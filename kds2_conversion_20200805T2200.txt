@@ -1,0 +1,9 @@
+20200805T2200 KDS Upgrade Assistant Conversion Report
+Project name: KPB08_Slave_PRG
+Project location: D:/0_KPB_Project/KPB08/PRG_File/KPB08_Slave_V3.0_Debug/KPB08_Slave_PRG_V1.3
+Conversion status: success.
+Toolchain settings, for configuration Debug: already set. Not changed.
+Newlib-nano, for configuration Debug: no instances of -nanolibc found.
+Semihosting support None, for configuration Debug: semihosting options successfully removed.
+Add _exit(): /Sources/exit.c, was added.
+A backup of the original .cproject file has been created in .cproject_backup

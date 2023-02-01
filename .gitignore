@@ -1,0 +1,9 @@
+Bootloader/
+Debug/
+*.o
+*.d
+*.mk
+cscope.in.out
+cscope.out
+cscope.po.out
+tags

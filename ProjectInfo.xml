@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+  Copyright : 2012 Freescale, Inc. All Rights Reserved.
+
+  This configuration file is a standard interchange file that's format is maintained
+  by Freescale, Inc. The configuration file is a derivative work
+  of the Processor Expert Software technology licensed for use by customers
+  as defined as SOFTWARE in the product's End User License Agreement. This file
+  and format are free to use and distribute for read-only purposes. You do not have
+  the right to create these files or modify this format or use for any purposes other
+  than interchange with the Processor Expert Software technology.
+
+  THIS SOFTWARE IS PROVIDED "AS IS".
+
+  NO WARRANTIES, WHETHER EXPRESS, IMPLIED OR STATUTORY, INCLUDING, BUT NOT
+  LIMITED TO, IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+  PURPOSE APPLY TO THIS SOFTWARE. IN NO EVENT WILL FREESCALE BE LIABLE, WHETHER
+  IN CONTRACT, TORT, OR OTHERWISE, FOR ANY INCIDENTAL, SPECIAL, INDIRECT,
+  CONSEQUENTIAL OR PUNITIVE DAMAGES, INCLUDING, BUT NOT LIMITED TO, DAMAGES FOR
+  ANY LOSS OF USE, LOSS OF TIME, INCONVENIENCE, COMMERCIAL LOSS, OR LOST PROFITS,
+  SAVINGS, OR REVENUES TO THE FULL EXTENT SUCH MAY BE DISCLAIMED BY LAW.
+
+-->
+<export xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="ProjectInfoDescription.xsd">
+  <PROCESSOR>
+    <DeviceID>SKEAZ64xxx4</DeviceID>
+    <CoreNum>1</CoreNum>
+    <Cores>
+      <Core>
+        <CoreSet>Cortex-M0+</CoreSet>
+      </Core>
+    </Cores>
+    <SRAMsize>8192</SRAMsize>
+    <FLASHsize>64k</FLASHsize>
+  </PROCESSOR>
+  <PATHS>
+    <LinkerCommandFile>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Project_Settings\Linker_Files\ProcessorExpert.ld</LinkerCommandFile>
+    <IncludePaths>
+      <Path>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Static_Code\System\</Path>
+      <Path>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Static_Code\PDD\</Path>
+      <Path>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Static_Code\IO_Map\</Path>
+      <Path>C:\Freescale\KDS_v3\eclipse\ProcessorExpert\lib\Kinetis\pdd\inc\</Path>
+      <Path>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Sources\</Path>
+      <Path>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Generated_Code\</Path>
+    </IncludePaths>
+    <SourceCodePaths>
+      <Path>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\.metadata\.plugins\org.eclipse.cdt.make.core\</Path>
+      <Path>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Generated_Code\</Path>
+      <Path>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Project_Settings\Startup_Code\</Path>
+      <Path>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Sources\</Path>
+      <Path>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Static_Code\System\</Path>
+    </SourceCodePaths>
+  </PATHS>
+  <FILES>
+    <GeneratedCs>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\.metadata\.plugins\org.eclipse.cdt.make.core\specs.c</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Generated_Code\AD1.c</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Generated_Code\AdcLdd1.c</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Generated_Code\CAN1.c</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Generated_Code\CI2C1.c</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Generated_Code\CI2C2.c</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Generated_Code\Cpu.c</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Generated_Code\FLASH1.c</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Generated_Code\H_RESET_CTL.c</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Generated_Code\LED.c</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Generated_Code\L_RESET_CTL.c</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Generated_Code\MC33664_CLK_OE.c</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Generated_Code\MC33664_CS_TX.c</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Generated_Code\MC33664_EN.c</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Generated_Code\MC33664_INT.c</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Generated_Code\M_RESET_CTL.c</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Generated_Code\PCS_S.c</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Generated_Code\PE_LDD.c</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Generated_Code\Pins1.c</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Generated_Code\RN_CTL.c</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Generated_Code\RP_CTL.c</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Generated_Code\RTC_CE.c</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Generated_Code\RTC_Select.c</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Generated_Code\SPI0.c</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Generated_Code\SPI1.c</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Generated_Code\Temp_A0.c</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Generated_Code\Temp_A1.c</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Generated_Code\Temp_A2.c</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Generated_Code\Temp_A3.c</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Generated_Code\Timer2ms.c</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Generated_Code\Timer_PIT.c</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Generated_Code\WDog1.c</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Project_Settings\Startup_Code\startup.c</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Sources\ADC.c</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Sources\ADVAL2temp.c</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Sources\CAN.c</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Sources\CRC15.c</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Sources\CellVoltage.c</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Sources\Current.c</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Sources\Events.c</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Sources\Flash.c</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Sources\FuncCom.c</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Sources\HV.c</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Sources\IIC.c</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Sources\INA226.c</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Sources\MC33771C.c</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Sources\RA4803SA.c</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Sources\RX8130.c</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Sources\RX8900.c</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Sources\Read_Res_Val.c</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Sources\SPI.c</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Sources\SPI1_Driver.c</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Sources\SPI1_Slave.c</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Sources\exit.c</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Sources\gpio_Ctr.c</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Sources\main.c</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Static_Code\System\CPU_Init.c</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Static_Code\System\Peripherals_Init.c</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Static_Code\System\Vectors.c</PathName>
+    </GeneratedCs>
+    <GeneratedHs>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Generated_Code\AD1.h</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Generated_Code\AdcLdd1.h</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Generated_Code\CAN1.h</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Generated_Code\CI2C1.h</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Generated_Code\CI2C2.h</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Generated_Code\CPU_Config.h</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Generated_Code\Cpu.h</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Generated_Code\FLASH1.h</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Generated_Code\H_RESET_CTL.h</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Generated_Code\IO_Map.h</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Generated_Code\Init_Config.h</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Generated_Code\LED.h</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Generated_Code\L_RESET_CTL.h</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Generated_Code\MC33664_CLK_OE.h</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Generated_Code\MC33664_CS_TX.h</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Generated_Code\MC33664_EN.h</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Generated_Code\MC33664_INT.h</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Generated_Code\M_RESET_CTL.h</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Generated_Code\PCS_S.h</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Generated_Code\PE_Const.h</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Generated_Code\PE_Error.h</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Generated_Code\PE_LDD.h</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Generated_Code\PE_Types.h</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Generated_Code\Pins1.h</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Generated_Code\RN_CTL.h</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Generated_Code\RP_CTL.h</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Generated_Code\RTC_CE.h</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Generated_Code\RTC_Select.h</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Generated_Code\SPI0.h</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Generated_Code\SPI1.h</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Generated_Code\Temp_A0.h</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Generated_Code\Temp_A1.h</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Generated_Code\Temp_A2.h</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Generated_Code\Temp_A3.h</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Generated_Code\Timer2ms.h</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Generated_Code\Timer_PIT.h</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Generated_Code\Vectors_Config.h</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Generated_Code\WDog1.h</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Sources\ADC.h</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Sources\ADVAL2temp.h</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Sources\CAN.h</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Sources\CRC15.h</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Sources\CellVoltage.h</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Sources\Current.h</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Sources\Events.h</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Sources\Flash.h</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Sources\FuncCom.h</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Sources\HV.h</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Sources\IIC.h</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Sources\INA226.h</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Sources\MC33771C.h</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Sources\RA4803SA.h</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Sources\RX8130.h</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Sources\RX8900.h</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Sources\Read_Res_Val.h</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Sources\SPI.h</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Sources\SPI1_Driver.h</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Sources\SPI1_Slave.h</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Sources\gpio_Ctr.h</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Static_Code\IO_Map\SKEAZ1284.h</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Static_Code\PDD\ADC_PDD.h</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Static_Code\PDD\CMP_PDD.h</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Static_Code\PDD\CRC_PDD.h</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Static_Code\PDD\FTMRE_PDD.h</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Static_Code\PDD\FTM_PDD.h</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Static_Code\PDD\GPIO_PDD.h</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Static_Code\PDD\I2C_PDD.h</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Static_Code\PDD\IRQ_PDD.h</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Static_Code\PDD\KBI_PDD.h</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Static_Code\PDD\MCM_PDD.h</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Static_Code\PDD\MSCAN_PDD.h</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Static_Code\PDD\NVIC_PDD.h</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Static_Code\PDD\PDD_Types.h</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Static_Code\PDD\PIT_PDD.h</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Static_Code\PDD\PMC_PDD.h</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Static_Code\PDD\PORT_PDD.h</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Static_Code\PDD\PWT_PDD.h</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Static_Code\PDD\RTC0_PDD.h</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Static_Code\PDD\SCB_PDD.h</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Static_Code\PDD\SIM_PDD.h</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Static_Code\PDD\SPI_PDD.h</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Static_Code\PDD\SysTick_PDD.h</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Static_Code\PDD\UART_PDD.h</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Static_Code\PDD\WDOG_PDD.h</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Static_Code\System\CPU_Init.h</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Static_Code\System\PDD_Includes.h</PathName>
+      <PathName>E:\项目\00.公司项目\003.KPB\09.KPB17\08.Slave\KPB17_Slave_PRG_V1.03\Static_Code\System\Peripherals_Init.h</PathName>
+    </GeneratedHs>
+  </FILES>
+  <OPTIONS>
+  </OPTIONS>
+</export>
