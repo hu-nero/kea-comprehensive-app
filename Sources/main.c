@@ -33,7 +33,6 @@
 #include "Pins1.h"
 #include "CI2C1.h"
 #include "CI2C2.h"
-#include "SPI0.h"
 #include "WDog1.h"
 #include "Timer2ms.h"
 #include "RN_CTL.h"
@@ -116,10 +115,10 @@ int main(void)
   PE_low_level_init();
   /*** End of Processor Expert internal initialization.                    ***/
   __DI();
-  WDog1_Init(NULL);
+  //WDog1_Init(NULL);
   I2C1_TDeviceDataPtr = CI2C1_Init(NULL);
   I2C2_TDeviceDataPtr = CI2C2_Init(NULL);
-  SPI0TDeviceData = SPI0_Init(NULL);
+  spi0_init();
   Timer2ms_TDeviceDataPtr = Timer2ms_Init(NULL);
   Init_SPI1();
   Timer2ms_Disable(Timer2ms_TDeviceDataPtr);
@@ -135,7 +134,7 @@ int main(void)
 
   __EI();
  _LED_ON;
-  WDog1_Clear(NULL);
+  //WDog1_Clear(NULL);
 
 
 #ifdef _DISABLE_FLASH_WR
@@ -147,7 +146,7 @@ int main(void)
   //INA226_Init();//通过
   INA226_R_Init();//通过
   Init_MC33771();
-  WDog1_Clear(NULL);
+  //WDog1_Clear(NULL);
 
   /*
   if (RTC_SelectStatus != 0) {
@@ -166,23 +165,22 @@ int main(void)
   } else {
 	  RX8130_CheckInit();
   }
-  WDog1_Clear(NULL);
+  //WDog1_Clear(NULL);
   InitADC();
   mdelay(50);
   ADC_MeasureInit();
 
 
   SPI_RD_Length = _SPI_RD_LEN;
-  SPI0_ReceiveBlock(SPI0TDeviceData,SPI_READ_DMA, SPI_RD_Length);
 
-  WDog1_Clear(NULL);
+  //WDog1_Clear(NULL);
   //mdelay(50);
   //INA226_GetRegData(Cfg_Reg, &gINA226CFG);
   mdelay(50);
   INA226_R_GetRegData(Cfg_Reg, &gINA226CFG_R);
   MC33771_RunCOD();
   mdelay(50);
-  WDog1_Clear(NULL);
+  //WDog1_Clear(NULL);
   /* Write your code here */
 #ifdef _CAN_DEF
   MSCAN_CANRFLG &= 0x01;
@@ -201,7 +199,6 @@ int main(void)
   unsigned char balstep = 0; //均衡控制步骤，只在0和1之间跳
   Timer2ms_Enable(Timer2ms_TDeviceDataPtr);
   for (;;) {
-
 	DMA_Set();
 	if (Timer0Count != 0) {
 		ADC_Measure();
@@ -229,7 +226,7 @@ int main(void)
 			//CAN_TranData(ComBalanceEnergy+offset,0x200+offset/8,8);
 			Err_Count[5] = CellVolErr[12][0];
 			Err_Count[6] = CellVolErr[12][1];
-			//CAN_TranData(Err_Count,0x302,8);
+			CAN_TranData(Err_Count,0x302,8);
 			//CAN_TranData((unsigned char*)err_count32,0x303,8);
 			//CAN_TranData((unsigned char*)MC33771_TEMP,0x304,6);
 			offset += 8;
@@ -347,8 +344,8 @@ int main(void)
 				break;
 			}
 			case 12: {
-				//if(balstep==1)
-				//	MC33771_RunCOD();//均衡电压转换
+				if(balstep==1)
+					MC33771_RunCOD();//均衡电压转换
 				break;
 			}
 			case 13: {
@@ -369,34 +366,34 @@ int main(void)
 				break;
 			}
 			case 17: {
-				//CellVolErr[7][0] = GetCellVoltage(1, &BalanceVoltage[14]);
+				CellVolErr[7][0] = GetCellVoltage(1, &BalanceVoltage[14]);
 				break;
 			}
 			case 18: {
-				//CellVolErr[8][0] = GetCellVoltage(2, &BalanceVoltage[28]);
+				CellVolErr[8][0] = GetCellVoltage(2, &BalanceVoltage[28]);
 				break;
 			}
 			case 19: {
-				//if (CellVolErr[6][0] != 0) {
-				//	CellVolErr[6][1] = GetCellVoltage(0, &BalanceVoltage[0]);
-				//}
+				if (CellVolErr[6][0] != 0) {
+					CellVolErr[6][1] = GetCellVoltage(0, &BalanceVoltage[0]);
+				}
 				break;
 			}
 			case 20: {
-				//if (CellVolErr[7][0] != 0) {
-				//	CellVolErr[7][1] = GetCellVoltage(1, &BalanceVoltage[14]);
-				//}
+				if (CellVolErr[7][0] != 0) {
+					CellVolErr[7][1] = GetCellVoltage(1, &BalanceVoltage[14]);
+				}
 				break;
 			}
 			case 21: {
-				//if (CellVolErr[8][0] != 0) {
-				//	CellVolErr[8][1] = GetCellVoltage(2, &BalanceVoltage[28]);
-				//}
+				if (CellVolErr[8][0] != 0) {
+					CellVolErr[8][1] = GetCellVoltage(2, &BalanceVoltage[28]);
+				}
 				break;
 			}
 			case 22: {
-				if(balstep==1)
-					GetBalanceEnergy();
+//				if(balstep==1)
+//					GetBalanceEnergy();
 #if 0
 				unsigned char tempdata[8] = {0};
 				tempdata[0] = BalanceCurrent[offset2]&0xFF;
@@ -475,7 +472,7 @@ int main(void)
 		}
 		Timer1Count += Timer0Count;
 		Timer0Count = 0;
-		WDog1_Clear(NULL);
+		//WDog1_Clear(NULL);
 	}
 
 	if (Timer1Count > 500) {//1s
@@ -494,7 +491,7 @@ int main(void)
 			  Init_MC33771();
 		  }
 	  }
-	  //WDog1_Clear(NULL);
+	  ////WDog1_Clear(NULL);
 	}
   }
 

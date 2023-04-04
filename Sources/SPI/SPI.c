@@ -6,9 +6,12 @@
  */
 
 #include "SPI.h"
+#include "SS0.h"
+#include <stdbool.h>
 
 
 
+static uint8_t DMA_RT_Flag = 0;
 LDD_TDeviceData * SPI0TDeviceData;
 
 
@@ -16,15 +19,10 @@ uint8_t SPI_RD_Length = _SPI_RD_LEN;
 uint8_t SPI_RD_Length_Cache = _SPI_RD_LEN;
 
 uint8_t DMA_ERR = 0;
-uint8_t DMA_RT_Flag = 0;
 
 uint8_t SPI_READ_DMA[40] = {0};
-//uint8_t SPI_SEND_DMA[40] = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40};
-//uint8_t SPI_SEND_DMA_Test[40] = {0x0A,0x00,0xA1,0xA2,0xA3,0xA4,0xA5,0xA6,0xA7,0xA8,0xA9,0xAA,0xAB,0xAC,0xAD,0xAE,0xAF,0xA0,0xB1,0xB2};
 uint8_t SPI_SEND_DMA[40] = {0};
 
-uint8_t SPI0_READ_DMA[40] = {0};
-uint8_t SPI0_SEND_DMA[40] = {0};
 
 
 uint8_t SPI_IV[18] = {0};
@@ -70,6 +68,23 @@ uint16_t SPI_RD_DMA_Flag = 0;
 uint16_t SPI_TX_DMA_Flag = 0;
 uint8_t SPI_RD_Flag = 0;
 uint8_t SPI_TX_Flag = 0;
+
+uint16_t
+spi0_init(void)
+{
+	uint16_t u16Err = 0;
+	uint32_t u32TimeOut = 0;
+	SPI0TDeviceData = SS0_Init(NULL);
+	if(NULL == SPI0TDeviceData)
+		return 1;
+	u16Err = SS0_ReceiveBlock(SPI0TDeviceData, SPI_READ_DMA, 4);
+	while((ERR_OK != u16Err) && (u32TimeOut < 3))
+	{
+		 u32TimeOut ++;
+		 u16Err = SS0_ReceiveBlock(SPI0TDeviceData, SPI_READ_DMA, 4);
+	}
+	return 0;
+}
 
 void DMA_GetIVData(void) {
 	SPI_IV[0] = (uint8_t)(_Mcmd_R_IV>>8);
@@ -358,38 +373,9 @@ uint8_t Read_S[2] = {0};
 
 uint16_t ErrCount = 0;
 
-void DMA_Set(void) {
-	static uint8_t Spi_CS_Sta = 0;
-
-	if (PCS_S_GetVal(NULL) == 0x01) {
-		Spi_CS_Sta ++;
-		if (Spi_CS_Sta >= 3) {
-			Spi_CS_Sta = 0;
-			if (DMA_ERR != 0) {
-				SPI0_CancelBlockTransmission(SPI0TDeviceData);
-				SPI0_CancelBlockReception(SPI0TDeviceData);
-				//SPI0TDeviceData = SPI0_Init(NULL);
-				Read_S[0] = SPI_PDD_ReadStatusReg(SPI0_BASE_PTR);
-				Read_D[0] = SPI_PDD_ReadData8bit(SPI0_BASE_PTR);
-				if (( Read_S[0] & SPI_PDD_RX_BUFFER_FULL) != 0U) {
-					Read_D[0] = SPI_PDD_ReadData8bit(SPI0_BASE_PTR);
-				}
-
-				Read_D[1] = SPI_PDD_ReadData8bit(SPI0_BASE_PTR);
-				Read_S[1] = SPI_PDD_ReadStatusReg(SPI0_BASE_PTR);
-				SPI_RD_Length = _SPI_RD_LEN;
-				SPI0_ReceiveBlock(SPI0TDeviceData,SPI_READ_DMA, SPI_RD_Length);
-				DMA_ERR = 0;
-				SPI_RD_DMA_Flag = 0;
-				SPI_TX_DMA_Flag = 0;
-			}
-		}
-
-		DMA_GetDataAll();//更新数据
-		//MDA_GetDataAllTest();
-
-	}
-
+void DMA_Set(void)
+{
+	DMA_GetDataAll();//更新数据
 }
 /*
 uint16_t TestMcmd = 0;
@@ -411,16 +397,14 @@ uint8_t SPI_Data_Test(uint8_t *data, uint8_t len) {
 	}
 }
 */
-uint16_t Mcmd = 0;
-uint16_t McmdCRC = 0;
-uint16_t gMcmdCRC = 0;
-uint16_t SendDataCRC = 0;
-
 //uint16_t TestCount[2]  = {0};
 
 uint8_t DMA_Data_Handle(uint8_t *data, uint8_t len) {
 
-  	static uint8_t DataFlag = 0;//==1，接收数据
+  	uint16_t Mcmd = 0;
+  	uint16_t McmdCRC = 0;
+  	uint16_t gMcmdCRC = 0;
+  	uint16_t SendDataCRC = 0;
   	uint8_t DMA_Send_Flag = 0;
 
 	if (len <= 2) return 2;
@@ -428,112 +412,107 @@ uint8_t DMA_Data_Handle(uint8_t *data, uint8_t len) {
 	Mcmd = (uint16_t)(((uint16_t)data[0]<<8) | ((uint16_t)data[1]));
 	gMcmdCRC = (uint16_t)(((uint16_t)data[len-2]<<8) | ((uint16_t)data[len-1]));
 
-	McmdCRC = PEC15((uint8_t *)&SPI_READ_DMA[0], len-2);
+	McmdCRC = PEC15((uint8_t *)&data[0], len-2);
 
-	if (len == _SPI_RD_LEN) {
-		if (gMcmdCRC != McmdCRC) {
-			DMA_ERR = 0x01;
-			DMA_RT_Flag = 2;
-			return 1;
-		}
-	} else if (len == _SPI_RD_DATA_LEN) {
-		if ((gMcmdCRC != McmdCRC) && (DataFlag == 1)) {
-			DMA_ERR = 0x01;
-			DMA_RT_Flag = 2;
-			return 1;
-		}
-	}
+    if (gMcmdCRC != McmdCRC) {
+        DMA_ERR = 0x01;
+        DMA_RT_Flag = 0;
+        return 1;
+    }
 
-	/*
-	if ((data[0] <=  _SPI_SEND_NUM) && (data[0]!= 0)) {
-	  	memset(SPI_SEND_DMA, 0, sizeof(SPI_SEND_DMA));
-		SPI_SEND_DMA[4] = data[0];
-		SPI_SEND_DMA[5] = 0x00;
-		memcpy(&SPI_SEND_DMA[6], &SPI_Send_Cache[data[0]-1][0], 16);
-		SendDataCRC = PEC15(&SPI_READ_DMA[4], 18);
-		SPI_SEND_DMA[22] = (uint8_t)(SendDataCRC>>8);
-		SPI_SEND_DMA[23] = (uint8_t)(SendDataCRC);
-	}
-	*/
-	DataFlag = 0;
 #if 1
-	memset(SPI_SEND_DMA, 0, sizeof(SPI_SEND_DMA));
-	memcpy((uint8_t *)SPI0_READ_DMA, data, 4);
 	switch (Mcmd) {
 	  	//读命令
 		case _Mcmd_R_IV: {
+            EnterCritical();
 		 	memcpy(&SPI_SEND_DMA[0], SPI_IV, 18);
 			SendDataCRC = PEC15((uint8_t *)&SPI_SEND_DMA[0], 18);
 			SPI_SEND_DMA[18] = (uint8_t)(SendDataCRC>>8);
 			SPI_SEND_DMA[19] = (uint8_t)(SendDataCRC);
+            ExitCritical();
 			DMA_Send_Flag = 1;
 			//SPI_Cmd_Count[0] ++;
 			break;
 		}
 		case _Mcmd_R_CV1: {
+            EnterCritical();
 		 	memcpy(&SPI_SEND_DMA[0], SPI_CV1, 18);
 			SendDataCRC = PEC15((uint8_t *)&SPI_SEND_DMA[0], 18);
 			SPI_SEND_DMA[18] = (uint8_t)(SendDataCRC>>8);
 			SPI_SEND_DMA[19] = (uint8_t)(SendDataCRC);
+            ExitCritical();
 			DMA_Send_Flag = 1;
 			//SPI_Cmd_Count[1] ++;
 			break;
 		}
 		case _Mcmd_R_CV2: {
+            EnterCritical();
 		 	memcpy(&SPI_SEND_DMA[0], SPI_CV2, 18);
 			SendDataCRC = PEC15((uint8_t *)&SPI_SEND_DMA[0], 18);
 			SPI_SEND_DMA[18] = (uint8_t)(SendDataCRC>>8);
 			SPI_SEND_DMA[19] = (uint8_t)(SendDataCRC);
+            ExitCritical();
 			DMA_Send_Flag = 1;
 			//SPI_Cmd_Count[2] ++;
 			break;
 		}
 		case _Mcmd_R_CV3: {
+            EnterCritical();
 		 	memcpy(&SPI_SEND_DMA[0], SPI_CV3, 18);
 			SendDataCRC = PEC15((uint8_t *)&SPI_SEND_DMA[0], 18);
 			SPI_SEND_DMA[18] = (uint8_t)(SendDataCRC>>8);
 			SPI_SEND_DMA[19] = (uint8_t)(SendDataCRC);
+            ExitCritical();
 			DMA_Send_Flag = 1;
 			//SPI_Cmd_Count[3] ++;
 			break;
 		}
 		case _Mcmd_R_CV4: {
+            EnterCritical();
 		 	memcpy(&SPI_SEND_DMA[0], SPI_CV4, 18);
 			SendDataCRC = PEC15((uint8_t *)&SPI_SEND_DMA[0], 18);
 			SPI_SEND_DMA[18] = (uint8_t)(SendDataCRC>>8);
 			SPI_SEND_DMA[19] = (uint8_t)(SendDataCRC);
+            ExitCritical();
 			DMA_Send_Flag = 1;
 			//SPI_Cmd_Count[4] ++;
 			break;
 		}
 		case _Mcmd_R_CV5: {
+            EnterCritical();
 		 	memcpy(&SPI_SEND_DMA[0], SPI_CV5, 18);
 			SendDataCRC = PEC15((uint8_t *)&SPI_SEND_DMA[0], 18);
 			SPI_SEND_DMA[18] = (uint8_t)(SendDataCRC>>8);
 			SPI_SEND_DMA[19] = (uint8_t)(SendDataCRC);
+            ExitCritical();
 			DMA_Send_Flag = 1;
 			//SPI_Cmd_Count[5] ++;
 			break;
 		}
 		case _Mcmd_R_CV6: {
+            EnterCritical();
 		 	memcpy(&SPI_SEND_DMA[0], SPI_CV6, 18);
 			SendDataCRC = PEC15((uint8_t *)&SPI_SEND_DMA[0], 18);
 			SPI_SEND_DMA[18] = (uint8_t)(SendDataCRC>>8);
 			SPI_SEND_DMA[19] = (uint8_t)(SendDataCRC);
+            ExitCritical();
 			DMA_Send_Flag = 1;
 			//SPI_Cmd_Count[6] ++;
 			break;
 		}
 		case _Mcmd_R_T1: {
+            EnterCritical();
 		 	memcpy(&SPI_SEND_DMA[0], SPI_T1, 18);
 			SendDataCRC = PEC15((uint8_t *)&SPI_SEND_DMA[0], 18);
 			SPI_SEND_DMA[18] = (uint8_t)(SendDataCRC>>8);
 			SPI_SEND_DMA[19] = (uint8_t)(SendDataCRC);
+            ExitCritical();
 			DMA_Send_Flag = 1;
 			//SPI_Cmd_Count[7] ++;
 			break;
 		}
 		case _Mcmd_R_T2: {
+            EnterCritical();
 		 	memcpy(&SPI_SEND_DMA[0], SPI_T2, 18);
 		 	memcpy(&SPI_ReT2[10], &SPI_T2[10], 8);
 		 	SendDataCRC = PEC15((uint8_t *)&SPI_SEND_DMA[0], 18);
@@ -541,39 +520,46 @@ uint8_t DMA_Data_Handle(uint8_t *data, uint8_t len) {
 			SPI_SEND_DMA[19] = (uint8_t)(SendDataCRC);
 			DSG_AH = 0;
 			CHG_AH = 0;
+            ExitCritical();
 			DMA_Send_Flag = 1;
 			//SPI_Cmd_Count[8] ++;
 			break;
 		}
 		case _Mcmd_R_T3: {
+            EnterCritical();
 		 	memcpy(&SPI_SEND_DMA[0], SPI_T3, 18);
 			SendDataCRC = PEC15((uint8_t *)&SPI_SEND_DMA[0], 18);
 			SPI_SEND_DMA[18] = (uint8_t)(SendDataCRC>>8);
 			SPI_SEND_DMA[19] = (uint8_t)(SendDataCRC);
+            ExitCritical();
 			DMA_Send_Flag = 1;
 			//SPI_Cmd_Count[9] ++;
 			break;
 		}
 		case _Mcmd_R_E: {
+            EnterCritical();
 		 	memcpy(&SPI_SEND_DMA[0], SPI_E, 18);
 			SendDataCRC = PEC15((uint8_t *)&SPI_SEND_DMA[0], 18);
 			SPI_SEND_DMA[18] = (uint8_t)(SendDataCRC>>8);
 			SPI_SEND_DMA[19] = (uint8_t)(SendDataCRC);
+            ExitCritical();
 			DMA_Send_Flag = 1;
 			//SPI_Cmd_Count[10] ++;
 			break;
 		}
 		case _Mcmd_R_E2: {
+            EnterCritical();
 		 	memcpy(&SPI_SEND_DMA[0], SPI_E2, 18);
 			SendDataCRC = PEC15((uint8_t *)&SPI_SEND_DMA[0], 18);
 			SPI_SEND_DMA[18] = (uint8_t)(SendDataCRC>>8);
 			SPI_SEND_DMA[19] = (uint8_t)(SendDataCRC);
+            ExitCritical();
 			DMA_Send_Flag = 1;
 			//SPI_Cmd_Count[11] ++;
 			break;
 		}
 		case _Mcmd_R_BL1: {
-
+            EnterCritical();
 		 	memcpy(&SPI_SEND_DMA[0], SPI_BL1, 18);
 			memcpy(&SPI_ReBL1[2], &SPI_BL1[2], 16);
 			SendDataCRC = PEC15((uint8_t *)&SPI_SEND_DMA[0], 18);
@@ -583,13 +569,14 @@ uint8_t DMA_Data_Handle(uint8_t *data, uint8_t len) {
 			GetBalanceCmdCount ++;
 			BalanceCmd = 0;
 			ClrDataFlag[0] = 0;
+            ExitCritical();
 			DMA_Send_Flag = 1;
 			//SPI_Cmd_Count[12] ++;
 
 			break;
 		}
 		case _Mcmd_R_BL2: {
-
+            EnterCritical();
 		 	memcpy(&SPI_SEND_DMA[0], SPI_BL2, 18);
 			memcpy(&SPI_ReBL2[2], &SPI_BL2[2], 16);
 			SendDataCRC = PEC15((uint8_t *)&SPI_SEND_DMA[0], 18);
@@ -599,13 +586,13 @@ uint8_t DMA_Data_Handle(uint8_t *data, uint8_t len) {
 			GetBalanceCmdCount ++;
 			BalanceCmd = 0;
 			ClrDataFlag[1] = 0;
+            ExitCritical();
 			DMA_Send_Flag = 1;
 			//SPI_Cmd_Count[13] ++;
-
 			break;
 		}
 		case _Mcmd_R_BL3: {
-
+            EnterCritical();
 		 	memcpy(&SPI_SEND_DMA[0], SPI_BL3, 18);
 			memcpy(&SPI_ReBL3[2], &SPI_BL3[2], 16);
 			SendDataCRC = PEC15((uint8_t *)&SPI_SEND_DMA[0], 18);
@@ -615,60 +602,70 @@ uint8_t DMA_Data_Handle(uint8_t *data, uint8_t len) {
 			GetBalanceCmdCount ++;
 			BalanceCmd = 0;
 			ClrDataFlag[2] = 0;
+            ExitCritical();
 			DMA_Send_Flag = 1;
 			//SPI_Cmd_Count[14] ++;
-
 			break;
 		}
 		case _Mcmd_R_RTC: {
+            EnterCritical();
 		 	memcpy(&SPI_SEND_DMA[0], SPI_RTC, 18);
 			SendDataCRC = PEC15((uint8_t *)&SPI_SEND_DMA[0], 18);
 			SPI_SEND_DMA[18] = (uint8_t)(SendDataCRC>>8);
 			SPI_SEND_DMA[19] = (uint8_t)(SendDataCRC);
+            ExitCritical();
 			DMA_Send_Flag = 1;
 			//SPI_Cmd_Count[15] ++;
 			break;
 		}
 		case _Mcmd_R_ReT2: {
+            EnterCritical();
 		  	SPI_SEND_DMA[0] = (uint8_t)(_Mcmd_R_ReT2>>8);
 			SPI_SEND_DMA[1] = 0x00;
 		 	memcpy(&SPI_SEND_DMA[2], &SPI_ReT2[2], 16);
 			SendDataCRC = PEC15((uint8_t *)&SPI_SEND_DMA[0], 18);
 			SPI_SEND_DMA[18] = (uint8_t)(SendDataCRC>>8);
 			SPI_SEND_DMA[19] = (uint8_t)(SendDataCRC);
+            ExitCritical();
 			DMA_Send_Flag = 1;
 			//SPI_Cmd_Count[16] ++;
 			break;
 		}
 		case _Mcmd_R_ReBL1: {
+            EnterCritical();
 		  	SPI_SEND_DMA[0] = (uint8_t)(_Mcmd_R_ReBL1>>8);
 			SPI_SEND_DMA[1] = 0x00;
 		 	memcpy(&SPI_SEND_DMA[2], &SPI_ReBL1[2], 16);
 			SendDataCRC = PEC15((uint8_t *)&SPI_SEND_DMA[0], 18);
 			SPI_SEND_DMA[18] = (uint8_t)(SendDataCRC>>8);
 			SPI_SEND_DMA[19] = (uint8_t)(SendDataCRC);
+            ExitCritical();
 			DMA_Send_Flag = 1;
 			//SPI_Cmd_Count[17] ++;
 			break;
 		}
 		case _Mcmd_R_ReBL2: {
+            EnterCritical();
 		  	SPI_SEND_DMA[0] = (uint8_t)(_Mcmd_R_ReBL2>>8);
 			SPI_SEND_DMA[1] = 0x00;
 		 	memcpy(&SPI_SEND_DMA[2], &SPI_ReBL2[2], 16);
 			SendDataCRC = PEC15((uint8_t *)&SPI_SEND_DMA[0], 18);
 			SPI_SEND_DMA[18] = (uint8_t)(SendDataCRC>>8);
 			SPI_SEND_DMA[19] = (uint8_t)(SendDataCRC);
+            ExitCritical();
 			DMA_Send_Flag = 1;
 			//SPI_Cmd_Count[18] ++;
 			break;
 		}
 		case _Mcmd_R_ReBL3: {
+            EnterCritical();
 			SPI_SEND_DMA[0] = (uint8_t)(_Mcmd_R_ReBL3>>8);
 			SPI_SEND_DMA[1] = 0x00;
 			memcpy(&SPI_SEND_DMA[2], &SPI_ReBL3[2], 16);
 			SendDataCRC = PEC15((uint8_t *)&SPI_SEND_DMA[0], 18);
 			SPI_SEND_DMA[18] = (uint8_t)(SendDataCRC>>8);
 			SPI_SEND_DMA[19] = (uint8_t)(SendDataCRC);
+            ExitCritical();
 			DMA_Send_Flag = 1;
 			//SPI_Cmd_Count[19] ++;
 			break;
@@ -695,7 +692,6 @@ uint8_t DMA_Data_Handle(uint8_t *data, uint8_t len) {
 		  	//SPI_rdData_Flag = 0x04;
 		  	//DMA_Send_Flag = 1;
 			DMA_Send_Flag = 3;
-			DataFlag = 1;
 			//SPI_RD_Length = _SPI_RD_DATA_LEN;
 			break;
 		}
@@ -750,11 +746,13 @@ uint8_t DMA_Data_Handle(uint8_t *data, uint8_t len) {
 		}
 		//数据处理
 		case _Mcmd_W_BL1_D: {
+            EnterCritical();
 		  	memcpy(&SetBalanceEnergy[0], &SPI_READ_DMA[2], 16);
 		  	BalanceCmd = 1;
 		  	//_LED_ON;
 		  	ClrDataFlag[0] = 1;
 			//SPI_rdData_Flag = 0;
+            ExitCritical();
 		  	DMA_Send_Flag = 0;
 			//SPI_RD_Length = _SPI_RD_LEN;
 		  	//SPI_Cmd_Count[20] ++;
@@ -762,9 +760,11 @@ uint8_t DMA_Data_Handle(uint8_t *data, uint8_t len) {
 		}
 	  	case _Mcmd_W_BL2_D: {
 	  		if (BalanceCmd == 1) {
+            EnterCritical();
 	  			memcpy(&SetBalanceEnergy[16], &SPI_READ_DMA[2], 16);
 	  			BalanceCmd = 2;
 	  			ClrDataFlag[1] = 1;
+            ExitCritical();
 	  			//BalanceCmdCount ++;
 	  			//BalanceTime = 0;
 	  		}
@@ -776,10 +776,12 @@ uint8_t DMA_Data_Handle(uint8_t *data, uint8_t len) {
 		}
 	  	case _Mcmd_W_BL3_D: {
 	  		if (BalanceCmd == 2) {
+            EnterCritical();
 	  			memcpy(&SetBalanceEnergy[32], &SPI_READ_DMA[2], 10);
 	  			BalanceCmd = 3;
 	  			ClrDataFlag[2] = 1;
 	  			BalanceCmdCount ++;
+            ExitCritical();
 	  			//_LED_OFF;
 	  			//BalanceTime = 0;
 	  		}
@@ -790,9 +792,11 @@ uint8_t DMA_Data_Handle(uint8_t *data, uint8_t len) {
 			break;
 		}
 		case _Mcmd_W_WUT_D: {
+            EnterCritical();
 		  	SetWakeUpTime = (uint16_t)(((uint16_t)SPI_READ_DMA[2]<<8) | (uint16_t)SPI_READ_DMA[3]);
 			SetWakeUpFlag ++;
 			//SPI_rdData_Flag = 0;
+            ExitCritical();
 			DMA_Send_Flag = 0;
 			//SPI_RD_Length = _SPI_RD_LEN;
 
@@ -829,3 +833,79 @@ unsigned char GetDMARTFlag(void)
 {
 	return DMA_RT_Flag;
 }
+
+void
+hal_spi_slave_tx_callback(void)
+{
+    uint16_t u16Err = 0;
+    uint32_t u32TimeOut = 0;
+
+    if(SS0_GetBlockSentStatus(SPI0TDeviceData) == true)
+    {
+    	//set recv
+        u16Err = SS0_ReceiveBlock(SPI0TDeviceData, SPI_READ_DMA, 4);
+        u16Err = u16Err;
+        while((ERR_OK != u16Err) && (u32TimeOut < 3))
+        {
+            u32TimeOut ++;
+            /* set recv buf */
+            u16Err = SS0_ReceiveBlock(SPI0TDeviceData, SPI_READ_DMA, 4);
+        }
+    }
+}
+
+/**
+ * @brief :spi slave rx callback
+ */
+
+void
+hal_spi_slave_rx_callback(void)
+{
+    uint16_t u16Err = 0;
+    uint32_t u32TimeOut = 0;
+    uint8_t SPI0_READ_DMA[20] = {0};
+    uint8_t SPI0_SEND_DMA[20] = {0};
+    if(SS0_GetBlockReceivedStatus(SPI0TDeviceData) == true)
+    {
+        //analysis data
+        DMA_Data_Handle(SPI_READ_DMA, SPI_RD_Length);
+
+        if (DMA_RT_Flag == 0) {//接收数据
+            SPI_RD_Length = _SPI_RD_LEN;
+            //set recv
+            u16Err = SS0_ReceiveBlock(SPI0TDeviceData, SPI_READ_DMA, SPI_RD_Length);
+            u16Err = u16Err;
+            while((ERR_OK != u16Err) && (u32TimeOut < 3))
+            {
+                u32TimeOut ++;
+                /* set recv buf */
+                u16Err = SS0_ReceiveBlock(SPI0TDeviceData, SPI_READ_DMA, SPI_RD_Length);
+            }
+        } else if (DMA_RT_Flag == 1) {//发送数据
+            EnterCritical();
+            memcpy((uint8_t *)&SPI0_SEND_DMA[0], SPI_SEND_DMA, _SPI_TX_LEN);
+            ExitCritical();
+            DMA_RT_Flag = 0;
+            //set send buf
+            u16Err = SS0_SendBlock(SPI0TDeviceData, SPI0_SEND_DMA, _SPI_TX_LEN);
+            while((ERR_OK != u16Err) && (u32TimeOut < 3))
+            {
+                u32TimeOut ++;
+                /* set send buf */
+                u16Err = SS0_SendBlock(SPI0TDeviceData, SPI0_SEND_DMA, _SPI_TX_LEN);
+            }
+        } else if (DMA_RT_Flag == 3) {//接受20字节
+            SPI_RD_Length = _SPI_RD_DATA_LEN;
+            //set recv
+            u16Err = SS0_ReceiveBlock(SPI0TDeviceData, SPI_READ_DMA, SPI_RD_Length);
+            u16Err = u16Err;
+            while((ERR_OK != u16Err) && (u32TimeOut < 3))
+            {
+                u32TimeOut ++;
+                /* set recv buf */
+                u16Err = SS0_ReceiveBlock(SPI0TDeviceData, SPI_READ_DMA, SPI_RD_Length);
+            }
+        }
+    }
+}
+

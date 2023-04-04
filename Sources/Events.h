@@ -36,7 +36,7 @@
 #include "Pins1.h"
 #include "CI2C1.h"
 #include "CI2C2.h"
-#include "SPI0.h"
+#include "SS0.h"
 #include "WDog1.h"
 #include "Timer2ms.h"
 #include "RN_CTL.h"
@@ -106,7 +106,7 @@ void Cpu_OnNMI(void);
 **                           as the parameter of Init method. 
 */
 /* ===================================================================*/
-void SPI0_OnBlockSent(LDD_TUserData *UserDataPtr);
+void SS0_OnBlockSent(LDD_TUserData *UserDataPtr);
 
 /*
 ** ===================================================================
@@ -125,7 +125,7 @@ void SPI0_OnBlockSent(LDD_TUserData *UserDataPtr);
 **                           as the parameter of Init method. 
 */
 /* ===================================================================*/
-void SPI0_OnBlockReceived(LDD_TUserData *UserDataPtr);
+void SS0_OnBlockReceived(LDD_TUserData *UserDataPtr);
 
 /*
 ** ===================================================================

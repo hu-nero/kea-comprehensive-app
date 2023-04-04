@@ -92,15 +92,11 @@ uint8_t SPI_sData_Buf[40] = {0};
 uint8_t SPI_rData_Buf[40] = {0};
 
 
-void SPI0_OnBlockSent(LDD_TUserData *UserDataPtr)
+void SS0_OnBlockSent(LDD_TUserData *UserDataPtr)
 {
   /* Write your code here ... */
-	//(void) UserDataPtr;
-	//SPI_TX_DMA_Flag ++;
-	//SPI_TX_Flag = 0x01;
-
-	memset((uint8_t *)SPI0_SEND_DMA, 0, sizeof(SPI0_SEND_DMA));
-
+	(void) UserDataPtr;
+	hal_spi_slave_tx_callback();
 }
 
 /*
@@ -120,53 +116,13 @@ void SPI0_OnBlockSent(LDD_TUserData *UserDataPtr)
 **                           as the parameter of Init method. 
 */
 /* ===================================================================*/
-uint8_t SPI_rData_Buf2[40] = {0};
-unsigned char SPI0_Flag = 0;
-void SPI0_OnBlockReceived(LDD_TUserData *UserDataPtr)
+void SS0_OnBlockReceived(LDD_TUserData *UserDataPtr)
 {
   /* Write your code here ... */
 	(void) UserDataPtr;
-#if 1
-	DMA_Data_Handle(SPI_READ_DMA, SPI_RD_Length);
-
-
-	if (DMA_RT_Flag == 0) {//接受4字节
-		memset((uint8_t *)SPI_READ_DMA, 0, sizeof(SPI_READ_DMA));
-		SPI_RD_Length = _SPI_RD_LEN;
-		SPI0_ReceiveBlock(SPI0TDeviceData,SPI_READ_DMA, SPI_RD_Length);
-		SPI0_Flag = 1;
-		//_LED_TOGGLE;
-
-	} else if (DMA_RT_Flag == 1) {//发送数据
-
-		memcpy((uint8_t *)&SPI0_SEND_DMA[0], SPI_SEND_DMA, _SPI_TX_LEN);
-
-		SPI_RD_Length = _SPI_TX_LEN;
-		SPI0_ReceiveBlock(SPI0TDeviceData,SPI_READ_DMA, SPI_RD_Length);
-		SPI0_SendBlock(SPI0TDeviceData, SPI0_SEND_DMA, _SPI_TX_LEN);
-		DMA_RT_Flag = 0;
-		SPI0_Flag = 0;
-
-
-	} else if (DMA_RT_Flag == 2) {//故障，重新接受4字节
-
-		memset((uint8_t *)SPI_READ_DMA, 0, sizeof(SPI_READ_DMA));
-		SPI_RD_Length = _SPI_RD_LEN;
-		SPI0_ReceiveBlock(SPI0TDeviceData,SPI_READ_DMA, SPI_RD_Length);
-		SPI0_Flag = 0;
-
-	} else if (DMA_RT_Flag == 3) {//接受20字节
-		memset((uint8_t *)SPI_READ_DMA, 0, sizeof(SPI_READ_DMA));
-		SPI_RD_Length = _SPI_RD_DATA_LEN;
-		SPI0_ReceiveBlock(SPI0TDeviceData,SPI_READ_DMA, SPI_RD_Length);
-		SPI0_Flag = 0;
-	}
-#endif
+	hal_spi_slave_rx_callback();
 }
-unsigned char GetSPI0Flag(void)
-{
-	return SPI0_Flag;
-}
+
 /*
 ** ===================================================================
 **     Event       :  CI2C2_OnMasterBlockSent (module Events)

@@ -12,7 +12,7 @@
 extern "C" {
 #endif
 
-#include "SPI0.h"
+#include "SS0.h"
 #include "gpio_Ctr.h"
 #include "CRC\CRC15.h"
 //#include "INA226.h"
@@ -109,22 +109,20 @@ extern uint8_t SPI_READ_DMA[40];
 extern uint8_t SPI_SEND_DMA[40];
 extern uint8_t SPI_SEND_DMA_Test[40];
 
-extern uint8_t SPI0_READ_DMA[40];
-extern uint8_t SPI0_SEND_DMA[40];
-
 extern uint16_t SPI_RD_DMA_Flag;
 extern uint16_t SPI_TX_DMA_Flag;
 
 extern uint8_t SPI_RD_Flag;
 extern uint8_t SPI_TX_Flag;
 extern uint8_t DMA_ERR;
-extern uint8_t DMA_RT_Flag;
 
 //extern uint8_t SPI_Cmd_Count[24];
 extern uint8_t WorkSignal;
 
-extern LDD_TDeviceData * SPI0TDeviceData;
 
+extern uint16_t spi0_init(void);
+extern void hal_spi_slave_tx_callback(void);
+extern void hal_spi_slave_rx_callback(void);
 extern void DMA_Set(void);
 //extern uint8_t SPI_Data_Test(uint8_t *data, uint8_t len);
 extern uint8_t DMA_Data_Handle(uint8_t *data, uint8_t len);
