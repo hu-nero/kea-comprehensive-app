@@ -195,7 +195,7 @@ char MC33771_ReadData(uint8_t nrt, uint8_t regaddr, uint8_t cid, uint16_t *spi_r
 	if (nrt > 40)	nrt = 40;
 
 	BCC_PackFrame((uint16_t)nrt, regaddr, cid, BCC_CMD_READ , sdata);
-	EnterCritical();
+//	EnterCritical();
 	/*******************************Send Cmd********************************/
 	MC33664_CS_TX_PutVal(NULL, 0);
 	if ((_STATREG & SPI_PDD_RX_BUFFER_FULL)){
@@ -270,7 +270,7 @@ char MC33771_ReadData(uint8_t nrt, uint8_t regaddr, uint8_t cid, uint16_t *spi_r
 		}
 
 	}
-	ExitCritical();
+//	ExitCritical();
 #else
 
 #endif

@@ -100,6 +100,16 @@ extern "C" {
 #define _Mcmd_OFF_HEAT_CRC	0x6718
  */
 
+typedef enum
+{
+    HAL_SLAVE_SPI_RECV_CMD = 0,
+    HAL_SLAVE_SPI_RECV_RCMD,
+    HAL_SLAVE_SPI_RECV_TCMD,
+    HAL_SLAVE_SPI_RECV_DATA,
+    HAL_SLAVE_SPI_SEND_DATA,
+    HAL_SLAVE_SPI_UNDEFINED
+} HAL_SLAVE_SPI_Enum;
+
 extern uint8_t SoftsVer[32];
 
 extern uint8_t SPI_RD_Length;
@@ -118,14 +128,16 @@ extern uint8_t DMA_ERR;
 
 //extern uint8_t SPI_Cmd_Count[24];
 extern uint8_t WorkSignal;
-
+extern uint8_t gsu8HalSpiRxDataBuf[20];
 
 extern uint16_t spi0_init(void);
 extern void hal_spi_slave_tx_callback(void);
 extern void hal_spi_slave_rx_callback(void);
+extern void hal_spi_slave_endcs_callback(void);
 extern void DMA_Set(void);
 //extern uint8_t SPI_Data_Test(uint8_t *data, uint8_t len);
 extern uint8_t DMA_Data_Handle(uint8_t *data, uint8_t len);
+extern uint8_t DMA_Recv_Data_Handle(uint8_t *Data, uint8_t Len);
 
 #ifdef __cplusplus
 }

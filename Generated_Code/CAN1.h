@@ -7,7 +7,7 @@
 **     Version     : Component 01.112, Driver 01.00, CPU db: 3.00.000
 **     Repository  : Kinetis
 **     Compiler    : GNU C Compiler
-**     Date/Time   : 2023-04-04, 09:32, # CodeGen: 0
+**     Date/Time   : 2023-04-13, 20:17, # CodeGen: 4
 **     Abstract    :
 **         This component "CAN_LDD" implements a CAN serial channel.
 **     Settings    :
@@ -15,19 +15,19 @@
 **          CAN channel                                    : MSCAN
 **          Interrupt service                              : Enabled
 **            Interrupt TxD                                : INT_MSCAN_TX
-**            Interrupt TxD priority                       : low priority
+**            Interrupt TxD priority                       : minimal priority
 **            ISR Name                                     : CAN1_TxInterrupt
 **            Interrupt RxD                                : INT_MSCAN_RX
-**            Interrupt RxD priority                       : low priority
+**            Interrupt RxD priority                       : minimal priority
 **            ISR Name                                     : CAN1_RxInterrupt
 **            Interrupt error                              : INT_MSCAN_TX
-**            Interrupt error priority                     : low priority
+**            Interrupt error priority                     : minimal priority
 **            ISR Name                                     : CAN1_TxInterrupt
 **            Interrupt bus off                            : INT_MSCAN_TX
-**            Interrupt bus off priority                   : low priority
+**            Interrupt bus off priority                   : minimal priority
 **            ISR Name                                     : CAN1_TxInterrupt
 **            Interrupt wake up                            : INT_MSCAN_TX
-**            Interrupt wake up priority                   : low priority
+**            Interrupt wake up priority                   : minimal priority
 **            ISR Name                                     : CAN1_TxInterrupt
 **          Settings                                       : 
 **            Pins                                         : 

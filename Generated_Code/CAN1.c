@@ -7,7 +7,7 @@
 **     Version     : Component 01.112, Driver 01.00, CPU db: 3.00.000
 **     Repository  : Kinetis
 **     Compiler    : GNU C Compiler
-**     Date/Time   : 2023-04-04, 09:32, # CodeGen: 0
+**     Date/Time   : 2023-04-13, 20:17, # CodeGen: 4
 **     Abstract    :
 **         This component "CAN_LDD" implements a CAN serial channel.
 **     Settings    :
@@ -15,19 +15,19 @@
 **          CAN channel                                    : MSCAN
 **          Interrupt service                              : Enabled
 **            Interrupt TxD                                : INT_MSCAN_TX
-**            Interrupt TxD priority                       : low priority
+**            Interrupt TxD priority                       : minimal priority
 **            ISR Name                                     : CAN1_TxInterrupt
 **            Interrupt RxD                                : INT_MSCAN_RX
-**            Interrupt RxD priority                       : low priority
+**            Interrupt RxD priority                       : minimal priority
 **            ISR Name                                     : CAN1_RxInterrupt
 **            Interrupt error                              : INT_MSCAN_TX
-**            Interrupt error priority                     : low priority
+**            Interrupt error priority                     : minimal priority
 **            ISR Name                                     : CAN1_TxInterrupt
 **            Interrupt bus off                            : INT_MSCAN_TX
-**            Interrupt bus off priority                   : low priority
+**            Interrupt bus off priority                   : minimal priority
 **            ISR Name                                     : CAN1_TxInterrupt
 **            Interrupt wake up                            : INT_MSCAN_TX
-**            Interrupt wake up priority                   : low priority
+**            Interrupt wake up priority                   : minimal priority
 **            ISR Name                                     : CAN1_TxInterrupt
 **          Settings                                       : 
 **            Pins                                         : 
@@ -210,22 +210,14 @@ LDD_TDeviceData* CAN1_Init(LDD_TUserData *UserDataPtr)
   /* SIM_PINSEL1: MSCANPS=1 */
   SIM_PINSEL1 |= SIM_PINSEL1_MSCANPS_MASK;
   /* Interrupt priorities */
-  /* NVIC_IPR7: PRI_31=2 */
-  NVIC_IPR7 = (uint32_t)((NVIC_IPR7 & (uint32_t)~(uint32_t)(
-               NVIC_IP_PRI_31(0x01)
-              )) | (uint32_t)(
-               NVIC_IP_PRI_31(0x02)
-              ));
+  /* NVIC_IPR7: PRI_31=3 */
+  NVIC_IPR7 |= NVIC_IP_PRI_31(0x03);
   /* NVIC_ISER: SETENA31=1,SETENA30=0,SETENA29=0,SETENA28=0,SETENA27=0,SETENA26=0,SETENA25=0,SETENA24=0,SETENA23=0,SETENA22=0,SETENA21=0,SETENA20=0,SETENA19=0,SETENA18=0,SETENA17=0,SETENA16=0,SETENA15=0,SETENA14=0,SETENA13=0,SETENA12=0,SETENA11=0,SETENA10=0,SETENA9=0,SETENA8=0,SETENA7=0,SETENA6=0,SETENA5=0,SETENA4=0,SETENA3=0,SETENA2=0,SETENA1=0,SETENA0=0 */
   NVIC_ISER = NVIC_ISER_SETENA31_MASK;
   /* NVIC_ICER: CLRENA31=0,CLRENA30=0,CLRENA29=0,CLRENA28=0,CLRENA27=0,CLRENA26=0,CLRENA25=0,CLRENA24=0,CLRENA23=0,CLRENA22=0,CLRENA21=0,CLRENA20=0,CLRENA19=0,CLRENA18=0,CLRENA17=0,CLRENA16=0,CLRENA15=0,CLRENA14=0,CLRENA13=0,CLRENA12=0,CLRENA11=0,CLRENA10=0,CLRENA9=0,CLRENA8=0,CLRENA7=0,CLRENA6=0,CLRENA5=0,CLRENA4=0,CLRENA3=0,CLRENA2=0,CLRENA1=0,CLRENA0=0 */
   NVIC_ICER = 0x00U;
-  /* NVIC_IPR7: PRI_30=2 */
-  NVIC_IPR7 = (uint32_t)((NVIC_IPR7 & (uint32_t)~(uint32_t)(
-               NVIC_IP_PRI_30(0x01)
-              )) | (uint32_t)(
-               NVIC_IP_PRI_30(0x02)
-              ));
+  /* NVIC_IPR7: PRI_30=3 */
+  NVIC_IPR7 |= NVIC_IP_PRI_30(0x03);
   /* NVIC_ISER: SETENA31=0,SETENA30=1,SETENA29=0,SETENA28=0,SETENA27=0,SETENA26=0,SETENA25=0,SETENA24=0,SETENA23=0,SETENA22=0,SETENA21=0,SETENA20=0,SETENA19=0,SETENA18=0,SETENA17=0,SETENA16=0,SETENA15=0,SETENA14=0,SETENA13=0,SETENA12=0,SETENA11=0,SETENA10=0,SETENA9=0,SETENA8=0,SETENA7=0,SETENA6=0,SETENA5=0,SETENA4=0,SETENA3=0,SETENA2=0,SETENA1=0,SETENA0=0 */
   NVIC_ISER = NVIC_ISER_SETENA30_MASK;
   /* NVIC_ICER: CLRENA31=0,CLRENA30=0,CLRENA29=0,CLRENA28=0,CLRENA27=0,CLRENA26=0,CLRENA25=0,CLRENA24=0,CLRENA23=0,CLRENA22=0,CLRENA21=0,CLRENA20=0,CLRENA19=0,CLRENA18=0,CLRENA17=0,CLRENA16=0,CLRENA15=0,CLRENA14=0,CLRENA13=0,CLRENA12=0,CLRENA11=0,CLRENA10=0,CLRENA9=0,CLRENA8=0,CLRENA7=0,CLRENA6=0,CLRENA5=0,CLRENA4=0,CLRENA3=0,CLRENA2=0,CLRENA1=0,CLRENA0=0 */

@@ -7,7 +7,7 @@
 **     Version     : Component 01.697, Driver 01.00, CPU db: 3.00.000
 **     Repository  : Kinetis
 **     Compiler    : GNU C Compiler
-**     Date/Time   : 2023-04-04, 09:32, # CodeGen: 0
+**     Date/Time   : 2023-04-13, 20:19, # CodeGen: 5
 **     Abstract    :
 **         This device "ADC" implements an A/D converter,
 **         its control methods and interrupt/event handling procedure.
@@ -18,7 +18,7 @@
 **          ADC_LDD                                        : ADC_LDD
 **          Interrupt service/event                        : Enabled
 **            A/D interrupt                                : INT_ADC0
-**            A/D interrupt priority                       : medium priority
+**            A/D interrupt priority                       : minimal priority
 **          A/D channels                                   : 10
 **            Channel0                                     : 
 **              A/D channel (pin)                          : PTF4/KBI1_P12/ADC0_SE12

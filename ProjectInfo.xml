@@ -71,6 +71,7 @@
       <PathName>D:\workspace\vscode_workspace\kpb17\Generated_Code\CI2C1.c</PathName>
       <PathName>D:\workspace\vscode_workspace\kpb17\Generated_Code\CI2C2.c</PathName>
       <PathName>D:\workspace\vscode_workspace\kpb17\Generated_Code\Cpu.c</PathName>
+      <PathName>D:\workspace\vscode_workspace\kpb17\Generated_Code\EInt.c</PathName>
       <PathName>D:\workspace\vscode_workspace\kpb17\Generated_Code\FLASH1.c</PathName>
       <PathName>D:\workspace\vscode_workspace\kpb17\Generated_Code\H_RESET_CTL.c</PathName>
       <PathName>D:\workspace\vscode_workspace\kpb17\Generated_Code\LED.c</PathName>
@@ -87,7 +88,6 @@
       <PathName>D:\workspace\vscode_workspace\kpb17\Generated_Code\RP_CTL.c</PathName>
       <PathName>D:\workspace\vscode_workspace\kpb17\Generated_Code\RTC_CE.c</PathName>
       <PathName>D:\workspace\vscode_workspace\kpb17\Generated_Code\RTC_Select.c</PathName>
-      <PathName>D:\workspace\vscode_workspace\kpb17\Generated_Code\SPI0.c</PathName>
       <PathName>D:\workspace\vscode_workspace\kpb17\Generated_Code\SPI1.c</PathName>
       <PathName>D:\workspace\vscode_workspace\kpb17\Generated_Code\SS0.c</PathName>
       <PathName>D:\workspace\vscode_workspace\kpb17\Generated_Code\Temp_A0.c</PathName>
@@ -134,6 +134,7 @@
       <PathName>D:\workspace\vscode_workspace\kpb17\Generated_Code\CI2C2.h</PathName>
       <PathName>D:\workspace\vscode_workspace\kpb17\Generated_Code\CPU_Config.h</PathName>
       <PathName>D:\workspace\vscode_workspace\kpb17\Generated_Code\Cpu.h</PathName>
+      <PathName>D:\workspace\vscode_workspace\kpb17\Generated_Code\EInt.h</PathName>
       <PathName>D:\workspace\vscode_workspace\kpb17\Generated_Code\FLASH1.h</PathName>
       <PathName>D:\workspace\vscode_workspace\kpb17\Generated_Code\H_RESET_CTL.h</PathName>
       <PathName>D:\workspace\vscode_workspace\kpb17\Generated_Code\IO_Map.h</PathName>
@@ -155,7 +156,6 @@
       <PathName>D:\workspace\vscode_workspace\kpb17\Generated_Code\RP_CTL.h</PathName>
       <PathName>D:\workspace\vscode_workspace\kpb17\Generated_Code\RTC_CE.h</PathName>
       <PathName>D:\workspace\vscode_workspace\kpb17\Generated_Code\RTC_Select.h</PathName>
-      <PathName>D:\workspace\vscode_workspace\kpb17\Generated_Code\SPI0.h</PathName>
       <PathName>D:\workspace\vscode_workspace\kpb17\Generated_Code\SPI1.h</PathName>
       <PathName>D:\workspace\vscode_workspace\kpb17\Generated_Code\SS0.h</PathName>
       <PathName>D:\workspace\vscode_workspace\kpb17\Generated_Code\Temp_A0.h</PathName>

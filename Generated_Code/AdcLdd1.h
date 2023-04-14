@@ -7,7 +7,7 @@
 **     Version     : Component 01.183, Driver 01.00, CPU db: 3.00.000
 **     Repository  : Kinetis
 **     Compiler    : GNU C Compiler
-**     Date/Time   : 2023-04-04, 09:32, # CodeGen: 0
+**     Date/Time   : 2023-04-13, 20:19, # CodeGen: 5
 **     Abstract    :
 **         This device "ADC_LDD" implements an A/D converter,
 **         its control methods and interrupt/event handling procedure.
@@ -17,7 +17,7 @@
 **          Discontinuous mode                             : no
 **          Interrupt service/event                        : Enabled
 **            A/D interrupt                                : INT_ADC0
-**            A/D interrupt priority                       : medium priority
+**            A/D interrupt priority                       : minimal priority
 **            ISR Name                                     : AdcLdd1_MeasurementCompleteInterrupt
 **          A/D channel list                               : 10
 **            Channel 0                                    : 

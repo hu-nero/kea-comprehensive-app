@@ -33,7 +33,7 @@ by the component.
 <td class="regNotResetVal">0x00009C3F</td>
  <td>FTM0_MOD register, peripheral Timer2ms.</td></tr>
 <tr><td>0xE000E410</td><td>NVIC_IPR4</td>
-<td class="regNotResetVal">0x00004000</td>
+<td class="regNotResetVal">0x0000C000</td>
  <td>NVIC_IPR4 register, peripheral Timer2ms.</td></tr>
 <tr><td>0xE000E100</td><td>NVIC_ISER</td>
 <td class="regNotResetVal">0x00020400</td>
@@ -433,12 +433,12 @@ registers of the peripheral(s) configured by the component.
         
 </div>
 <table class="regtbl2"><tr><td class="trowtit" colspan="2">Address</td><td colspan="2">0xE000E410</td></tr>
-<tr class="trowtit"><td  class="trowtit" colspan="2">Initial value</td><td colspan="2">0x00004000</td></tr>
+<tr class="trowtit"><td  class="trowtit" colspan="2">Initial value</td><td colspan="2">0x0000C000</td></tr>
 <tr class="trowtit"><td  class="trowtit" colspan="2">After-reset value</td><td colspan="2">0x00000000</td></tr>
 <tr><td class="ttitle2">Bit</td><td class="ttitle2">Field</td><td class="ttitle2">Value</td><td class="ttitle2">Description</td></tr>
 <tr><td>30 - 31</td><td>PRI_19</td><td>0x00</td><td>Priority of the FlexTimer Module 2 interrupt</td>
 <tr><td>22 - 23</td><td>PRI_18</td><td>0x00</td><td>Priority of the FlexTimer Module 1 interrupt</td>
-<tr><td>14 - 15</td><td>PRI_17</td><td>0x00</td><td>Priority of the FlexTimer Module 0 interrupt</td>
+<tr><td>14 - 15</td><td>PRI_17</td><td>0x02</td><td>Priority of the FlexTimer Module 0 interrupt</td>
 <tr><td>6 - 7</td><td>PRI_16</td><td>0x00</td><td>Priority of the Analog comparator 0 interrupt interrupt</td>
 </tr></table>
 <div class="reghdr1">NVIC_ISER</div>
@@ -624,7 +624,7 @@ registers of the peripheral(s) configured by the component.
 **            Period                                       : 2 ms
 **            Interrupt                                    : Enabled
 **              Interrupt                                  : INT_FTM0
-**              Interrupt priority                         : medium priority
+**              Interrupt priority                         : minimal priority
 **              ISR Name                                   : Timer2ms_Interrupt
 **          Channel list                                   : 0
 **          Initialization                                 : 

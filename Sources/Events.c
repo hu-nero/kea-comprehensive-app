@@ -73,58 +73,6 @@ void Cpu_OnNMI(void)
 
 /*
 ** ===================================================================
-**     Event       :  SPI0_OnBlockSent (module Events)
-**
-**     Component   :  SPI0 [SPISlave_LDD]
-*/
-/*!
-**     @brief
-**         This event is called after the last character from the
-**         output buffer is moved to the transmitter. This event is
-**         available only if the SendBlock method is enabled.
-**     @param
-**         UserDataPtr     - Pointer to the user or
-**                           RTOS specific data. The pointer is passed
-**                           as the parameter of Init method. 
-*/
-/* ===================================================================*/
-uint8_t SPI_sData_Buf[40] = {0};
-uint8_t SPI_rData_Buf[40] = {0};
-
-
-void SS0_OnBlockSent(LDD_TUserData *UserDataPtr)
-{
-  /* Write your code here ... */
-	(void) UserDataPtr;
-	hal_spi_slave_tx_callback();
-}
-
-/*
-** ===================================================================
-**     Event       :  SPI0_OnBlockReceived (module Events)
-**
-**     Component   :  SPI0 [SPISlave_LDD]
-*/
-/*!
-**     @brief
-**         This event is called when the requested number of data is
-**         moved to the input buffer. This method is available only if
-**         the ReceiveBlock method is enabled.
-**     @param
-**         UserDataPtr     - Pointer to the user or
-**                           RTOS specific data. The pointer is passed
-**                           as the parameter of Init method. 
-*/
-/* ===================================================================*/
-void SS0_OnBlockReceived(LDD_TUserData *UserDataPtr)
-{
-  /* Write your code here ... */
-	(void) UserDataPtr;
-	hal_spi_slave_rx_callback();
-}
-
-/*
-** ===================================================================
 **     Event       :  CI2C2_OnMasterBlockSent (module Events)
 **
 **     Component   :  CI2C2 [I2C_LDD]
@@ -250,9 +198,9 @@ void Timer2ms_OnCounterRestart(LDD_TUserData *UserDataPtr)
 
 	/*
 	if (BalanceStatus == 1) {
-		if (BalanceChSelectCache == 0) {//ª˘ ˝
+		if (BalanceChSelectCache == 0) {//Âü∫Êï∞
 			BalanceTimer[0] ++;
-		} else {//≈º ˝
+		} else {//ÂÅ∂Êï∞
 			BalanceTimer[1] ++;
 		}
 	}
@@ -422,6 +370,76 @@ void SPI1_OnBlockReceived(LDD_TUserData *UserDataPtr)
 void FLASH1_OnOperationComplete(LDD_TUserData *UserDataPtr)
 {
   /* Write your code here ... */
+}
+
+/*
+** ===================================================================
+**     Event       :  SS0_OnBlockSent (module Events)
+**
+**     Component   :  SS0 [SPISlave_LDD]
+*/
+/*!
+**     @brief
+**         This event is called after the last character from the
+**         output buffer is moved to the transmitter. This event is
+**         available only if the SendBlock method is enabled.
+**     @param
+**         UserDataPtr     - Pointer to the user or
+**                           RTOS specific data. The pointer is passed
+**                           as the parameter of Init method.
+*/
+/* ===================================================================*/
+void SS0_OnBlockSent(LDD_TUserData *UserDataPtr)
+{
+	  /* Write your code here ... */
+		(void) UserDataPtr;
+		hal_spi_slave_tx_callback();
+}
+
+/*
+** ===================================================================
+**     Event       :  SS0_OnBlockReceived (module Events)
+**
+**     Component   :  SS0 [SPISlave_LDD]
+*/
+/*!
+**     @brief
+**         This event is called when the requested number of data is
+**         moved to the input buffer. This method is available only if
+**         the ReceiveBlock method is enabled.
+**     @param
+**         UserDataPtr     - Pointer to the user or
+**                           RTOS specific data. The pointer is passed
+**                           as the parameter of Init method. 
+*/
+/* ===================================================================*/
+void SS0_OnBlockReceived(LDD_TUserData *UserDataPtr)
+{
+	  /* Write your code here ... */
+		(void) UserDataPtr;
+		hal_spi_slave_rx_callback();
+}
+
+/*
+** ===================================================================
+**     Event       :  EInt_OnInterrupt (module Events)
+**
+**     Component   :  EInt [ExtInt_LDD]
+*/
+/*!
+**     @brief
+**         This event is called when an active signal edge/level has
+**         occurred.
+**     @param
+**         UserDataPtr     - Pointer to RTOS device
+**                           data structure pointer.
+*/
+/* ===================================================================*/
+void EInt_OnInterrupt(LDD_TUserData *UserDataPtr)
+{
+  /* Write your code here ... */
+	(void) UserDataPtr;
+	hal_spi_slave_endcs_callback();
 }
 
 /* END Events */

@@ -37,6 +37,7 @@
 #include "CI2C1.h"
 #include "CI2C2.h"
 #include "SS0.h"
+#include "SS0.h"
 #include "WDog1.h"
 #include "Timer2ms.h"
 #include "RN_CTL.h"
@@ -58,6 +59,7 @@
 #include "SPI1.h"
 #include "FLASH1.h"
 #include "Timer_PIT.h"
+#include "EInt.h"
 #include "RTC_CE.h"
 #include "CAN1.h"
 #include "LED.h"
@@ -93,7 +95,7 @@ void Cpu_OnNMI(void);
 ** ===================================================================
 **     Event       :  SPI0_OnBlockSent (module Events)
 **
-**     Component   :  SPI0 [SPISlave_LDD]
+**     Component   :  SS0 [SPISlave_LDD]
 */
 /*!
 **     @brief
@@ -112,7 +114,7 @@ void SS0_OnBlockSent(LDD_TUserData *UserDataPtr);
 ** ===================================================================
 **     Event       :  SPI0_OnBlockReceived (module Events)
 **
-**     Component   :  SPI0 [SPISlave_LDD]
+**     Component   :  SS0 [SPISlave_LDD]
 */
 /*!
 **     @brief
@@ -354,6 +356,61 @@ void FLASH1_OnOperationComplete(LDD_TUserData *UserDataPtr);
 **                           as the parameter of Init method.
 */
 /* ===================================================================*/
+
+/*
+** ===================================================================
+**     Event       :  EInt_OnInterrupt (module Events)
+**
+**     Component   :  EInt [ExtInt_LDD]
+*/
+/*!
+**     @brief
+**         This event is called when an active signal edge/level has
+**         occurred.
+**     @param
+**         UserDataPtr     - Pointer to RTOS device
+**                           data structure pointer.
+*/
+/* ===================================================================*/
+void EInt_OnInterrupt(LDD_TUserData *UserDataPtr);
+
+/*
+** ===================================================================
+**     Event       :  SPI0_OnBlockSent (module Events)
+**
+**     Component   :  SS0 [SPISlave_LDD]
+*/
+/*!
+**     @brief
+**         This event is called after the last character from the
+**         output buffer is moved to the transmitter. This event is
+**         available only if the SendBlock method is enabled.
+**     @param
+**         UserDataPtr     - Pointer to the user or
+**                           RTOS specific data. The pointer is passed
+**                           as the parameter of Init method. 
+*/
+/* ===================================================================*/
+void SPI0_OnBlockSent(LDD_TUserData *UserDataPtr);
+
+/*
+** ===================================================================
+**     Event       :  SPI0_OnBlockReceived (module Events)
+**
+**     Component   :  SS0 [SPISlave_LDD]
+*/
+/*!
+**     @brief
+**         This event is called when the requested number of data is
+**         moved to the input buffer. This method is available only if
+**         the ReceiveBlock method is enabled.
+**     @param
+**         UserDataPtr     - Pointer to the user or
+**                           RTOS specific data. The pointer is passed
+**                           as the parameter of Init method. 
+*/
+/* ===================================================================*/
+void SPI0_OnBlockReceived(LDD_TUserData *UserDataPtr);
 
 /* END Events */
 

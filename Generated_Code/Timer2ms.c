@@ -7,7 +7,7 @@
 **     Version     : Component 01.164, Driver 01.11, CPU db: 3.00.000
 **     Repository  : Kinetis
 **     Compiler    : GNU C Compiler
-**     Date/Time   : 2023-04-04, 09:32, # CodeGen: 0
+**     Date/Time   : 2023-04-13, 20:19, # CodeGen: 5
 **     Abstract    :
 **          This TimerUnit component provides a low level API for unified hardware access across
 **          various timer devices using the Prescaler-Counter-Compare-Capture timer structure.
@@ -25,7 +25,7 @@
 **            Period                                       : 2 ms
 **            Interrupt                                    : Enabled
 **              Interrupt                                  : INT_FTM0
-**              Interrupt priority                         : medium priority
+**              Interrupt priority                         : minimal priority
 **              ISR Name                                   : Timer2ms_Interrupt
 **          Channel list                                   : 0
 **          Initialization                                 : 
@@ -176,12 +176,8 @@ LDD_TDeviceData* Timer2ms_Init(LDD_TUserData *UserDataPtr)
   FTM0_MOD = FTM_MOD_MOD(0x9C3F);      /* Set up modulo register */
   DeviceDataPrv->EnEvents = 0x0100U;   /* Enable selected events */
   DeviceDataPrv->Source = FTM_PDD_SYSTEM; /* Store clock source */
-  /* NVIC_IPR4: PRI_17=1 */
-  NVIC_IPR4 = (uint32_t)((NVIC_IPR4 & (uint32_t)~(uint32_t)(
-               NVIC_IP_PRI_17(0x02)
-              )) | (uint32_t)(
-               NVIC_IP_PRI_17(0x01)
-              ));
+  /* NVIC_IPR4: PRI_17=3 */
+  NVIC_IPR4 |= NVIC_IP_PRI_17(0x03);
   /* NVIC_ISER: SETENA31=0,SETENA30=0,SETENA29=0,SETENA28=0,SETENA27=0,SETENA26=0,SETENA25=0,SETENA24=0,SETENA23=0,SETENA22=0,SETENA21=0,SETENA20=0,SETENA19=0,SETENA18=0,SETENA17=1,SETENA16=0,SETENA15=0,SETENA14=0,SETENA13=0,SETENA12=0,SETENA11=0,SETENA10=0,SETENA9=0,SETENA8=0,SETENA7=0,SETENA6=0,SETENA5=0,SETENA4=0,SETENA3=0,SETENA2=0,SETENA1=0,SETENA0=0 */
   NVIC_ISER = NVIC_ISER_SETENA17_MASK;
   /* NVIC_ICER: CLRENA31=0,CLRENA30=0,CLRENA29=0,CLRENA28=0,CLRENA27=0,CLRENA26=0,CLRENA25=0,CLRENA24=0,CLRENA23=0,CLRENA22=0,CLRENA21=0,CLRENA20=0,CLRENA19=0,CLRENA18=0,CLRENA17=0,CLRENA16=0,CLRENA15=0,CLRENA14=0,CLRENA13=0,CLRENA12=0,CLRENA11=0,CLRENA10=0,CLRENA9=0,CLRENA8=0,CLRENA7=0,CLRENA6=0,CLRENA5=0,CLRENA4=0,CLRENA3=0,CLRENA2=0,CLRENA1=0,CLRENA0=0 */
