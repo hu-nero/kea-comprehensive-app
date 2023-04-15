@@ -7,7 +7,7 @@
 **     Version     : Component 01.052, Driver 01.09, CPU db: 3.00.000
 **     Repository  : Kinetis
 **     Compiler    : GNU C Compiler
-**     Date/Time   : 2023-04-13, 19:51, # CodeGen: 0
+**     Date/Time   : 2023-04-15, 13:12, # CodeGen: 12
 **     Abstract    :
 **          The WatchDog component provides a high level API for unified hardware access
 **          across various watchdog timer devices.

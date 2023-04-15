@@ -205,6 +205,11 @@ int main(void)
   for (;;) {
 	DMA_Set();
 
+    for(uint8_t i=0;i<36;i++)
+    {
+	  SetBalanceEnergy[i]=100;
+    }
+	  BalanceCmdCount++;
 	if(hal_spi_slave_spi_recv_data_flag_get() == 2)
 	{
 		hal_spi_slave_spi_recv_data_flag_set(0);
@@ -233,6 +238,7 @@ int main(void)
 			ResMeasure_Sta = 0;
 		}
 		if(peridosendcount==0){
+
 			//CAN_TranData(SetBalanceEnergy+offset,0x100+offset/8,8);
 			//CAN_TranData(ComBalanceEnergy+offset,0x200+offset/8,8);
 			Err_Count[5] = CellVolErr[12][0];
@@ -303,7 +309,8 @@ int main(void)
 						Err_Count[1] ++;
 						CellVolErr[0][0] = 1;
 					}
-					CAN_TranData(CellVoltageReal,0x400,8);
+					CAN_TranData((uint8_t*)&CellVoltageReal[0],0x400,8);
+					CAN_TranData((uint8_t*)&CellVoltageReal[4],0x401,8);
 				}
 				break;
 			}
@@ -355,8 +362,8 @@ int main(void)
 				break;
 			}
 			case 12: {
-//				if(balstep==1)
-//					MC33771_RunCOD();//均衡电压转换
+				if(balstep==1)
+					MC33771_RunCOD();//均衡电压转换
 				break;
 			}
 			case 13: {
@@ -369,37 +376,40 @@ int main(void)
 			}
 			case 15: {
 				CellVoltageFillter(CellVoltage, CellVoltageReal, (_CV_CH_NUM*2/3), _CV_CH_NUM);//28 22 23 .... 41
+
+				CAN_TranData((uint8_t*)&CellVoltage[0],0x500,8);
+				CAN_TranData((uint8_t*)&CellVoltage[4],0x501,8);
 				break;
 			}
 			case 16: {
-//				CellVolErr[6][0] = SetBalVoltage(&BalanceVoltage[0]);
-//				CAN_TranData(BalanceVoltage,0x401,8);
+				CellVolErr[6][0] = SetBalVoltage(&BalanceVoltage[0]);
+				CAN_TranData(BalanceVoltage,0x401,8);
 				break;
 			}
 			case 17: {
-//				CellVolErr[7][0] = GetCellVoltage(1, &BalanceVoltage[14]);
+				CellVolErr[7][0] = GetCellVoltage(1, &BalanceVoltage[14]);
 				break;
 			}
 			case 18: {
-//				CellVolErr[8][0] = GetCellVoltage(2, &BalanceVoltage[28]);
+				CellVolErr[8][0] = GetCellVoltage(2, &BalanceVoltage[28]);
 				break;
 			}
 			case 19: {
-//				if (CellVolErr[6][0] != 0) {
-//					CellVolErr[6][1] = GetCellVoltage(0, &BalanceVoltage[0]);
-//				}
+				if (CellVolErr[6][0] != 0) {
+					CellVolErr[6][1] = GetCellVoltage(0, &BalanceVoltage[0]);
+				}
 				break;
 			}
 			case 20: {
-//				if (CellVolErr[7][0] != 0) {
-//					CellVolErr[7][1] = GetCellVoltage(1, &BalanceVoltage[14]);
-//				}
+				if (CellVolErr[7][0] != 0) {
+					CellVolErr[7][1] = GetCellVoltage(1, &BalanceVoltage[14]);
+				}
 				break;
 			}
 			case 21: {
-//				if (CellVolErr[8][0] != 0) {
-//					CellVolErr[8][1] = GetCellVoltage(2, &BalanceVoltage[28]);
-//				}
+				if (CellVolErr[8][0] != 0) {
+					CellVolErr[8][1] = GetCellVoltage(2, &BalanceVoltage[28]);
+				}
 				break;
 			}
 			case 22: {

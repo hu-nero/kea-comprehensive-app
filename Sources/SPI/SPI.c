@@ -8,7 +8,7 @@
 #include "SPI.h"
 #include "SS0.h"
 #include <stdbool.h>
-//#include <stdlib.h>
+#include "CAN/CAN.h"
 #include "CRC/CRC15.h"
 
 
@@ -377,7 +377,6 @@ void DMA_GetDataAll(void) {
 	DMA_GetBL2Data();
 	DMA_GetBL3Data();
 	DMA_GetRTCData();
-
 }
 
 void MDA_GetDataAllTest(void) {
@@ -421,8 +420,6 @@ void DMA_Set(void)
 
 	CAN_TranData(&SPI_CV1[2],0x600,8);
 	CAN_TranData(&SPI_CV1[10],0x601,8);
-	CAN_TranData(&SPI_CV2[2],0x602,8);
-	CAN_TranData(&SPI_CV2[10],0x603,8);
 }
 /*
 uint16_t TestMcmd = 0;
@@ -894,7 +891,11 @@ hal_spi_slave_rx_callback(void)
             {
                 //judge cmd legit
                 u16RxCrc.u16Crc = PEC15(SPI_READ_DMA, 2);
-                u16RxCrc.u16Crc = u16RxCrc.u16Crc;
+                if( (u16RxCrc.u8Crc[0] != SPI_READ_DMA[3]) || (u16RxCrc.u8Crc[1] != SPI_READ_DMA[2]) )
+                {
+                    halSlaveSpiRxFlag = HAL_SLAVE_SPI_RECV_CMD;
+                    break;
+                }
                 //cmd
                 if(SPI_READ_DMA[1] != 0x01)
                 {
@@ -940,11 +941,15 @@ hal_spi_slave_endcs_callback(void)
 	uint32_t u32TimeOut;
     CrcUnion u16TxCrc;
 
-    SS0_CancelBlockTransmission(SPI0TDeviceData);
-        SS0_CancelBlockReception(SPI0TDeviceData);
-    	SPI_PDD_ReadStatusReg(SPI0_BASE_PTR);
-    	SPI_PDD_ReadData8bit(SPI0_BASE_PTR);
-    	SPI_PDD_ReadData8bit(SPI0_BASE_PTR);
+    SS0_Deinit(NULL);
+    SPI0TDeviceData = SS0_Init(NULL);
+    if(NULL == SPI0TDeviceData)
+        return;
+//    SS0_CancelBlockTransmission(SPI0TDeviceData);
+//        SS0_CancelBlockReception(SPI0TDeviceData);
+//    	SPI_PDD_ReadStatusReg(SPI0_BASE_PTR);
+//    	SPI_PDD_ReadData8bit(SPI0_BASE_PTR);
+//    	SPI_PDD_ReadData8bit(SPI0_BASE_PTR);
     switch(halSlaveSpiRxFlag)
     {
         case HAL_SLAVE_SPI_RECV_RCMD:

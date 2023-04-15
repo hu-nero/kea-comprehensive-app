@@ -37,7 +37,6 @@
 #include "CI2C1.h"
 #include "CI2C2.h"
 #include "SS0.h"
-#include "SS0.h"
 #include "WDog1.h"
 #include "Timer2ms.h"
 #include "RN_CTL.h"
