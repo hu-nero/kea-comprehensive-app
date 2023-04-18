@@ -117,7 +117,7 @@ int main(void)
   /*** Processor Expert internal initialization. DON'T REMOVE THIS CODE!!! ***/
   PE_low_level_init();
   /*** End of Processor Expert internal initialization.                    ***/
-  //WDog1_Init(NULL);
+  WDog1_Init(NULL);
   I2C1_TDeviceDataPtr = CI2C1_Init(NULL);
   I2C2_TDeviceDataPtr = CI2C2_Init(NULL);
   spi0_init();
@@ -137,7 +137,7 @@ int main(void)
 
   __EI();
  _LED_ON;
-  //WDog1_Clear(NULL);
+  WDog1_Clear(NULL);
 
 
 #ifdef _DISABLE_FLASH_WR
@@ -149,7 +149,7 @@ int main(void)
   //INA226_Init();//通过
   INA226_R_Init();//通过
   Init_MC33771();
-  //WDog1_Clear(NULL);
+  WDog1_Clear(NULL);
 
   /*
   if (RTC_SelectStatus != 0) {
@@ -168,7 +168,7 @@ int main(void)
   } else {
 	  RX8130_CheckInit();
   }
-  //WDog1_Clear(NULL);
+  WDog1_Clear(NULL);
   InitADC();
   mdelay(50);
   ADC_MeasureInit();
@@ -176,14 +176,14 @@ int main(void)
 
   SPI_RD_Length = _SPI_RD_LEN;
 
-  //WDog1_Clear(NULL);
+  WDog1_Clear(NULL);
   //mdelay(50);
   //INA226_GetRegData(Cfg_Reg, &gINA226CFG);
   mdelay(50);
   INA226_R_GetRegData(Cfg_Reg, &gINA226CFG_R);
   MC33771_RunCOD();
   mdelay(50);
-  //WDog1_Clear(NULL);
+  WDog1_Clear(NULL);
   /* Write your code here */
 #ifdef _CAN_DEF
   MSCAN_CANRFLG &= 0x01;
@@ -204,12 +204,6 @@ int main(void)
   EInt_Enable(tDevEIntPtr);
   for (;;) {
 	DMA_Set();
-
-    for(uint8_t i=0;i<36;i++)
-    {
-	  SetBalanceEnergy[i]=100;
-    }
-	  BalanceCmdCount++;
 	if(hal_spi_slave_spi_recv_data_flag_get() == 2)
 	{
 		hal_spi_slave_spi_recv_data_flag_set(0);
@@ -413,8 +407,8 @@ int main(void)
 				break;
 			}
 			case 22: {
-				if(balstep==1)
-					GetBalanceEnergy();
+//				if(balstep==1)
+//					GetBalanceEnergy();
 #if 0
 				unsigned char tempdata[8] = {0};
 				tempdata[0] = BalanceCurrent[offset2]&0xFF;
@@ -493,7 +487,7 @@ int main(void)
 		}
 		Timer1Count += Timer0Count;
 		Timer0Count = 0;
-		//WDog1_Clear(NULL);
+		WDog1_Clear(NULL);
 	}
 
 	if (Timer1Count > 500) {//1s
@@ -512,7 +506,7 @@ int main(void)
 			  Init_MC33771();
 		  }
 	  }
-	  ////WDog1_Clear(NULL);
+	  WDog1_Clear(NULL);
 	}
   }
 

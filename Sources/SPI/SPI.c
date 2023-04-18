@@ -748,24 +748,24 @@ uint8_t DMA_Recv_Data_Handle(uint8_t *Data, uint8_t Len)
     {
 		//数据处理
 		case _Mcmd_W_BL1_D: {
-            //EnterCritical();
+            EnterCritical();
 		  	memcpy(&SetBalanceEnergy[0], &SPI_READ_DMA[2], 16);
 		  	BalanceCmd = 1;
 		  	//_LED_ON;
 		  	ClrDataFlag[0] = 1;
 			//SPI_rdData_Flag = 0;
-            //ExitCritical();
+            ExitCritical();
 			//SPI_RD_Length = _SPI_RD_LEN;
 		  	//SPI_Cmd_Count[20] ++;
 			break;
 		}
 	  	case _Mcmd_W_BL2_D: {
 	  		if (BalanceCmd == 1) {
-            //EnterCritical();
+            EnterCritical();
 	  			memcpy(&SetBalanceEnergy[16], &SPI_READ_DMA[2], 16);
 	  			BalanceCmd = 2;
 	  			ClrDataFlag[1] = 1;
-            //ExitCritical();
+            ExitCritical();
 	  			//BalanceCmdCount ++;
 	  			//BalanceTime = 0;
 	  		}
@@ -773,23 +773,23 @@ uint8_t DMA_Recv_Data_Handle(uint8_t *Data, uint8_t Len)
 		}
 	  	case _Mcmd_W_BL3_D: {
 	  		if (BalanceCmd == 2) {
-            //EnterCritical();
+            EnterCritical();
 	  			memcpy(&SetBalanceEnergy[32], &SPI_READ_DMA[2], 10);
 	  			BalanceCmd = 3;
 	  			ClrDataFlag[2] = 1;
 	  			BalanceCmdCount ++;
-            //ExitCritical();
+            ExitCritical();
 	  			//_LED_OFF;
 	  			//BalanceTime = 0;
 	  		}
 			break;
 		}
 		case _Mcmd_W_WUT_D: {
-            //EnterCritical();
+            EnterCritical();
 		  	SetWakeUpTime = (uint16_t)(((uint16_t)SPI_READ_DMA[2]<<8) | (uint16_t)SPI_READ_DMA[3]);
 			SetWakeUpFlag ++;
 			//SPI_rdData_Flag = 0;
-            //ExitCritical();
+            ExitCritical();
 			break;
 		}
 		case _Mcmd_W_RTC_D: {
@@ -807,68 +807,9 @@ unsigned char GetDMARTFlag(void)
 	return DMA_RT_Flag;
 }
 
-
-/**
- * @brief :spi slave rx callback
- */
-
-//void
-//hal_spi_slave_rx_callback(void)
-//{
-//    uint16_t u16Err = 0;
-//    uint32_t u32TimeOut = 0;
-//    uint8_t SPI0_READ_DMA[20] = {0};
-//    uint8_t SPI0_SEND_DMA[20] = {0};
-//    if(SS0_GetBlockReceivedStatus(SPI0TDeviceData) == true)
-//    {
-//        //analysis data
-//        DMA_Data_Handle(SPI_READ_DMA, SPI_RD_Length);
-//
-//        if (DMA_RT_Flag == 0) {//接收数据
-//            SPI_RD_Length = _SPI_RD_LEN;
-//            //set recv
-//            u16Err = SS0_ReceiveBlock(SPI0TDeviceData, SPI_READ_DMA, SPI_RD_Length);
-//            u16Err = u16Err;
-//            while((ERR_OK != u16Err) && (u32TimeOut < 3))
-//            {
-//                u32TimeOut ++;
-//                /* set recv buf */
-//                u16Err = SS0_ReceiveBlock(SPI0TDeviceData, SPI_READ_DMA, SPI_RD_Length);
-//            }
-//        } else if (DMA_RT_Flag == 1) {//发送数据
-//            //EnterCritical();
-//            memcpy((uint8_t *)&SPI0_SEND_DMA[0], SPI_SEND_DMA, _SPI_TX_LEN);
-//            //ExitCritical();
-//            DMA_RT_Flag = 0;
-//            //set send buf
-//            u16Err = SS0_SendBlock(SPI0TDeviceData, SPI0_SEND_DMA, _SPI_TX_LEN);
-//            while((ERR_OK != u16Err) && (u32TimeOut < 3))
-//            {
-//                u32TimeOut ++;
-//                /* set send buf */
-//                u16Err = SS0_SendBlock(SPI0TDeviceData, SPI0_SEND_DMA, _SPI_TX_LEN);
-//            }
-//        } else if (DMA_RT_Flag == 3) {//接受20字节
-//            SPI_RD_Length = _SPI_RD_DATA_LEN;
-//            //set recv
-//            u16Err = SS0_ReceiveBlock(SPI0TDeviceData, SPI_READ_DMA, SPI_RD_Length);
-//            u16Err = u16Err;
-//            while((ERR_OK != u16Err) && (u32TimeOut < 3))
-//            {
-//                u32TimeOut ++;
-//                /* set recv buf */
-//                u16Err = SS0_ReceiveBlock(SPI0TDeviceData, SPI_READ_DMA, SPI_RD_Length);
-//            }
-//        }
-//    }
-//}
-
-
-
 void
 hal_spi_slave_tx_callback(void)
 {
-
 	halSlaveSpiRxFlag = HAL_SLAVE_SPI_RECV_CMD;
 }
 
@@ -941,15 +882,6 @@ hal_spi_slave_endcs_callback(void)
 	uint32_t u32TimeOut;
     CrcUnion u16TxCrc;
 
-    SS0_Deinit(NULL);
-    SPI0TDeviceData = SS0_Init(NULL);
-    if(NULL == SPI0TDeviceData)
-        return;
-//    SS0_CancelBlockTransmission(SPI0TDeviceData);
-//        SS0_CancelBlockReception(SPI0TDeviceData);
-//    	SPI_PDD_ReadStatusReg(SPI0_BASE_PTR);
-//    	SPI_PDD_ReadData8bit(SPI0_BASE_PTR);
-//    	SPI_PDD_ReadData8bit(SPI0_BASE_PTR);
     switch(halSlaveSpiRxFlag)
     {
         case HAL_SLAVE_SPI_RECV_RCMD:
