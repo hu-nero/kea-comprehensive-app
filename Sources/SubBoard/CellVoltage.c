@@ -171,7 +171,6 @@ char CellVoltageFillter(uint16_t *vdest, const uint16_t *vsrc, uint8_t sp, uint8
 	}
 }
 
-
 unsigned char GetBalanceStartFlag(void)
 {
 	return BalanceStartFlag;

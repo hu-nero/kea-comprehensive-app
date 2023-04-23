@@ -547,7 +547,7 @@ unsigned char MC33771_CheckID(void)
 		}
 		else
 			err |= 0x10<<index;
-		CAN_TranData(&err,0x500+index,1);
+//		CAN_TranData(&err,0x500+index,1);
 	}
 	return err;
 }

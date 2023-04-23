@@ -515,7 +515,7 @@ extern char MC33771_Writecommand(uint16_t data, uint8_t regaddr, uint8_t cid);
 extern char Init_MC33771(void);
 extern char MC33771_ReadData(uint8_t nrt, uint8_t regaddr, uint8_t cid, uint16_t *data);
 
-
+extern unsigned char MC33771_CheckID(void);
 extern char MC33771_RunCOD(void);
 extern char CheckMeasCellRdy(uint8_t ic);
 extern char GetMeasCell_IC(uint8_t ic, uint16_t *vdata);

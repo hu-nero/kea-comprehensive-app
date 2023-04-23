@@ -889,23 +889,29 @@ hal_spi_slave_endcs_callback(void)
             	//TODO:
 				//prepare data
                 //set send buf
-                u16Err = SS0_SendBlock(SPI0TDeviceData, SPI_SEND_DMA, 20);
+                u16Err |= SS0_ReceiveBlock(SPI0TDeviceData, SPI_READ_DMA, 20);
+                u16Err |= SS0_SendBlock(SPI0TDeviceData, SPI_SEND_DMA, 20);
                 while((ERR_OK != u16Err) && (u32TimeOut < 3))
                 {
+                    u16Err = 0;
                     u32TimeOut ++;
                     /* set recv buf */
-                    u16Err = SS0_SendBlock(SPI0TDeviceData, SPI_SEND_DMA, 20);
+                    u16Err |= SS0_ReceiveBlock(SPI0TDeviceData, SPI_READ_DMA, 20);
+                    u16Err |= SS0_SendBlock(SPI0TDeviceData, SPI_SEND_DMA, 20);
                 }
                 if(u32TimeOut == 3)
                 {
+                    u16Err = 0;
                     SS0_CancelBlockTransmission(SPI0TDeviceData);
-                    u16Err = SS0_SendBlock(SPI0TDeviceData, SPI_SEND_DMA, 20);
+                    u16Err |= SS0_ReceiveBlock(SPI0TDeviceData, SPI_READ_DMA, 20);
+                    u16Err |= SS0_SendBlock(SPI0TDeviceData, SPI_SEND_DMA, 20);
                     if(u16Err)
                     {
                         SS0_Deinit(NULL);
                         SPI0TDeviceData = SS0_Init(NULL);
                         if(NULL == SPI0TDeviceData)
                             return;
+                        SS0_ReceiveBlock(SPI0TDeviceData, SPI_READ_DMA, 20);
                         SS0_SendBlock(SPI0TDeviceData, SPI_SEND_DMA, 20);
                     }
                 }

@@ -200,6 +200,20 @@ int main(void)
   unsigned char offset = 0, offset2 = 0;;
   unsigned char peridosendcount = 0;
   unsigned char balstep = 0; //均衡控制步骤，只在0和1之间跳
+  __DI();
+  //First collection of cell voltage
+  {
+      for(uint8_t i=0;i<_MC33771_NUM;i++)
+      {
+          GetCellVoltage(i, &CellVoltageReal[i*14]);
+      }
+      CellVoltageFillter(CellVoltage, CellVoltageReal, 0, _CV_CH_NUM/3);//0 1 2 .... 13
+      CellVoltageFillter(CellVoltage, CellVoltageReal, (_CV_CH_NUM/3), (_CV_CH_NUM*2/3));//14 15 16 .... 27
+      CellVoltageFillter(CellVoltage, CellVoltageReal, (_CV_CH_NUM*2/3), _CV_CH_NUM);//28 22 23 .... 41
+      DMA_GetDataAll();
+  }
+  __EI();
+  mdelay(50);//let the main core collect data
   Timer2ms_Enable(Timer2ms_TDeviceDataPtr);
   EInt_Enable(tDevEIntPtr);
   for (;;) {
@@ -290,7 +304,7 @@ int main(void)
 			case 5: {
 				if(balstep==0)
 					SetAndCheckBalance();
-				CAN_TranData(SetBalanceReg,0x300,8);
+//				CAN_TranData(SetBalanceReg,0x300,8);
 				break;
 			}
 			case 6: {
@@ -376,8 +390,8 @@ int main(void)
 				break;
 			}
 			case 16: {
-				CellVolErr[6][0] = SetBalVoltage(&BalanceVoltage[0]);
-				CAN_TranData(BalanceVoltage,0x401,8);
+				SetBalVoltage(&BalanceVoltage[0]);
+//				CAN_TranData(BalanceVoltage,0x401,8);
 				break;
 			}
 			case 17: {

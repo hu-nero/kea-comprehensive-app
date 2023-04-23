@@ -444,7 +444,7 @@
         <Period v="2 ms" />
         <boolgroup name="Interrupt" v="Enabled">
           <Interrupt v="INT_FTM0" />
-          <Interrupt_priority v="minimal priority" />
+          <Interrupt_priority v="64" />
           <ISR_Name v="Timer2ms_Interrupt" />
         </boolgroup>
       </enumgroup>
@@ -776,7 +776,7 @@
           <Discontinuous_mode v="no" />
           <boolgroup name="Interrupt service/event" v="Enabled">
             <A_D_interrupt v="INT_ADC0" />
-            <A_D_interrupt_priority v="minimal priority" />
+            <A_D_interrupt_priority v="low priority" />
             <ISR_Name v="AdcLdd1_MeasurementCompleteInterrupt" />
           </boolgroup>
           <list name="A/D channel list" v="10">
@@ -915,7 +915,7 @@ Autoselect
       </inhrbean>
       <boolgroup name="Interrupt service/event" v="Enabled">
         <A_D_interrupt v="INT_ADC0" />
-        <A_D_interrupt_priority v="minimal priority" />
+        <A_D_interrupt_priority v="low priority" />
       </boolgroup>
       <list name="A/D channels" v="10">
         <group name="Channel0">
@@ -1666,7 +1666,7 @@ Autoselect
       <Pin v="PTI4/IRQ" />
       <Generate_interrupt_on v="rising edge" />
       <Interrupt v="INT_IRQ" />
-      <Interrupt_priority v="low priority" />
+      <Interrupt_priority v="64" />
       <ISR_Name v="EInt_Interrupt" />
       <group name="Initialization">
         <Enabled_in_init__code v="yes" />

@@ -134,8 +134,13 @@ extern uint16_t spi0_init(void);
 extern void hal_spi_slave_tx_callback(void);
 extern void hal_spi_slave_rx_callback(void);
 extern void hal_spi_slave_endcs_callback(void);
+
+extern uint8_t hal_spi_slave_spi_recv_data_flag_get(void);
+extern void hal_spi_slave_spi_recv_data_flag_set(uint8_t Flag);
+
 extern void DMA_Set(void);
 //extern uint8_t SPI_Data_Test(uint8_t *data, uint8_t len);
+extern void DMA_GetDataAll(void);
 extern uint8_t DMA_Data_Handle(uint8_t *data, uint8_t len);
 extern uint8_t DMA_Recv_Data_Handle(uint8_t *Data, uint8_t Len);
 
