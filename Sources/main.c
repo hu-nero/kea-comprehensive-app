@@ -56,10 +56,10 @@
 #include "FLASH1.h"
 #include "Timer_PIT.h"
 #include "EInt.h"
+#include "SPI0_RDY.h"
 #include "RTC_CE.h"
 #include "CAN1.h"
 #include "LED.h"
-#include "PCS_S.h"
 /* Including shared modules, which are used for whole project */
 #include "PE_Types.h"
 #include "PE_Error.h"
@@ -195,35 +195,21 @@ int main(void)
 #endif
   //BCC_WaitMs(5);
   _LED_OFF;
-  unsigned char sdata[8] = {1,2,3,4,5,6,7,8};
-  CAN_TranData(sdata,0x50,8);
   unsigned char offset = 0, offset2 = 0;;
   unsigned char peridosendcount = 0;
   unsigned char balstep = 0; //均衡控制步骤，只在0和1之间跳
-  __DI();
-  //First collection of cell voltage
-  {
-      for(uint8_t i=0;i<_MC33771_NUM;i++)
-      {
-          GetCellVoltage(i, &CellVoltageReal[i*14]);
-      }
-      CellVoltageFillter(CellVoltage, CellVoltageReal, 0, _CV_CH_NUM/3);//0 1 2 .... 13
-      CellVoltageFillter(CellVoltage, CellVoltageReal, (_CV_CH_NUM/3), (_CV_CH_NUM*2/3));//14 15 16 .... 27
-      CellVoltageFillter(CellVoltage, CellVoltageReal, (_CV_CH_NUM*2/3), _CV_CH_NUM);//28 22 23 .... 41
-      DMA_GetDataAll();
-  }
-  __EI();
-  mdelay(50);//let the main core collect data
+
   Timer2ms_Enable(Timer2ms_TDeviceDataPtr);
   EInt_Enable(tDevEIntPtr);
   for (;;) {
-	DMA_Set();
-	if(hal_spi_slave_spi_recv_data_flag_get() == 2)
-	{
-		hal_spi_slave_spi_recv_data_flag_set(0);
-		DMA_Recv_Data_Handle(gsu8HalSpiRxDataBuf, 20);
-	}
-
+      //prepare tdata
+      DMA_Set();
+      //analysis rdata
+      if(gu8halSlaveSpiRecvDataFlag == 1)
+      {
+    	  gu8halSlaveSpiRecvDataFlag = 0;
+          DMA_Recv_Data_Handle(gu8HalSpiRxDataBuf, 20);
+      }
 	if (Timer0Count != 0) {
 		ADC_Measure();
 		unsigned char ret;

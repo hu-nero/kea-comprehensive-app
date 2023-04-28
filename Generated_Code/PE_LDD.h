@@ -6,7 +6,7 @@
 **     Version     : Component 01.013, Driver 01.00, CPU db: 3.00.000
 **     Repository  : Kinetis
 **     Compiler    : GNU C Compiler
-**     Date/Time   : 2023-04-15, 13:12, # CodeGen: 12
+**     Date/Time   : 2023-04-27, 17:17, # CodeGen: 28
 **
 **     Copyright : 1997 - 2015 Freescale Semiconductor, Inc. 
 **     All Rights Reserved.
@@ -67,7 +67,6 @@
 #include "Temp_A1.h"
 #include "Temp_A2.h"
 #include "Temp_A3.h"
-#include "PCS_S.h"
 #include "LED.h"
 #include "AD1.h"
 #include "AdcLdd1.h"
@@ -85,6 +84,7 @@
 #include "FLASH1.h"
 #include "Timer_PIT.h"
 #include "EInt.h"
+#include "SPI0_RDY.h"
 
 
 /*

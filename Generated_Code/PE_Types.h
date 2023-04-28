@@ -6,7 +6,7 @@
 **     Component   : PE_Types
 **     Version     : Driver 01.01
 **     Compiler    : GNU C Compiler
-**     Date/Time   : 2023-04-15, 13:12, # CodeGen: 12
+**     Date/Time   : 2023-04-27, 17:17, # CodeGen: 28
 **     Abstract    :
 **         PE_Types.h - contains definitions of basic types,
 **         register access macros and hardware specific macros
@@ -215,23 +215,23 @@ typedef unsigned long int       uint32;
 #define PE_LDD_COMPONENT_Temp_A1_ID              0x08U
 #define PE_LDD_COMPONENT_Temp_A2_ID              0x09U
 #define PE_LDD_COMPONENT_Temp_A3_ID              0x0AU
-#define PE_LDD_COMPONENT_PCS_S_ID                0x0BU
-#define PE_LDD_COMPONENT_LED_ID                  0x0CU
-#define PE_LDD_COMPONENT_AdcLdd1_ID              0x0DU
-#define PE_LDD_COMPONENT_RTC_Select_ID           0x0EU
-#define PE_LDD_COMPONENT_RTC_CE_ID               0x0FU
-#define PE_LDD_COMPONENT_CAN1_ID                 0x10U
-#define PE_LDD_COMPONENT_MC33664_CLK_OE_ID       0x11U
-#define PE_LDD_COMPONENT_MC33664_CS_TX_ID        0x12U
-#define PE_LDD_COMPONENT_MC33664_EN_ID           0x13U
-#define PE_LDD_COMPONENT_L_RESET_CTL_ID          0x14U
-#define PE_LDD_COMPONENT_M_RESET_CTL_ID          0x15U
-#define PE_LDD_COMPONENT_H_RESET_CTL_ID          0x16U
-#define PE_LDD_COMPONENT_MC33664_INT_ID          0x17U
-#define PE_LDD_COMPONENT_SPI1_ID                 0x18U
-#define PE_LDD_COMPONENT_FLASH1_ID               0x19U
-#define PE_LDD_COMPONENT_Timer_PIT_ID            0x1AU
-#define PE_LDD_COMPONENT_EInt_ID                 0x1BU
+#define PE_LDD_COMPONENT_LED_ID                  0x0BU
+#define PE_LDD_COMPONENT_AdcLdd1_ID              0x0CU
+#define PE_LDD_COMPONENT_RTC_Select_ID           0x0DU
+#define PE_LDD_COMPONENT_RTC_CE_ID               0x0EU
+#define PE_LDD_COMPONENT_CAN1_ID                 0x0FU
+#define PE_LDD_COMPONENT_MC33664_CLK_OE_ID       0x10U
+#define PE_LDD_COMPONENT_MC33664_CS_TX_ID        0x11U
+#define PE_LDD_COMPONENT_MC33664_EN_ID           0x12U
+#define PE_LDD_COMPONENT_L_RESET_CTL_ID          0x13U
+#define PE_LDD_COMPONENT_M_RESET_CTL_ID          0x14U
+#define PE_LDD_COMPONENT_H_RESET_CTL_ID          0x15U
+#define PE_LDD_COMPONENT_MC33664_INT_ID          0x16U
+#define PE_LDD_COMPONENT_SPI1_ID                 0x17U
+#define PE_LDD_COMPONENT_FLASH1_ID               0x18U
+#define PE_LDD_COMPONENT_Timer_PIT_ID            0x19U
+#define PE_LDD_COMPONENT_EInt_ID                 0x1AU
+#define PE_LDD_COMPONENT_SPI0_RDY_ID             0x1BU
 
 /*
 ** ===================================================================

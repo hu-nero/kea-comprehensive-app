@@ -25,7 +25,7 @@ by the component.
 <td class="regNotResetVal">0x00060810</td>
  <td>GPIOB_PDOR register, peripheral MC33664_INT.</td></tr>
 <tr><td>0x400FF058</td><td>GPIOB_PIDR</td>
-<td class="regNotResetVal">0xFFFFFFD7</td>
+<td class="regNotResetVal">0xFFFFFFF7</td>
  <td>GPIOB_PIDR register, peripheral MC33664_INT.</td></tr>
 </table>
 Color Denotes Reset Value
@@ -155,7 +155,7 @@ registers of the peripheral(s) configured by the component.
         
 </div>
 <table class="regtbl2"><tr><td class="trowtit" colspan="2">Address</td><td colspan="2">0x400FF058</td></tr>
-<tr class="trowtit"><td  class="trowtit" colspan="2">Initial value</td><td colspan="2">0xFFFFFFD7</td></tr>
+<tr class="trowtit"><td  class="trowtit" colspan="2">Initial value</td><td colspan="2">0xFFFFFFF7</td></tr>
 <tr class="trowtit"><td  class="trowtit" colspan="2">After-reset value</td><td colspan="2">0xFFFFFFFF</td></tr>
 <tr><td class="ttitle2">Bit</td><td class="ttitle2">Field</td><td class="ttitle2">Value</td><td class="ttitle2">Description</td></tr>
 <tr><td>0 - 31</td><td>PID</td><td>0x80000000</td><td>Port Input Disable</td>

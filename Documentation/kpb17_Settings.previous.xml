@@ -315,14 +315,7 @@
     <Properties>
       <Component_name v="SS0" />
       <Device v="SPI0" />
-      <boolgroup name="Interrupt service/event" v="Enabled">
-        <Input_interrupt v="INT_SPI0" />
-        <Input_interrupt_priority v="medium priority" />
-        <Input_ISR_name v="SS0_Interrupt" />
-        <Output_interrupt v="INT_SPI0" />
-        <Output_interrupt_priority v="medium priority" />
-        <Output_ISR_name v="SS0_Interrupt" />
-      </boolgroup>
+      <boolgroup name="Interrupt service/event" v="Disabled" />
       <group name="Settings">
         <boolgroup name="Input pin" v="Enabled">
           <Pin v="PTB3/KBI0_P11/SPI0_MOSI/FTM0_CH1/ADC0_SE7" />
@@ -374,7 +367,7 @@
       <CancelBlockTransmission v="generate code" />
       <CancelBlockReception v="generate code" />
       <GetError v="don&amp;apos;t generate code" />
-      <Main v="don&amp;apos;t generate code" />
+      <Main v="generate code" />
       <ForceReceiver v="don&amp;apos;t generate code" />
       <GetStats v="generate code" />
       <ClearStats v="don&amp;apos;t generate code" />
@@ -689,38 +682,6 @@
       <PutVal v="generate code" />
       <ClrVal v="generate code" />
       <SetVal v="generate code" />
-      <NegVal v="don&amp;apos;t generate code" />
-      <ConnectPin v="don&amp;apos;t generate code" />
-      <GetRawVal v="don&amp;apos;t generate code" />
-    </Methods>
-    <Events>
-      <EmptySection_DummyValue />
-    </Events>
-  </Bean>
-  <Bean name="PCS_S" type="BitIO_LDD">
-    <Enabled v="Y" />
-    <Properties>
-      <Component_name v="PCS_S" />
-      <Pin_for_I_O v="PTE5/KBI1_P5" />
-      <Direction v="Input" />
-      <group name="Initialization">
-        <Init__direction v="Input" />
-        <Init__value v="0" />
-        <Auto_initialization v="yes" />
-      </group>
-      <Safe_mode v="no" />
-    </Properties>
-    <Methods>
-      <Init v="generate code" />
-      <Deinit v="don&amp;apos;t generate code" />
-      <GetDir v="don&amp;apos;t generate code" />
-      <SetDir v="don&amp;apos;t generate code" />
-      <SetInput v="don&amp;apos;t generate code" />
-      <SetOutput v="don&amp;apos;t generate code" />
-      <GetVal v="generate code" />
-      <PutVal v="don&amp;apos;t generate code" />
-      <ClrVal v="don&amp;apos;t generate code" />
-      <SetVal v="don&amp;apos;t generate code" />
       <NegVal v="don&amp;apos;t generate code" />
       <ConnectPin v="don&amp;apos;t generate code" />
       <GetRawVal v="don&amp;apos;t generate code" />
@@ -1074,19 +1035,19 @@ Autoselect
       <CAN_channel v="MSCAN" />
       <boolgroup name="Interrupt service" v="Enabled">
         <Interrupt_TxD v="INT_MSCAN_TX" />
-        <Interrupt_TxD_priority v="medium priority" />
+        <Interrupt_TxD_priority v="minimal priority" />
         <ISR_Name v="CAN1_TxInterrupt" />
         <Interrupt_RxD v="INT_MSCAN_RX" />
-        <Interrupt_RxD_priority v="medium priority" />
+        <Interrupt_RxD_priority v="minimal priority" />
         <ISR_Name v="CAN1_RxInterrupt" />
         <Interrupt_error v="INT_MSCAN_TX" />
-        <Interrupt_error_priority v="medium priority" />
+        <Interrupt_error_priority v="minimal priority" />
         <ISR_Name v="CAN1_TxInterrupt" />
         <Interrupt_bus_off v="INT_MSCAN_TX" />
-        <Interrupt_bus_off_priority v="medium priority" />
+        <Interrupt_bus_off_priority v="minimal priority" />
         <ISR_Name v="CAN1_TxInterrupt" />
         <Interrupt_wake_up v="INT_MSCAN_TX" />
-        <Interrupt_wake_up_priority v="medium priority" />
+        <Interrupt_wake_up_priority v="minimal priority" />
         <ISR_Name v="CAN1_TxInterrupt" />
       </boolgroup>
       <group name="Settings">
@@ -1664,7 +1625,7 @@ Autoselect
     <Properties>
       <Component_name v="EInt" />
       <Pin v="PTI4/IRQ" />
-      <Generate_interrupt_on v="rising edge" />
+      <Generate_interrupt_on v="falling edge" />
       <Interrupt v="INT_IRQ" />
       <Interrupt_priority v="low priority" />
       <ISR_Name v="EInt_Interrupt" />
@@ -1688,6 +1649,38 @@ Autoselect
       <event name="OnInterrupt" v="generate code">
         <Event_procedure_name v="EInt_OnInterrupt" />
       </event>
+    </Events>
+  </Bean>
+  <Bean name="SPI0_RDY" type="BitIO_LDD">
+    <Enabled v="Y" />
+    <Properties>
+      <Component_name v="SPI0_RDY" />
+      <Pin_for_I_O v="PTD7/KBI0_P31/UART2_TX" />
+      <Direction v="Output" />
+      <group name="Initialization">
+        <Init__direction v="Output" />
+        <Init__value v="0" />
+        <Auto_initialization v="yes" />
+      </group>
+      <Safe_mode v="no" />
+    </Properties>
+    <Methods>
+      <Init v="generate code" />
+      <Deinit v="generate code" />
+      <GetDir v="don&amp;apos;t generate code" />
+      <SetDir v="don&amp;apos;t generate code" />
+      <SetInput v="don&amp;apos;t generate code" />
+      <SetOutput v="don&amp;apos;t generate code" />
+      <GetVal v="generate code" />
+      <PutVal v="generate code" />
+      <ClrVal v="generate code" />
+      <SetVal v="generate code" />
+      <NegVal v="generate code" />
+      <ConnectPin v="don&amp;apos;t generate code" />
+      <GetRawVal v="don&amp;apos;t generate code" />
+    </Methods>
+    <Events>
+      <EmptySection_DummyValue />
     </Events>
   </Bean>
 </PE_PROJECT_SETTINGS_DOCUMENTATION>

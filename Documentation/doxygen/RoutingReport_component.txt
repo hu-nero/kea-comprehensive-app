@@ -108,7 +108,7 @@
 			</tr>
 			<tr>
 				<td>17</td><td>PTE5/KBI1_P5</td><td><small><i>same</i></small></td>
-				<td bgcolor='#F7DCFF'>GPIOB</td><td bgcolor='#F7DCFF'>port5</td><td bgcolor='#F7DCFF'>alt0</td><td bgcolor='#F7DCFF'>Input</td>
+				<td bgcolor='#F7DCFF'>GPIOB</td><td bgcolor='#F7DCFF'>port5</td><td bgcolor='#F7DCFF'>alt0</td><td bgcolor='#F7DCFF'>Not Specified</td>
 			</tr>
 			<tr>
 				<td>18</td><td>PTB5/KBI0_P13/FTM2_CH5/SPI0_PCS/ACMP1_OUT</td><td><small><i>same</i></small></td>
@@ -128,7 +128,7 @@
 			</tr>
 			<tr>
 				<td>22</td><td>PTD7/KBI0_P31/UART2_TX</td><td><small><i>same</i></small></td>
-				<td bgcolor='#F7DCFF'>GPIOA</td><td bgcolor='#F7DCFF'>port31</td><td bgcolor='#F7DCFF'>alt0</td><td bgcolor='#F7DCFF'>Not Specified</td>
+				<td bgcolor='#F7DCFF'>GPIOA</td><td bgcolor='#F7DCFF'>port31</td><td bgcolor='#F7DCFF'>alt0</td><td bgcolor='#F7DCFF'>Output</td>
 			</tr>
 			<tr>
 				<td>23</td><td>PTD6/KBI0_P30/UART2_RX</td><td><small><i>same</i></small></td>
@@ -1067,7 +1067,7 @@
 			</tr>
 			<tr>
 				<td>17</td><td>PTE5/KBI1_P5</td><td><small><i>same</i></small></td>
-				<td bgcolor='#F7DCFF'>GPIOB</td><td bgcolor='#F7DCFF'>port5</td><td bgcolor='#F7DCFF'>alt0</td><td bgcolor='#F7DCFF'>Input</td>
+				<td bgcolor='#F7DCFF'>GPIOB</td><td bgcolor='#F7DCFF'>port5</td><td bgcolor='#F7DCFF'>alt0</td><td bgcolor='#F7DCFF'>Not Specified</td>
 			</tr>
 			<tr>
 				<td>18</td><td>PTB5/KBI0_P13/FTM2_CH5/SPI0_PCS/ACMP1_OUT</td><td><small><i>same</i></small></td>
@@ -1087,7 +1087,7 @@
 			</tr>
 			<tr>
 				<td>22</td><td>PTD7/KBI0_P31/UART2_TX</td><td><small><i>same</i></small></td>
-				<td bgcolor='#F7DCFF'>GPIOA</td><td bgcolor='#F7DCFF'>port31</td><td bgcolor='#F7DCFF'>alt0</td><td bgcolor='#F7DCFF'>Not Specified</td>
+				<td bgcolor='#F7DCFF'>GPIOA</td><td bgcolor='#F7DCFF'>port31</td><td bgcolor='#F7DCFF'>alt0</td><td bgcolor='#F7DCFF'>Output</td>
 			</tr>
 			<tr>
 				<td>23</td><td>PTD6/KBI0_P30/UART2_RX</td><td><small><i>same</i></small></td>

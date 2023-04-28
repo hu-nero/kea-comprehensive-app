@@ -66,6 +66,7 @@ extern volatile uint8_t SleepFlag;
 extern volatile uint8_t SleepCmd;
 
 extern unsigned char GetBalanceStartFlag(void);
+extern void SetBalVoltage(uint16_t *pdata);
 extern char GetCellVoltage(uint8_t ic, uint16_t *vdata);
 extern unsigned char CheckADCState(void);
 extern char CellVoltageFillter(uint16_t *vdest, const uint16_t *vsrc, uint8_t sp, uint8_t ep);

@@ -7,7 +7,7 @@
 **     Version     : Component 02.156, Driver 01.02, CPU db: 3.00.000
 **     Repository  : Kinetis
 **     Compiler    : GNU C Compiler
-**     Date/Time   : 2023-04-15, 13:12, # CodeGen: 12
+**     Date/Time   : 2023-04-23, 18:11, # CodeGen: 16
 **     Abstract    :
 **         This component, "ExtInt_LDD", provide a low level API 
 **         for unified access of external interrupts handling
@@ -17,7 +17,7 @@
 **     Settings    :
 **          Component name                                 : EInt
 **          Pin                                            : PTI4/IRQ
-**          Generate interrupt on                          : rising edge
+**          Generate interrupt on                          : falling edge
 **          Interrupt                                      : INT_IRQ
 **          Interrupt priority                             : low priority
 **          ISR Name                                       : EInt_Interrupt

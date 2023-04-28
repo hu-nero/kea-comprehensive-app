@@ -103,6 +103,10 @@ Module "SS0"       (component SPISlave_LDD)
    - SS0_CancelBlockReception -Immediately cancels the running receive process started by the ReceiveBlock method. Characters 
                 already stored in the HW buffer will be lost. This method is available only if the ReceiveBlock method is 
                 enabled.
+   - SS0_Main -This method is available only in the polling mode (Interrupt service/event = 'no'). If interrupt service is 
+                disabled this method replaces the interrupt handler. This method should be called if Receive/SendBlock was 
+                invoked before in order to run the reception/transmission. The end of the receiving/transmitting is indicated 
+                by OnBlockSent or OnBlockReceived event.
    - SS0_GetStats -Returns communication statistics (e.g. sent character count, parity error count).
    - SS0_GetDriverState -This method returns the current driver status.
 
@@ -240,15 +244,6 @@ Module "Temp_A3"   (component BitIO_LDD)
                 only if the direction = _[output]_ or _[input/output]_.
    - Temp_A3_SetVal -Sets (to one) the output value. It is equivalent to the [PutVal(TRUE)]. This method is available only if 
                 the direction = _[output]_ or _[input/output]_.
-
-Module "PCS_S"     (component BitIO_LDD)
-   - PCS_S_Init -Initializes the device. Allocates memory for the device data structure, allocates interrupt vectors and sets 
-                interrupt priority, sets pin routing, sets timing, etc. If the "Enable in init. code" is set to "yes" value 
-                then the device is also enabled(see the description of the Enable() method). In this case the Enable() method 
-                is not necessary and needn't to be generated.
-   - PCS_S_GetVal -Returns the input/output value. If the direction is [input] then the input value of the pin is read and 
-                returned. If the direction is [output] then the last written value is read and returned (see <Safe mode> 
-                property for limitations). This method cannot be disabled if direction is [input].
 
 Module "LED"       (component BitIO_LDD)
    - LED_Init -Initializes the device. Allocates memory for the device data structure, allocates interrupt vectors and sets 
@@ -508,6 +503,28 @@ Module "EInt"      (component ExtInt_LDD)
                 enable/disable of the interrupt.
    - EInt_Disable -Disable the component - the external events are not accepted. This method is available only if HW module 
                 allows enable/disable of the interrupt.
+
+Module "SPI0_RDY"  (component BitIO_LDD)
+   - SPI0_RDY_Init -Initializes the device. Allocates memory for the device data structure, allocates interrupt vectors and 
+                sets interrupt priority, sets pin routing, sets timing, etc. If the "Enable in init. code" is set to "yes" 
+                value then the device is also enabled(see the description of the Enable() method). In this case the Enable() 
+                method is not necessary and needn't to be generated.
+   - SPI0_RDY_Deinit -Deinitializes the device. Switches off the device, frees the device data structure memory, interrupts 
+                vectors, etc.
+   - SPI0_RDY_GetVal -Returns the input/output value. If the direction is [input] then the input value of the pin is read and 
+                returned. If the direction is [output] then the last written value is read and returned (see <Safe mode> 
+                property for limitations). This method cannot be disabled if direction is [input].
+   - SPI0_RDY_PutVal -The specified output value is set. If the direction is <b>input</b>, the component saves the value to a 
+                memory or a register and this value will be written to the pin after switching to the output mode (using 
+                <tt>SetDir(TRUE)</tt>; see <a href="BitIOProperties.html#SafeMode">Safe mode</a> property for limitations). If 
+                the direction is <b>output</b>, it writes the value to the pin. (Method is available only if the direction = 
+                <u><tt>output</tt></u> or <u><tt>input/output</tt></u>).
+   - SPI0_RDY_ClrVal -Clears (set to zero) the output value. It is equivalent to the [PutVal(FALSE)]. This method is available 
+                only if the direction = _[output]_ or _[input/output]_.
+   - SPI0_RDY_SetVal -Sets (to one) the output value. It is equivalent to the [PutVal(TRUE)]. This method is available only if 
+                the direction = _[output]_ or _[input/output]_.
+   - SPI0_RDY_NegVal -Negates (inverts) the output value. It is equivalent to the [PutVal(!GetVal())]. This method is available 
+                only if the direction = _[output]_ or _[input/output]_.
 
 Module "Cpu"       (component SKEAZ128LH4)
 

@@ -8,7 +8,7 @@
 **     Repository  : Kinetis
 **     Datasheet   : KEA128RM, Rev. 22, Jun 2014
 **     Compiler    : GNU C Compiler
-**     Date/Time   : 2023-04-15, 13:39, # CodeGen: 14
+**     Date/Time   : 2023-04-27, 17:17, # CodeGen: 28
 **     Abstract    :
 **
 **     Settings    :
@@ -95,7 +95,7 @@ void Common_Init(void)
      registers in this method (see active generator configuration 
      Optimizations\Utilize after reset values property or enabled processor 
      component Common settings\Utilize after reset values property) */
-	 /* SIM_PINSEL0: SPI0PS=0,IRQPS=5 */
+	  /* SIM_PINSEL0: SPI0PS=0,IRQPS=5 */
 	  SIM_PINSEL0 = (uint32_t)((SIM_PINSEL0 & (uint32_t)~(uint32_t)(
 	                 SIM_PINSEL_SPI0PS_MASK |
 	                 SIM_PINSEL_IRQPS(0x02)
@@ -141,8 +141,6 @@ void Components_Init(void)
   (void)Temp_A2_Init(NULL);
   /* ### BitIO_LDD "Temp_A3" component auto initialization. Auto initialization feature can be disabled by component property "Auto initialization". */
   (void)Temp_A3_Init(NULL);
-  /* ### BitIO_LDD "PCS_S" component auto initialization. Auto initialization feature can be disabled by component property "Auto initialization". */
-  (void)PCS_S_Init(NULL);
   /* ### BitIO_LDD "LED" component auto initialization. Auto initialization feature can be disabled by component property "Auto initialization". */
   (void)LED_Init(NULL);
   /* ### ADC "AD1" init code ... */
@@ -167,6 +165,8 @@ void Components_Init(void)
   (void)MC33664_INT_Init(NULL);
   /* ### TimerUnit_LDD "Timer_PIT" component auto initialization. Auto initialization feature can be disabled by component property "Auto initialization". */
   (void)Timer_PIT_Init(NULL);
+  /* ### BitIO_LDD "SPI0_RDY" component auto initialization. Auto initialization feature can be disabled by component property "Auto initialization". */
+  (void)SPI0_RDY_Init(NULL);
 }
 #endif /* CPU_COMPONENTS_INIT */
 

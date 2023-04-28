@@ -21,13 +21,13 @@ by the component.
 <td class="regNotResetVal">0x280FB020</td>
  <td>SIM_SCGC register, peripheral EInt.</td></tr>
 <tr><td>0x40031000</td><td>IRQ_SC</td>
-<td class="regNotResetVal">0x00000036</td>
+<td class="regNotResetVal">0x00000016</td>
  <td>IRQ_SC register, peripheral EInt.</td></tr>
 <tr><td>0xE000E404</td><td>NVIC_IPR1</td>
 <td class="regNotResetVal">0x80000000</td>
  <td>NVIC_IPR1 register, peripheral EInt.</td></tr>
 <tr><td>0xE000E100</td><td>NVIC_ISER</td>
-<td class="regNotResetVal">0xC00284A0</td>
+<td class="regNotResetVal">0xC00280A0</td>
  <td>NVIC_ISER register, peripheral EInt.</td></tr>
 <tr><td>0xE000E180</td><td>NVIC_ICER</td>
 <td class="regResetVal">0x00000000</td>
@@ -135,11 +135,11 @@ registers of the peripheral(s) configured by the component.
         
 </div>
 <table class="regtbl2"><tr><td class="trowtit" colspan="2">Address</td><td colspan="2">0x40031000</td></tr>
-<tr class="trowtit"><td  class="trowtit" colspan="2">Initial value</td><td colspan="2">0x00000036</td></tr>
+<tr class="trowtit"><td  class="trowtit" colspan="2">Initial value</td><td colspan="2">0x00000016</td></tr>
 <tr class="trowtit"><td  class="trowtit" colspan="2">After-reset value</td><td colspan="2">0x00000000</td></tr>
 <tr><td class="ttitle2">Bit</td><td class="ttitle2">Field</td><td class="ttitle2">Value</td><td class="ttitle2">Description</td></tr>
 <tr><td>6</td><td>IRQPDD</td><td>0x00</td><td>Interrupt Request (IRQ) Pull Device Disable</td>
-<tr><td>5</td><td>IRQEDG</td><td>0x01</td><td>Interrupt Request (IRQ) Edge Select</td>
+<tr><td>5</td><td>IRQEDG</td><td>0x00</td><td>Interrupt Request (IRQ) Edge Select</td>
 <tr><td>4</td><td>IRQPE</td><td>0x01</td><td>IRQ Pin Enable</td>
 <tr><td>3</td><td>IRQF</td><td>0x00</td><td>IRQ Flag</td>
 <tr><td>2</td><td>IRQACK</td><td>0x01</td><td>IRQ Acknowledge</td>
@@ -246,7 +246,7 @@ registers of the peripheral(s) configured by the component.
         
 </div>
 <table class="regtbl2"><tr><td class="trowtit" colspan="2">Address</td><td colspan="2">0xE000E100</td></tr>
-<tr class="trowtit"><td  class="trowtit" colspan="2">Initial value</td><td colspan="2">0xC00284A0</td></tr>
+<tr class="trowtit"><td  class="trowtit" colspan="2">Initial value</td><td colspan="2">0xC00280A0</td></tr>
 <tr class="trowtit"><td  class="trowtit" colspan="2">After-reset value</td><td colspan="2">0x00000000</td></tr>
 <tr><td class="ttitle2">Bit</td><td class="ttitle2">Field</td><td class="ttitle2">Value</td><td class="ttitle2">Description</td></tr>
 <tr><td>31</td><td>SETENA31</td><td>0x01</td><td>Freescale&apos;s Scalable Controller Area Network Tx and error interrupt set-enable bit</td>
@@ -270,7 +270,7 @@ registers of the peripheral(s) configured by the component.
 <tr><td>13</td><td>SETENA13</td><td>0x00</td><td>UART1 status and error interrupt set-enable bit</td>
 <tr><td>12</td><td>SETENA12</td><td>0x00</td><td>UART0 status and error interrupt set-enable bit</td>
 <tr><td>11</td><td>SETENA11</td><td>0x00</td><td>Serial Peripheral Interface 1 interrupt set-enable bit</td>
-<tr><td>10</td><td>SETENA10</td><td>0x01</td><td>Serial Peripheral Interface 0 interrupt set-enable bit</td>
+<tr><td>10</td><td>SETENA10</td><td>0x00</td><td>Serial Peripheral Interface 0 interrupt set-enable bit</td>
 <tr><td>9</td><td>SETENA9</td><td>0x00</td><td>Inter-Integrated Circuit 1 interrupt set-enable bit</td>
 <tr><td>8</td><td>SETENA8</td><td>0x00</td><td>Inter-Integrated Circuit 0 interrupt set-enable bit</td>
 <tr><td>7</td><td>SETENA7</td><td>0x01</td><td>External Interrupt interrupt set-enable bit</td>
@@ -371,7 +371,7 @@ registers of the peripheral(s) configured by the component.
 \code
 **          Component name                                 : EInt
 **          Pin                                            : PTI4/IRQ
-**          Generate interrupt on                          : rising edge
+**          Generate interrupt on                          : falling edge
 **          Interrupt                                      : INT_IRQ
 **          Interrupt priority                             : low priority
 **          ISR Name                                       : EInt_Interrupt

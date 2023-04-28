@@ -35,7 +35,6 @@
 - \subpage Temp_A1
 - \subpage Temp_A2
 - \subpage Temp_A3
-- \subpage PCS_S
 - \subpage LED
 - \subpage AdcLdd1
 - \subpage RTC_Select
@@ -52,6 +51,7 @@
 - \subpage FLASH1
 - \subpage Timer_PIT
 - \subpage EInt
+- \subpage SPI0_RDY
 
 */
 
@@ -93,7 +93,6 @@
 - \subpage Temp_A1
 - \subpage Temp_A2
 - \subpage Temp_A3
-- \subpage PCS_S
 - \subpage LED
 - \subpage AdcLdd1
 - \subpage RTC_Select
@@ -110,6 +109,7 @@
 - \subpage FLASH1
 - \subpage Timer_PIT
 - \subpage EInt
+- \subpage SPI0_RDY
 
 */
 

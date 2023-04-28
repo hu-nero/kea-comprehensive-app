@@ -216,7 +216,7 @@ char MC33771_ReadData(uint8_t nrt, uint8_t regaddr, uint8_t cid, uint16_t *spi_r
 	if (_STATREG & SPI_PDD_RX_BUFFER_FULL) {//等待接收缓冲区有数据
 		rdatabuf = SPI_PDD_ReadData8bit(SPI1_BASE_PTR);
 	}
-  ExitCritical();
+//  ExitCritical();
 
 	BCC_WaitUs(8);
 
@@ -230,7 +230,7 @@ char MC33771_ReadData(uint8_t nrt, uint8_t regaddr, uint8_t cid, uint16_t *spi_r
 
 	/*******************************Init SPI Slave********************************/
 #if 1
-  EnterCritical();
+//  EnterCritical();
 	MC33664_CLK_OE_PutVal(NULL, 0);
 	MC33664_CS_TX_PutVal(NULL, 1);
 

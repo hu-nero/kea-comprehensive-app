@@ -16,7 +16,6 @@ extern "C" {
 #include "LED.h"
 #include "AD1.h"
 #include "AdcLdd1.h"
-#include "PCS_S.h"
 
 
 #define _RN_CTL_ON				RN_CTL_PutVal(NULL,0)	//R-
