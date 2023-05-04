@@ -708,7 +708,7 @@ DMA_Recv_Data_Handle(uint8_t *Data, uint8_t Len)
 		case _Mcmd_W_BL1_D: {
             EnterCritical();
 		  	memcpy(&SetBalanceEnergy[0], &SPI_READ_DMA[2], 16);
-		  	BalanceCmd = 1;
+//		  	BalanceCmd = 1;
 		  	//_LED_ON;
 		  	ClrDataFlag[0] = 1;
 			//SPI_rdData_Flag = 0;
@@ -718,28 +718,24 @@ DMA_Recv_Data_Handle(uint8_t *Data, uint8_t Len)
 			break;
 		}
 	  	case _Mcmd_W_BL2_D: {
-	  		if (BalanceCmd == 1) {
             EnterCritical();
 	  			memcpy(&SetBalanceEnergy[16], &SPI_READ_DMA[2], 16);
-	  			BalanceCmd = 2;
+//	  			BalanceCmd = 2;
 	  			ClrDataFlag[1] = 1;
             ExitCritical();
 	  			//BalanceCmdCount ++;
 	  			//BalanceTime = 0;
-	  		}
 			break;
 		}
 	  	case _Mcmd_W_BL3_D: {
-	  		if (BalanceCmd == 2) {
             EnterCritical();
 	  			memcpy(&SetBalanceEnergy[32], &SPI_READ_DMA[2], 10);
-	  			BalanceCmd = 3;
+//	  			BalanceCmd = 3;
 	  			ClrDataFlag[2] = 1;
 	  			BalanceCmdCount ++;
             ExitCritical();
 	  			//_LED_OFF;
 	  			//BalanceTime = 0;
-	  		}
 			break;
 		}
 		case _Mcmd_W_WUT_D: {
@@ -831,20 +827,20 @@ hal_spi_slave_cs_callback(void)
     	{
 			//send
 			u16Timeout = 0;
-			while (((SPI_PDD_ReadStatusReg(SPI0_BASE_PTR) & SPI_PDD_TX_BUFFER_EMPTYG) == 0U) && (u16Timeout<0xFF)) /* Is HW Tx buffer empty? */
+			while (((SPI_PDD_ReadStatusReg(SPI0_BASE_PTR) & SPI_PDD_TX_BUFFER_EMPTYG) == 0U) && (u16Timeout<0xFFFF)) /* Is HW Tx buffer empty? */
 			{
 				u16Timeout ++;
 			}
-			if(u16Timeout == 0xFF)break;
+			if(u16Timeout == 0xFFFF)break;
 			SPI_PDD_WriteData8Bit(SPI0_BASE_PTR, SPI_SEND_DMA[index]);
 
 			//recv
 			u16Timeout = 0;
-			while (((SPI_PDD_ReadStatusReg(SPI0_BASE_PTR) & SPI_PDD_RX_BUFFER_FULL) == 0U) && (u16Timeout<0xFF)) /* Is any char in HW Rx buffer? */
+			while (((SPI_PDD_ReadStatusReg(SPI0_BASE_PTR) & SPI_PDD_RX_BUFFER_FULL) == 0U) && (u16Timeout<0xFFFF)) /* Is any char in HW Rx buffer? */
 			{
 				u16Timeout ++;
 			}
-			if(u16Timeout == 0xFF)break;
+			if(u16Timeout == 0xFFFF)break;
             SPI_READ_DMA[index] = SPI_PDD_ReadData8bit(SPI0_BASE_PTR);
     		index ++;
     	}
