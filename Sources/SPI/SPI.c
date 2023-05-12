@@ -332,7 +332,8 @@ void DMA_GetRTCData(void) {
 	//SPI_RTC[14] = (uint8_t)(SetWakeUpFlagCache);
 }
 
-void DMA_GetDataAll(void) {
+void DMA_GetDataAll(void)
+{
   	DMA_GetIVData();
 	DMA_GetCV1Data();
 	DMA_GetCV2Data();
@@ -390,10 +391,23 @@ void DMA_Set(void)
 {
     if(halSlaveSpiSendDataFlag)
     {
+        EnterCritical();
         DMA_GetDataAll();//更新数据
+        halSlaveSpiSendDataFlag = 0;
+        ExitCritical();
         CAN_TranData(&SPI_CV1[2],0x600,8);
         CAN_TranData(&SPI_CV1[10],0x601,8);
-        halSlaveSpiSendDataFlag = 0;
+        CAN_TranData(&SPI_CV2[2],0x602,8);
+        CAN_TranData(&SPI_CV2[10],0x603,8);
+        CAN_TranData(&SPI_CV3[2],0x604,8);
+        CAN_TranData(&SPI_CV3[10],0x605,8);
+        CAN_TranData(&SPI_CV4[2],0x606,8);
+        CAN_TranData(&SPI_CV4[10],0x607,8);
+        CAN_TranData(&SPI_CV5[2],0x608,8);
+        CAN_TranData(&SPI_CV5[10],0x609,8);
+
+        CAN_TranData(&SPI_T1[2],0x700,8);
+        CAN_TranData(&SPI_T1[10],0x701,8);
     }
 }
 

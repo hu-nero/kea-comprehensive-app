@@ -326,12 +326,9 @@ char MC33771_Writecommand(uint16_t data, uint8_t regaddr, uint8_t cid) {
 	MC33771_SPI_TX(sdata);
 }
 
-char MC33771_RunCOD(void) {
+char MC33771_RunCOD(void)
+{
 	return MC33771_GlobalWritecommand(0x0C17, bcc_reg_adc_cfg);//ADC_CFG，开始
-	//return MC33771_GlobalWritecommand(0x0C97, 0x06);//ADC_CFG，开始
-	//return MC33771_GlobalWritecommand(0x0897, 0x06);//ADC_CFG，开始
-	//return MC33771_GlobalWritecommand(0x0917, 0x06);//ADC_CFG，开始
-	//return MC33771_GlobalWritecommand(0x0817, 0x06);//ADC_CFG，开始
 }
 
 char CheckMeasCellRdy(uint8_t ic) {
@@ -440,9 +437,11 @@ char Init_MC33771_Reg(void) {
 
 	for (index = 0; index < _MC33771_NUM; index ++) {
 		//char MC33771_ReadData(uint8_t nrt, uint8_t regaddr, uint8_t cid, uint16_t *spi_rdata)
+		sys_cfg1_read = 0;
+		ov_uv_en_read = 1;
 		MC33771_ReadData(1, bcc_reg_sys_cfg1, (uint8_t)MC33771_ID[index], &sys_cfg1_read);
-		if (sys_cfg1_read != 0x0200) {
-			//MC33771_Writecommand(0x0200, 0x03, (uint8_t)MC33771_ID[index]);
+		if (sys_cfg1_read != 0x0201) {
+			MC33771_Writecommand(0x0201, bcc_reg_sys_cfg1, (uint8_t)MC33771_ID[index]);
 		}
 		MC33771_ReadData(1, bcc_reg_ov_uv_en, MC33771_ID[index], &ov_uv_en_read);
 		if (ov_uv_en_read != 0x0000) {

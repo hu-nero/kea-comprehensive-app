@@ -7,7 +7,6 @@
 
 #include "CAN.h"
 
-#ifdef _CAN_DEF
 uint8_t CAN_TX_Flag = 0;
 
 volatile uint8_t CAN_RD_Count = 0;
@@ -79,10 +78,12 @@ char CAN_TranData(unsigned char *candata, unsigned long canid, unsigned char len
 
 	//return 0;
 
+#ifdef _CAN_DEF
 	CAN_TX_LENGTH[CAN_TX_Sum] = length;
 	CAN_TX_ID[CAN_TX_Sum] = (unsigned long)(canid);
 	memcpy((uint8_t *)(&(CAN_TX_DATA[CAN_TX_Sum][0])), (uint8_t *)(&(candata[0])), 8);
 
+	  EnterCritical();
 	if (CAN_TX_Flag == 0) {
 		CanTxFrame.Length = CAN_TX_LENGTH[CAN_TX_Sum];
 		CanTxFrame.MessageID = (unsigned long)(CAN_TX_ID[CAN_TX_Sum]);
@@ -90,12 +91,13 @@ char CAN_TranData(unsigned char *candata, unsigned long canid, unsigned char len
 		CAN1_SendFrame(CanDeviceDataPrv, 1, &CanTxFrame);
 		CAN_TX_Flag = 1;
 	}
+	  ExitCritical();
 
 	CAN_TX_Sum ++;
 	if (CAN_TX_Sum >= _CANTXNUM) {
 		CAN_TX_Sum = 0;
 	}
+#endif
 
 }
-#endif
 

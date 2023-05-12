@@ -282,8 +282,10 @@ int main(void)
 				break;
 			}
 			case 4: {
+                EnterCritical();
 				GetHVAll();
 				GetTemp();
+                ExitCritical();
 				memset(CellVolErr, 0 ,sizeof(CellVolErr));
 				break;
 			}
@@ -361,16 +363,21 @@ int main(void)
 				break;
 			}
 			case 13: {
+                EnterCritical();
 				CellVoltageFillter(CellVoltage, CellVoltageReal, 0, _CV_CH_NUM/3);//0 1 2 .... 13
+                ExitCritical();
 				break;
 			}
 			case 14: {
+                EnterCritical();
 				CellVoltageFillter(CellVoltage, CellVoltageReal, (_CV_CH_NUM/3), (_CV_CH_NUM*2/3));//14 15 16 .... 27
+                ExitCritical();
 				break;
 			}
 			case 15: {
+                EnterCritical();
 				CellVoltageFillter(CellVoltage, CellVoltageReal, (_CV_CH_NUM*2/3), _CV_CH_NUM);//28 22 23 .... 41
-
+                ExitCritical();
 				CAN_TranData((uint8_t*)&CellVoltage[0],0x500,8);
 				CAN_TranData((uint8_t*)&CellVoltage[4],0x501,8);
 				break;

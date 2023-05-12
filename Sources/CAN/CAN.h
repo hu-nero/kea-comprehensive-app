@@ -20,9 +20,8 @@
 #include "PE_Types.h"
 #include "CAN1.h"
 
-#define _CAN_DEF
+//#define _CAN_DEF
 
-#ifdef _CAN_DEF
 #define _CANTXNUM	50	//
 #define	_CANRDNUM	50
 
@@ -55,9 +54,7 @@ extern uint8_t CANRDBuff[8];
 extern uint8_t CANTxBuff[8];
 
 extern uint8_t CANmsgHandle(void);
-
 extern char CAN_TranData(unsigned char *candata, unsigned long canid, unsigned char length);
 
-#endif
 
 #endif /* SOURCES_CAN_H_ */

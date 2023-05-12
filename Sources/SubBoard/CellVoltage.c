@@ -126,6 +126,8 @@ char GetCellVoltage(uint8_t ic, uint16_t *vdata) {
 		cv_flter_flag = 0;
 		cv_flter_count = 0;
 	}
+    if(err != 0)
+        return err;
 
 	memcpy((uint8_t *)(&vdata[0]), (uint8_t *)(&CellVol[ic][0]), sizeof(uint16_t)*BCC_MAX_CELLS);
 
