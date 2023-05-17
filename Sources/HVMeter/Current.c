@@ -60,7 +60,9 @@ char GetCurrent(void) {
 	int16_t CUR_Cache[2] = {0};
 	int32_t CurCache = 0;
 	char err = 0;
+
 	err = GetMeasISENSE_IC(0, &CurV_MeasISENSE);//0.1uV
+    AH_TimerPresent = Timer_PIT_GetCounterValue(NULL);
 
 	if (err == 0) {
 
@@ -94,9 +96,15 @@ char GetCurrent(void) {
 
 	  	/***********************************************************************************/
 
-		AH_TimerPresent = Timer_PIT_GetCounterValue(NULL);
-		AH_TimerDiff = AH_TimerLast - AH_TimerPresent;//0.05us/LSB	降序
-		AH_TimerLast = AH_TimerPresent;
+        //timer calculate
+        if(AH_TimerLast < AH_TimerPresent)
+        {
+            AH_TimerDiff = AH_TimerLast + 0xFFFFFFFF - AH_TimerPresent;//0.05us/LSB   降序
+        }else
+        {
+            AH_TimerDiff = AH_TimerLast - AH_TimerPresent;//0.05us/LSB    降序
+        }
+        AH_TimerLast = AH_TimerPresent;
 
 		AH_TimerCache += (AH_TimerDiff);
 		AH_Timer = (AH_TimerCache/200); //0.01ms
@@ -164,6 +172,8 @@ void CurrentFillter(int16_t *cdata) {
 		CurTcalflag = 0;
 	}
 
+    //屏蔽温度校准
+    //CurTcalflag = 0;
 	if (CurTcalflag == 1) {//温度校准，无温度校准
 		NTC_BUFF = (int16_t)((int16_t)(NTCshunt - TempShunt)*10) / CurCPSRatio[NTCshunt];
 		if (NTC_BUFF < -10000) NTC_BUFF = -10000;
