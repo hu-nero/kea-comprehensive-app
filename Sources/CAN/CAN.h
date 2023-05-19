@@ -20,7 +20,7 @@
 #include "PE_Types.h"
 #include "CAN1.h"
 
-//#define _CAN_DEF
+#define _CAN_DEF
 
 #define _CANTXNUM	50	//
 #define	_CANRDNUM	50

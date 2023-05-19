@@ -7,7 +7,7 @@
 **     Version     : Component 01.052, Driver 01.09, CPU db: 3.00.000
 **     Repository  : Kinetis
 **     Compiler    : GNU C Compiler
-**     Date/Time   : 2023-04-15, 13:12, # CodeGen: 12
+**     Date/Time   : 2023-05-19, 11:21, # CodeGen: 34
 **     Abstract    :
 **          The WatchDog component provides a high level API for unified hardware access
 **          across various watchdog timer devices.
@@ -15,7 +15,7 @@
 **          Component name                                 : WDog1
 **          Device                                         : WDOG
 **          Action                                         : Reset CPU
-**          Period                                         : 2 sec
+**          Period                                         : 6 sec
 **          Windowed mode                                  : Disabled
 **          Initialization                                 : 
 **            Enabled in init. code                        : yes
@@ -89,7 +89,7 @@ extern "C" {
 #endif 
 
 
-#define WDog1_WATCHDOG_TIMEOUT 1.96608F /* Initialization watchdog timeout period in seconds. */
+#define WDog1_WATCHDOG_TIMEOUT 6.116693333333F /* Initialization watchdog timeout period in seconds. */
 #define WDog1_WATCHDOG_WINDOW 0.0F     /* Initialization watchdog window period in seconds as real number. */
 
 /*! Peripheral base address of a device allocated by the component. This constant can be used directly in PDD macros. */

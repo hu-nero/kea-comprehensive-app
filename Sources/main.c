@@ -135,6 +135,7 @@ int main(void)
   FLASHDeviceDataPtr = FLASH1_Init(NULL);
 #endif
 
+  InitADC();
   __EI();
  _LED_ON;
   WDog1_Clear(NULL);
@@ -169,8 +170,6 @@ int main(void)
 	  RX8130_CheckInit();
   }
   WDog1_Clear(NULL);
-  InitADC();
-  mdelay(50);
   ADC_MeasureInit();
 
 
@@ -179,7 +178,6 @@ int main(void)
   WDog1_Clear(NULL);
   //mdelay(50);
   //INA226_GetRegData(Cfg_Reg, &gINA226CFG);
-  mdelay(50);
   INA226_R_GetRegData(Cfg_Reg, &gINA226CFG_R);
   MC33771_RunCOD();
   mdelay(50);
@@ -201,6 +199,10 @@ int main(void)
 
   Timer2ms_Enable(Timer2ms_TDeviceDataPtr);
   EInt_Enable(tDevEIntPtr);
+
+  //start run
+  unsigned char u8TmpData[8] = {1,2,3,4,5,6,7,8};
+  CAN_TranData(u8TmpData,0x50,8);
   for (;;) {
       //prepare tdata
       DMA_Set();
@@ -305,8 +307,8 @@ int main(void)
 						Err_Count[1] ++;
 						CellVolErr[0][0] = 1;
 					}
-					CAN_TranData((uint8_t*)&CellVoltageReal[0],0x400,8);
-					CAN_TranData((uint8_t*)&CellVoltageReal[4],0x401,8);
+					//CAN_TranData((uint8_t*)&CellVoltageReal[0],0x400,8);
+					//CAN_TranData((uint8_t*)&CellVoltageReal[4],0x401,8);
 				}
 				break;
 			}
@@ -378,8 +380,6 @@ int main(void)
                 EnterCritical();
 				CellVoltageFillter(CellVoltage, CellVoltageReal, (_CV_CH_NUM*2/3), _CV_CH_NUM);//28 22 23 .... 41
                 ExitCritical();
-				CAN_TranData((uint8_t*)&CellVoltage[0],0x500,8);
-				CAN_TranData((uint8_t*)&CellVoltage[4],0x501,8);
 				break;
 			}
 			case 16: {

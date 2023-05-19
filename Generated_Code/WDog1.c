@@ -7,7 +7,7 @@
 **     Version     : Component 01.052, Driver 01.09, CPU db: 3.00.000
 **     Repository  : Kinetis
 **     Compiler    : GNU C Compiler
-**     Date/Time   : 2023-04-15, 13:12, # CodeGen: 12
+**     Date/Time   : 2023-05-19, 11:21, # CodeGen: 34
 **     Abstract    :
 **          The WatchDog component provides a high level API for unified hardware access
 **          across various watchdog timer devices.
@@ -15,7 +15,7 @@
 **          Component name                                 : WDog1
 **          Device                                         : WDOG
 **          Action                                         : Reset CPU
-**          Period                                         : 2 sec
+**          Period                                         : 6 sec
 **          Windowed mode                                  : Disabled
 **          Initialization                                 : 
 **            Enabled in init. code                        : yes
@@ -130,8 +130,8 @@ LDD_TDeviceData* WDog1_Init(LDD_TUserData *UserDataPtr)
   WDOG_CNT = WDOG_CNT_CNT(0x28D9);     /* Key 2 */
   /* WDOG_WIN: WIN=0 */
   WDOG_WIN = WDOG_WIN_WIN(0x00);       /* Setup window register high */
-  /* WDOG_TOVAL: TOVAL=1 */
-  WDOG_TOVAL = WDOG_TOVAL_TOVAL(0x01); /* Setup time-out value register high */
+  /* WDOG_TOVAL: TOVAL=3 */
+  WDOG_TOVAL = WDOG_TOVAL_TOVAL(0x03); /* Setup time-out value register high */
   /* WDOG_CS1: EN=1,INT=0,UPDATE=1,TST=0,DBG=1,WAIT=1,STOP=1 */
   WDOG_CS1 = WDOG_CS1_EN_MASK |
              WDOG_CS1_UPDATE_MASK |

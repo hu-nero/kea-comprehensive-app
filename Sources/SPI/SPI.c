@@ -12,6 +12,7 @@
 #include "FuncCom.h"
 #include "CRC/CRC15.h"
 #include "SPI0_RDY.h"
+#include "WDog1.h"
 
 
 #pragma GCC optimize ("O0")
@@ -417,8 +418,9 @@ DMA_Data_CMD_Handle(uint8_t *data, uint8_t len)
   	uint16_t Mcmd = 0;
   	uint16_t SendDataCRC = 0;
     volatile CrcUnion u16RxCrc;
+    uint8_t u8Tmp[18] = {0};
 
-	if (len <= 2) return 1;
+    if (len <= 2) return 1;
 
     //cmd
     if(halSlaveSpiCsFlag)
@@ -705,6 +707,13 @@ DMA_Data_CMD_Handle(uint8_t *data, uint8_t len)
                      }
         }
         halSlaveSpiCsFlag = 0;
+        if((strncmp(&SPI_CV1[2], u8Tmp, 18) == 0) && (strncmp(&SPI_CV2[2], u8Tmp, 18) == 0) &&
+           (strncmp(&SPI_CV3[2], u8Tmp, 18) == 0) && (strncmp(&SPI_CV4[2], u8Tmp, 18) == 0) &&
+           (strncmp(&SPI_CV5[2], u8Tmp, 18) == 0) && (strncmp(&SPI_CV6[2], u8Tmp, 18) == 0))
+        {
+            SPI_SEND_DMA[18] = 0;
+            SPI_SEND_DMA[19] = 0;
+        }
     }
 	return 0;
 }
@@ -801,6 +810,7 @@ hal_spi_slave_cs_callback(void)
     uint8_t index = 0;
     uint8_t len = 0;
     uint16_t u16Timeout = 0;
+    uint8_t u8Err = 0;
 
     switch(halSlaveSpiRxFlag)
     {
@@ -841,23 +851,39 @@ hal_spi_slave_cs_callback(void)
     	{
 			//send
 			u16Timeout = 0;
-			while (((SPI_PDD_ReadStatusReg(SPI0_BASE_PTR) & SPI_PDD_TX_BUFFER_EMPTYG) == 0U) && (u16Timeout<0xFFFF)) /* Is HW Tx buffer empty? */
+			while (((SPI_PDD_ReadStatusReg(SPI0_BASE_PTR) & SPI_PDD_TX_BUFFER_EMPTYG) == 0U) && (u16Timeout<40)) /* Is HW Tx buffer empty? */
 			{
 				u16Timeout ++;
 			}
-			if(u16Timeout == 0xFFFF)break;
+			if(u16Timeout == 40)
+            {
+                u8Err = 1;
+                break;
+            }
 			SPI_PDD_WriteData8Bit(SPI0_BASE_PTR, SPI_SEND_DMA[index]);
 
 			//recv
 			u16Timeout = 0;
-			while (((SPI_PDD_ReadStatusReg(SPI0_BASE_PTR) & SPI_PDD_RX_BUFFER_FULL) == 0U) && (u16Timeout<0xFFFF)) /* Is any char in HW Rx buffer? */
+			while (((SPI_PDD_ReadStatusReg(SPI0_BASE_PTR) & SPI_PDD_RX_BUFFER_FULL) == 0U) && (u16Timeout<40)) /* Is any char in HW Rx buffer? */
 			{
 				u16Timeout ++;
 			}
-			if(u16Timeout == 0xFFFF)break;
+			if(u16Timeout == 40)
+            {
+                u8Err = 2;
+                break;
+            }
             SPI_READ_DMA[index] = SPI_PDD_ReadData8bit(SPI0_BASE_PTR);
     		index ++;
     	}
+        if(u8Err != 0 )
+        {
+            SS0_Deinit(SPI0TDeviceData);
+            SPI0TDeviceData = SS0_Init(NULL);
+            SPI_PDD_ReadStatusReg(SPI0_BASE_PTR);
+            SPI_PDD_ReadData8bit(SPI0_BASE_PTR);
+        }
+
     }
 
     if(halSlaveSpiRxFlag == HAL_SLAVE_SPI_RECV_DATA)
@@ -874,9 +900,9 @@ hal_spi_slave_cs_callback(void)
         //analysis cmd
         DMA_Data_CMD_Handle(SPI_READ_DMA, 4);
     }
-    SS0_Deinit(SPI0TDeviceData);
-	SPI0TDeviceData = SS0_Init(NULL);
     SPI0_RDY_PutVal(NULL, 0);
+    //clear wdg
+    WDog1_Clear(NULL);
 }
 
 
