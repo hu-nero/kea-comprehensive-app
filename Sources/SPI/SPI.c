@@ -418,7 +418,7 @@ DMA_Data_CMD_Handle(uint8_t *data, uint8_t len)
   	uint16_t Mcmd = 0;
   	uint16_t SendDataCRC = 0;
     volatile CrcUnion u16RxCrc;
-    uint8_t u8Tmp[18] = {0};
+    uint8_t u8Tmp[16] = {0};
 
     if (len <= 2) return 1;
 
@@ -707,9 +707,9 @@ DMA_Data_CMD_Handle(uint8_t *data, uint8_t len)
                      }
         }
         halSlaveSpiCsFlag = 0;
-        if((strncmp(&SPI_CV1[2], u8Tmp, 18) == 0) && (strncmp(&SPI_CV2[2], u8Tmp, 18) == 0) &&
-           (strncmp(&SPI_CV3[2], u8Tmp, 18) == 0) && (strncmp(&SPI_CV4[2], u8Tmp, 18) == 0) &&
-           (strncmp(&SPI_CV5[2], u8Tmp, 18) == 0) && (strncmp(&SPI_CV6[2], u8Tmp, 18) == 0))
+        if((memcmp(&SPI_CV1[2], u8Tmp, 16) == 0) && (memcmp(&SPI_CV2[2], u8Tmp, 16) == 0) &&
+           (memcmp(&SPI_CV3[2], u8Tmp, 16) == 0) && (memcmp(&SPI_CV4[2], u8Tmp, 16) == 0) &&
+           (memcmp(&SPI_CV5[2], u8Tmp, 16) == 0) && (memcmp(&SPI_CV6[2], u8Tmp, 16) == 0))
         {
             SPI_SEND_DMA[18] = 0;
             SPI_SEND_DMA[19] = 0;
