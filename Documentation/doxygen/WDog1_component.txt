@@ -21,7 +21,7 @@ by the component.
 <td class="regResetVal">0x00000000</td>
  <td>WDOG_WIN register, peripheral WDog1.</td></tr>
 <tr><td>0x40052004</td><td>WDOG_TOVAL</td>
-<td class="regNotResetVal">0x00000003</td>
+<td class="regNotResetVal">0x00000001</td>
  <td>WDOG_TOVAL register, peripheral WDog1.</td></tr>
 <tr><td>0x40052000</td><td>WDOG_CS1</td>
 <td class="regNotResetVal">0x000000A7</td>
@@ -109,7 +109,7 @@ registers of the peripheral(s) configured by the component.
         
 </div>
 <table class="regtbl2"><tr><td class="trowtit" colspan="2">Address</td><td colspan="2">0x40052004</td></tr>
-<tr class="trowtit"><td  class="trowtit" colspan="2">Initial value</td><td colspan="2">0x00000003</td></tr>
+<tr class="trowtit"><td  class="trowtit" colspan="2">Initial value</td><td colspan="2">0x00000001</td></tr>
 <tr class="trowtit"><td  class="trowtit" colspan="2">After-reset value</td><td colspan="2">0x00000000</td></tr>
 <tr><td class="ttitle2">Bit</td><td class="ttitle2">Field</td><td class="ttitle2">Value</td><td class="ttitle2">Description</td></tr>
 <tr><td>0 - 15</td><td>TOVAL</td><td>0x00</td><td>Watchdog Timeout Value</td>
@@ -182,7 +182,7 @@ registers of the peripheral(s) configured by the component.
 **          Component name                                 : WDog1
 **          Device                                         : WDOG
 **          Action                                         : Reset CPU
-**          Period                                         : 6 sec
+**          Period                                         : 2 sec
 **          Windowed mode                                  : Disabled
 **          Initialization                                 : 
 **            Enabled in init. code                        : yes

@@ -394,7 +394,7 @@
       <enumgroup name="Action" v="Reset CPU">
         <EmptySection_DummyValue />
       </enumgroup>
-      <Period v="2 sec" />
+      <Period v="6 sec" />
       <enumgroup name="Windowed mode" v="Disabled">
         <EmptySection_DummyValue />
       </enumgroup>
