@@ -1659,7 +1659,7 @@ Autoselect
       <Direction v="Output" />
       <group name="Initialization">
         <Init__direction v="Output" />
-        <Init__value v="0" />
+        <Init__value v="1" />
         <Auto_initialization v="yes" />
       </group>
       <Safe_mode v="no" />

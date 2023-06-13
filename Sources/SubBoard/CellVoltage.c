@@ -42,12 +42,9 @@ uint8_t GetBalanceCmdCountCache = 0;
 
 uint8_t SetBalanceEnergy[_CV_CH_NUM] = {0};
 uint8_t SetBalanceEnergyCache[_CV_CH_NUM] = {0};
-uint8_t ComBalanceEnergy[_CV_CH_NUM] = {0};
 uint8_t ComBalanceEnergyCache[_CV_CH_NUM] = {0};
 
 uint64_t ComBalEnergyCache[_CV_CH_NUM] = {0};//均衡量
-
-uint8_t ClrDataFlag[3] = {0};
 
 uint16_t SetBalanceReg[_BATCV_IC_NUM] = {0};
 //uint16_t SetBalanceRegCache[_BATCV_IC_NUM] = {0};
@@ -177,7 +174,8 @@ unsigned char GetBalanceStartFlag(void)
 {
 	return BalanceStartFlag;
 }
-char SetAndCheckBalance(void) {//均衡开启
+char SetAndCheckBalance(void)//均衡开启
+{
   	uint8_t index = 0;
 	uint8_t indey = 0;
 	uint16_t BalanceRegBuf = 0;
@@ -200,13 +198,14 @@ char SetAndCheckBalance(void) {//均衡开启
 			BalanceStartFlag=2;
 			break; //只要有一个芯片的温度大于85度就停止均衡
 		}
-		else if(MC33771_TEMP[index]<80&&BalanceStartFlag==2)
+		else if(MC33771_TEMP[index]<80)
 		{
-			count++; //3个芯片的温度都小于80度就可以继续开均衡了
+            count |= 1<<index;//3个芯片的温度都小于80度就可以继续开均衡了
 		}
 	}
-	if(count==_MC33771_NUM)
+	if((BalanceStartFlag == 2)&&(count==7))
 	{
+        count = 0;
 		BalanceStartFlag = 1;
 	}
 	if (BalanceStartFlag == 1) {

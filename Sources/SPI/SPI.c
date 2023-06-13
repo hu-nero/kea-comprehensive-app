@@ -17,76 +17,26 @@
 
 #pragma GCC optimize ("O0")
 
-static uint8_t DMA_RT_Flag = 0;
 static LDD_TDeviceData * SPI0TDeviceData = NULL;
-
-
-uint8_t SPI_RD_Length = _SPI_RD_LEN;
-uint8_t SPI_RD_Length_Cache = _SPI_RD_LEN;
-
-uint8_t DMA_ERR = 0;
-
-uint8_t  SPI_READ_DMA[40] = {0};
-uint8_t  SPI_SEND_DMA[40] = {0};
-uint8_t  gu8HalSpiRxDataBuf[20] = {0};
-
-static volatile HAL_SLAVE_SPI_Enum halSlaveSpiRxFlag = HAL_SLAVE_SPI_UNDEFINED;
-static volatile uint8_t halSlaveSpiSendDataFlag = 0;
-volatile uint8_t gu8halSlaveSpiRecvDataFlag = 0;
-static volatile uint8_t halSlaveSpiCsFlag = 0;
-
-
-
-
-uint8_t SPI_IV[20] = {0};
-uint8_t SPI_CV1[20] = {0};
-uint8_t SPI_CV2[20] = {0};
-uint8_t SPI_CV3[20] = {0};
-uint8_t SPI_CV4[20] = {0};
-uint8_t SPI_CV5[20] = {0};
-uint8_t SPI_CV6[20] = {0};
-uint8_t SPI_T1[20] = {0};
-uint8_t SPI_T2[20] = {0};
-uint8_t SPI_T3[20] = {0};
-uint8_t SPI_E[20] = {0};
-uint8_t SPI_E2[20] = {0};
-uint8_t SPI_BL1[20] = {0};
-uint8_t SPI_BL2[20] = {0};
-uint8_t SPI_BL3[20] = {0};
-uint8_t SPI_RTC[20] = {0};
-
-uint8_t SPI_ReT2[20] = {0};
-uint8_t SPI_ReBL1[20] = {0};
-uint8_t SPI_ReBL2[20] = {0};
-uint8_t SPI_ReBL3[20] = {0};
-
-//uint8_t SPI_Cmd_Count[24] = {0};
-
+static uint8_t  SPI_READ_DMA[280] = {0};
+static uint8_t  SPI_SEND_DMA[280] = {0};
 uint8_t WorkSignal = 0;
 
-/*
-uint8_t SPI_IV_Buf[18] =  {0x01,0x00,0x11,0x12,0x13,0x14,0x15,0x16,0x17,0x18,0x19,0x1A,0x1B,0x1C,0x1D,0x1E,0x1F,0x10};
-uint8_t SPI_CV1_Buf[18] = {0x02,0x00,0x21,0x22,0x23,0x24,0x25,0x26,0x27,0x28,0x29,0x2A,0x2B,0x2C,0x2D,0x2E,0x2F,0x20};
-uint8_t SPI_CV2_Buf[18] = {0x03,0x00,0x31,0x32,0x33,0x34,0x35,0x36,0x37,0x38,0x39,0x3A,0x3B,0x3C,0x3D,0x3E,0x3F,0x30};
-uint8_t SPI_CV3_Buf[18] = {0x04,0x00,0x41,0x42,0x43,0x44,0x45,0x46,0x47,0x48,0x49,0x4A,0x4B,0x4C,0x4D,0x4E,0x4F,0x40};
-uint8_t SPI_CV4_Buf[18] = {0x05,0x00,0x51,0x52,0x53,0x54,0x55,0x56,0x57,0x58,0x59,0x5A,0x5B,0x5C,0x5D,0x5E,0x5F,0x50};
-uint8_t SPI_T1_Buf[18] =  {0x06,0x00,0x61,0x62,0x63,0x64,0x65,0x66,0x67,0x68,0x69,0x6A,0x6B,0x6C,0x6D,0x6E,0x6F,0x60};
-uint8_t SPI_T2_Buf[18] =  {0x07,0x00,0x71,0x72,0x73,0x74,0x75,0x76,0x77,0x78,0x79,0x7A,0x7B,0x7C,0x7D,0x7E,0x7F,0x70};
-uint8_t SPI_E_Buf[18] =   {0x08,0x00,0x81,0x82,0x83,0x84,0x85,0x86,0x87,0x88,0x89,0x8A,0x8B,0x8C,0x8D,0x8E,0x8F,0x80};
-uint8_t SPI_BL1_Buf[18] = {0x09,0x00,0x91,0x92,0x93,0x94,0x95,0x96,0x97,0x98,0x99,0x9A,0x9B,0x9C,0x9D,0x9E,0x9F,0x90};
-uint8_t SPI_BL2_Buf[18] = {0x0A,0x00,0xA1,0xA2,0xA3,0xA4,0xA5,0xA6,0xA7,0xA8,0xA9,0xAA,0xAB,0xAC,0xAD,0xAE,0xAF,0xA0};
-uint8_t SPI_RTC_Buf[18] = {0x0B,0x00,0xB1,0xB2,0xB3,0xB4,0xB5,0xB6,0xB7,0xB8,0xB9,0xBA,0xBB,0xBC,0xBD,0xBE,0xBF,0xB0};
-*/
-uint16_t SPI_RD_DMA_Flag = 0;
-uint16_t SPI_TX_DMA_Flag = 0;
-uint8_t SPI_RD_Flag = 0;
-uint8_t SPI_TX_Flag = 0;
+static volatile uint8_t gu8halSlaveSpiReadyFlag = 0;
+static uint8_t gu8HalSpiRxDataBuf[70] = {0};
 
 typedef union
 {
 	uint16_t u16Crc;
 	uint8_t u8Crc[2];
 } CrcUnion;
+
+static uint8_t DMA_GetIVData(uint8_t *Data, uint16_t Len);
+static uint8_t DMA_GetCVData(uint8_t *Data, uint16_t Len);
+static uint8_t DMA_GetTData(uint8_t *Data, uint16_t Len);
+static uint8_t DMA_GetEData(uint8_t *Data, uint16_t Len);
+static uint8_t DMA_GetBLData(uint8_t *Data, uint16_t Len);
+static uint8_t DMA_GetRTCData(uint8_t *Data, uint16_t Len);
 
 uint16_t
 spi0_init(void)
@@ -97,692 +47,280 @@ spi0_init(void)
 	SPI0TDeviceData = SS0_Init(NULL);
     if(NULL == SPI0TDeviceData)
         return 1;
-    halSlaveSpiRxFlag = HAL_SLAVE_SPI_RECV_CMD;
 	return 0;
 }
 
-void DMA_GetIVData(void) {
-	SPI_IV[0] = (uint8_t)(_Mcmd_R_IV>>8);
-	SPI_IV[1] = 0;
-	SPI_IV[2] = (uint8_t)(Current>>8);
-	SPI_IV[3] = (uint8_t)(Current);
-	SPI_IV[4] = (uint8_t)(V_HV2>>8);
-	SPI_IV[5] = (uint8_t)(V_HV2);
-	SPI_IV[6] = (uint8_t)(V_HV1>>8);
-	SPI_IV[7] = (uint8_t)(V_HV1);
-	SPI_IV[8] = (uint8_t)(V_HeatVOL>>8);
-	SPI_IV[9] = (uint8_t)(V_HeatVOL);
-	SPI_IV[10] = (uint8_t)(R_HV2_To_GND>>8);//R_HV2_To_GND
-	SPI_IV[11] = (uint8_t)(R_HV2_To_GND);
-	SPI_IV[12] = (uint8_t)(R_FLQ_To_GND>>8);//R_FLQ_To_GND
-	SPI_IV[13] = (uint8_t)(R_FLQ_To_GND);
-	//SPI_IV[14] = PreChargeStatus;
-	//SPI_IV[14] = 0;
-	SPI_IV[14] = SleepFlag;
-	SPI_IV[15] = (HeatCtlStatus&0x01)|((PreChargeStatus&0x01)<<1)|((ResMeasure_Sta&0x01)<<2);
-	//SPI_IV[16] = BalanceStatus;
-	SPI_IV[16] = BalanceStartFlag;
-	SPI_IV[17] = CVErrStatus|TempErrStatus;
-}
-
-void DMA_GetCV1Data(void) {
-  	uint8_t index = 0;
-	uint8_t indey = 0;
-	SPI_CV1[0] = (uint8_t)(_Mcmd_R_CV1>>8);
-	SPI_CV1[1] = 0;
-	indey = 2;
-	for (index = 0;index < 8; index ++) {
-		SPI_CV1[indey] = (uint8_t)(CellVoltage[index]>>8);
-		SPI_CV1[indey+1] = (uint8_t)(CellVoltage[index]);
-		indey += 2;
-	}
-}
-
-void DMA_GetCV2Data(void) {
-  	uint8_t index = 0;
-	uint8_t indey = 0;
-	SPI_CV2[0] = (uint8_t)(_Mcmd_R_CV2>>8);
-	SPI_CV2[1] = 0;
-	indey = 2;
-	for (index = 8;index < 16; index ++) {
-		SPI_CV2[indey] = (uint8_t)(CellVoltage[index]>>8);
-		SPI_CV2[indey+1] = (uint8_t)(CellVoltage[index]);
-		indey += 2;
-	}
-}
-
-void DMA_GetCV3Data(void) {
-  	uint8_t index = 0;
-	uint8_t indey = 0;
-	SPI_CV3[0] = (uint8_t)(_Mcmd_R_CV3>>8);
-	SPI_CV3[1] = 0;
-	indey = 2;
-	for (index = 16;index < 24; index ++) {
-		SPI_CV3[indey] = (uint8_t)(CellVoltage[index]>>8);
-		SPI_CV3[indey+1] = (uint8_t)(CellVoltage[index]);
-		indey += 2;
-	}
-}
-
-void DMA_GetCV4Data(void) {
-  	uint8_t index = 0;
-	uint8_t indey = 0;
-	SPI_CV4[0] = (uint8_t)(_Mcmd_R_CV4>>8);
-	SPI_CV4[1] = 0;
-	indey = 2;
-	for (index = 24;index < 32; index ++) {
-		SPI_CV4[indey] = (uint8_t)(CellVoltage[index]>>8);
-		SPI_CV4[indey+1] = (uint8_t)(CellVoltage[index]);
-		indey += 2;
-	}
-}
-
-void DMA_GetCV5Data(void) {
-  	uint8_t index = 0;
-	uint8_t indey = 0;
-	SPI_CV5[0] = (uint8_t)(_Mcmd_R_CV5>>8);
-	SPI_CV5[1] = 0;
-	indey = 2;
-	for (index = 32;index < 40; index ++) {
-		SPI_CV5[indey] = (uint8_t)(CellVoltage[index]>>8);
-		SPI_CV5[indey+1] = (uint8_t)(CellVoltage[index]);
-		indey += 2;
-	}
-}
-
-void DMA_GetCV6Data(void) {
-  	uint8_t index = 0;
-	uint8_t indey = 0;
-	SPI_CV6[0] = (uint8_t)(_Mcmd_R_CV6>>8);
-	SPI_CV6[1] = 0;
-	indey = 2;
-	for (index = 40;index < 42; index ++) {
-		SPI_CV6[indey] = (uint8_t)(CellVoltage[index]>>8);
-		SPI_CV6[indey+1] = (uint8_t)(CellVoltage[index]);
-		indey += 2;
-	}
-}
-
-void DMA_GetT1Data(void) {
-  	uint8_t index = 0;
-	uint8_t indey = 0;
-	SPI_T1[0] = (uint8_t)(_Mcmd_R_T1>>8);
-	SPI_T1[1] = 0;
-	memcpy(&SPI_T1[2], NTCTemp, 16);
-}
-
-void DMA_GetT2Data(void) {
-  	uint8_t index = 0;
-	uint8_t indey = 0;
-	SPI_T2[0] = (uint8_t)(_Mcmd_R_T2>>8);
-	SPI_T2[1] = 0;
-	memcpy(&SPI_T2[2], &NTCTemp[16], 4);
-	memcpy(&SPI_T2[6], &TempIC[0], 2);
-	SPI_T2[8] = NTCshunt;
-	SPI_T2[9] = WorkSignal;
-	SPI_T2[10] = (uint8_t)(DSG_AH>>24);
-	SPI_T2[11] = (uint8_t)(DSG_AH>>16);
-	SPI_T2[12] = (uint8_t)(DSG_AH>>8);
-	SPI_T2[13] = (uint8_t)(DSG_AH);
-	SPI_T2[14] = (uint8_t)(CHG_AH>>24);
-	SPI_T2[15] = (uint8_t)(CHG_AH>>16);
-	SPI_T2[16] = (uint8_t)(CHG_AH>>8);
-	SPI_T2[17] = (uint8_t)(CHG_AH);
-
-	SPI_ReT2[0] = (uint8_t)(_Mcmd_R_ReT2>>8);
-	SPI_ReT2[1] = 0;
-
-}
-
-void DMA_GetT3Data(void) {
-  	uint8_t index = 0;
-	uint8_t indey = 0;
-	SPI_T3[0] = (uint8_t)(_Mcmd_R_T3>>8);
-	SPI_T3[1] = 0;
-	memcpy(&SPI_T3[2], &NTCTemp[20], 15);
-
-	//TempIC
-	SPI_T3[17] = TempIC[2];
-}
-
-void DMA_GetEData(void) {
-	SPI_E[0] = (uint8_t)(_Mcmd_R_E>>8);
-	SPI_E[1] = 0;
-}
-
-void DMA_GetE2Data(void) {
-	SPI_E2[0] = (uint8_t)(_Mcmd_R_E2>>8);
-	SPI_E2[1] = 0;
-}
-void DMA_GetBL1Data(void) {
-	SPI_BL1[0] = (uint8_t)(_Mcmd_R_BL1>>8);
-	SPI_BL1[1] = 0;
-	SPI_ReBL1[0] = (uint8_t)(_Mcmd_R_ReBL1>>8);
-	SPI_ReBL1[1] = 0;
-
-	memcpy(ComBalanceEnergy, ComBalanceEnergyCache, 16);
-	memcpy(&SPI_BL1[2], (uint8_t *)&ComBalanceEnergy[0], 16);
-
-	if (ClrDataFlag[0] == 0) {
-		memset(ComBalanceEnergy, 0, 16);
-		memset(ComBalanceEnergyCache, 0, 16);
-		memset(SetBalanceEnergy, 0, 16);
-		memset(SetBalanceEnergyCache, 0, 16);
-	}
-}
-void DMA_GetBL2Data(void) {
-	SPI_BL2[0] = (uint8_t)(_Mcmd_R_BL2>>8);
-	SPI_BL2[1] = 0;
-	SPI_ReBL2[0] = (uint8_t)(_Mcmd_R_ReBL2>>8);
-	SPI_ReBL2[1] = 0;
-
-	memcpy((uint8_t *)&ComBalanceEnergy[16], (uint8_t *)&ComBalanceEnergyCache[16], 16);
-	memcpy(&SPI_BL2[2], (uint8_t *)&ComBalanceEnergy[16], 16);
-
-	if (ClrDataFlag[1] == 0) {
-		memset((uint8_t *)&ComBalanceEnergy[16], 0, 16);
-		memset((uint8_t *)&ComBalanceEnergyCache[16], 0, 16);
-		memset((uint8_t *)&SetBalanceEnergy[16], 0, 16);
-		memset((uint8_t *)&SetBalanceEnergyCache[16], 0, 16);
-	}
-}
-void DMA_GetBL3Data(void) {
-	SPI_BL3[0] = (uint8_t)(_Mcmd_R_BL3>>8);
-	SPI_BL3[1] = 0;
-	SPI_ReBL3[0] = (uint8_t)(_Mcmd_R_ReBL3>>8);
-	SPI_ReBL3[1] = 0;
-
-	memcpy((uint8_t *)&ComBalanceEnergy[32], (uint8_t *)&ComBalanceEnergyCache[32], 10);
-	memcpy(&SPI_BL3[2], (uint8_t *)&ComBalanceEnergy[32], 10);
-
-	if (ClrDataFlag[2] == 0) {
-		memset((uint8_t *)&ComBalanceEnergy[32], 0, 10);
-		memset((uint8_t *)&ComBalanceEnergyCache[32], 0, 10);
-		memset((uint8_t *)&SetBalanceEnergy[32], 0, 10);
-		memset((uint8_t *)&SetBalanceEnergyCache[32], 0, 10);
-	}
-}
-void DMA_GetRTCData(void) {
-	SPI_RTC[0] = (uint8_t)(_Mcmd_R_RTC>>8);
-	SPI_RTC[1] = 0;
-	memcpy(&SPI_RTC[2], &RTCtimers[0], 7);
-	SPI_RTC[9] = (uint8_t)(PowerOffInterruptTimer>>8);
-	SPI_RTC[10] = (uint8_t)(PowerOffInterruptTimer);
-
-	/*
-	SPI_RTC[11] = IIC1_ErrCount;
-	SPI_RTC[12] = IIC1_ErrCount;
-	*/
-
-	SPI_RTC[11] = SoftsVer[13];
-	SPI_RTC[12] = SoftsVer[15];
-	SPI_RTC[13] = SoftsVer[16];
-
-	SPI_RTC[14] = (uint8_t)((SetBalanceReg[0]>>8)&0xFF);
-	SPI_RTC[15] = (uint8_t)((SetBalanceReg[0])&0xFF);
-	SPI_RTC[16] = (uint8_t)((SetBalanceReg[1]>>8)&0xFF);
-	SPI_RTC[17] = (uint8_t)((SetBalanceReg[1])&0xFF);
-
-	SPI_ReT2[2] = (uint8_t)((SetBalanceReg[2]>>8)&0xFF);
-	SPI_ReT2[3] = (uint8_t)((SetBalanceReg[2])&0xFF);
-	//SetWakeUpTime
-	//SetWakeUpFlag
-	//SPI_RTC[11] = (uint8_t)(SetWakeUpTime>>8);
-	//SPI_RTC[12] = (uint8_t)(SetWakeUpTime);
-	//SPI_RTC[13] = (uint8_t)(SetWakeUpFlag);
-	//SPI_RTC[14] = (uint8_t)(SetWakeUpFlagCache);
-}
-
-void DMA_GetDataAll(void)
+//packaging
+uint8_t
+spi0_send_buffer_fill(uint8_t *Data, uint16_t Len)
 {
-  	DMA_GetIVData();
-	DMA_GetCV1Data();
-	DMA_GetCV2Data();
-	DMA_GetCV3Data();
-	DMA_GetCV4Data();
-	DMA_GetCV5Data();
-	DMA_GetCV6Data();
-	DMA_GetT1Data();
-	DMA_GetT2Data();
-	DMA_GetT3Data();
-	DMA_GetEData();
-	DMA_GetE2Data();
-	DMA_GetBL1Data();
-	DMA_GetBL2Data();
-	DMA_GetBL3Data();
-	DMA_GetRTCData();
+    uint8_t u8Err = 0;
+    if((Data == NULL) || (Len > 280))
+    {
+        return 1;
+    }
+  	u8Err |= DMA_GetIVData(&Data[0], 18);
+	u8Err |= DMA_GetCVData(&Data[20], 72);
+	u8Err |= DMA_GetTData(&Data[118], 35);
+	u8Err |= DMA_GetEData(&Data[155], 38);
+	u8Err |= DMA_GetBLData(&Data[195], 36);
+	u8Err |= DMA_GetRTCData(&Data[245], 18);
+    return u8Err;
 }
 
-void MDA_GetDataAllTest(void) {
-	/*
-	memcpy(SPI_IV, SPI_IV_Buf, 18);
-	memcpy(SPI_CV1, SPI_CV1_Buf, 18);
-	memcpy(SPI_CV2, SPI_CV2_Buf, 18);
-	memcpy(SPI_CV3, SPI_CV3_Buf, 18);
-	memcpy(SPI_CV4, SPI_CV4_Buf, 18);
-	memcpy(SPI_T1, SPI_T1_Buf, 18);
-	memcpy(SPI_T2, SPI_T2_Buf, 18);
-	memcpy(SPI_E, SPI_E_Buf, 18);
-	memcpy(SPI_BL1, SPI_BL1_Buf, 18);
-	memcpy(SPI_BL2, SPI_BL2_Buf, 18);
-	memcpy(SPI_RTC, SPI_RTC_Buf, 18);
-	*/
+//group 1
+static uint8_t
+DMA_GetIVData(uint8_t *Data, uint16_t Len) 
+{
+    if((Data == NULL) || (Len > 26))
+    {
+        return 1;
+    }
+	Data[0] = (uint8_t)(_Mcmd_Send_Cmd>>8);//header 1
+	Data[1] = (uint8_t)(_Mcmd_Send_Cmd);//header 2
+	Data[2] = (uint8_t)(Current>>8);
+	Data[3] = (uint8_t)(Current);
+	Data[4] = (uint8_t)(V_HV2>>8);
+	Data[5] = (uint8_t)(V_HV2);
+	Data[6] = (uint8_t)(V_HV1>>8);
+	Data[7] = (uint8_t)(V_HV1);
+	Data[8] = (uint8_t)(V_HeatVOL>>8);
+	Data[9] = (uint8_t)(V_HeatVOL);
+	Data[10] = (uint8_t)(R_HV2_To_GND>>8);//R_HV2_To_GND
+	Data[11] = (uint8_t)(R_HV2_To_GND);
+	Data[12] = (uint8_t)(R_FLQ_To_GND>>8);//R_FLQ_To_GND
+	Data[13] = (uint8_t)(R_FLQ_To_GND);
+	Data[14] = SleepFlag;
+	Data[15] = (HeatCtlStatus&0x01)|((PreChargeStatus&0x01)<<1)|((ResMeasure_Sta&0x01)<<2);
+	Data[16] = BalanceStartFlag;
+	Data[17] = CVErrStatus|TempErrStatus;
+    return 0;
 }
 
-void DMA_ClearDataAll(void) {
-	memset(SPI_IV, 0, sizeof(SPI_IV));
-	memset(SPI_CV1, 0, sizeof(SPI_CV1));
-	memset(SPI_CV2, 0, sizeof(SPI_CV2));
-	memset(SPI_CV3, 0, sizeof(SPI_CV3));
-	memset(SPI_CV4, 0, sizeof(SPI_CV4));
-	memset(SPI_T1, 0, sizeof(SPI_T1));
-	memset(SPI_T2, 0, sizeof(SPI_T2));
-	memset(SPI_E, 0, sizeof(SPI_E));
-	memset(SPI_BL1, 0, sizeof(SPI_BL1));
-	memset(SPI_BL2, 0, sizeof(SPI_BL2));
-	memset(SPI_RTC, 0, sizeof(SPI_RTC));
+//group 2
+static uint8_t
+DMA_GetCVData(uint8_t *Data, uint16_t Len)
+{
+  	uint8_t index = 0;
+	uint8_t indey = 0;
+	//36个单体，42个通道，48个传输量
+    if((Data == NULL) || (Len > 72))//36*2=72
+    {
+        return 1;
+    }
+	for (index = 0;index < (Len/2); index ++) {
+		Data[indey] = (uint8_t)(CellVoltage[index]>>8);
+		Data[indey+1] = (uint8_t)(CellVoltage[index]);
+		indey += 2;
+	}
+    return 0;
+}
+
+//group 3
+static uint8_t
+DMA_GetTData(uint8_t *Data, uint16_t Len)
+{
+    if((Data == NULL) || (Len > 35))
+    {
+        return 1;
+    }
+	memcpy(Data, NTCTemp, Len);
+    return 0;
+}
+
+//group 4
+static uint8_t
+DMA_GetEData(uint8_t *Data, uint16_t Len)
+{
+    if((Data == NULL) || (Len > 38))
+    {
+        return 1;
+    }
+	memcpy(Data, TempIC, 3);
+	Data[3] = NTCshunt;
+	Data[4] = WorkSignal;
+	Data[5] = (uint8_t)(DSG_AH>>24);
+	Data[6] = (uint8_t)(DSG_AH>>16);
+	Data[7] = (uint8_t)(DSG_AH>>8);
+	Data[8] = (uint8_t)(DSG_AH);
+	Data[9] = (uint8_t)(CHG_AH>>24);
+	Data[10] = (uint8_t)(CHG_AH>>16);
+	Data[11] = (uint8_t)(CHG_AH>>8);
+	Data[12] = (uint8_t)(CHG_AH);
+    return 0;
+}
+
+//group 5
+static uint8_t
+DMA_GetBLData(uint8_t *Data, uint16_t Len)
+{
+	//36个单体，42个通道，48个传输量
+    if((Data == NULL) || (Len > 48))
+    {
+        return 1;
+    }
+
+	memcpy(Data, SetBalanceEnergyCache, Len);
+
+    return 0;
+}
+
+//group 6
+static uint8_t
+DMA_GetRTCData(uint8_t *Data, uint16_t Len)
+{
+    if((Data == NULL) || (Len > 18))
+    {
+        return 1;
+    }
+	memcpy(Data, &RTCtimers[0], 7);
+	Data[7] = (uint8_t)(PowerOffInterruptTimer>>8);
+	Data[8] = (uint8_t)(PowerOffInterruptTimer);
+
+	Data[9] = SoftsVer[13];
+	Data[10] = SoftsVer[15];
+	Data[11] = SoftsVer[16];
+
+	Data[12] = (uint8_t)((SetBalanceReg[0]>>8)&0xFF);
+	Data[13] = (uint8_t)((SetBalanceReg[0])&0xFF);
+	Data[14] = (uint8_t)((SetBalanceReg[1]>>8)&0xFF);
+	Data[15] = (uint8_t)((SetBalanceReg[1])&0xFF);
+	Data[16] = (uint8_t)((SetBalanceReg[2]>>8)&0xFF);
+	Data[17] = (uint8_t)((SetBalanceReg[2])&0xFF);
+
+    return 0;
 }
 
 uint8_t Read_D[2] = {0};
 uint8_t Read_S[2] = {0};
-
 uint16_t ErrCount = 0;
 
 void DMA_Set(void)
 {
-    if(halSlaveSpiSendDataFlag)
-    {
-        EnterCritical();
-        DMA_GetDataAll();//更新数据
-        halSlaveSpiSendDataFlag = 0;
-        ExitCritical();
-        CAN_TranData(&SPI_CV1[2],0x600,8);
-        CAN_TranData(&SPI_CV1[10],0x601,8);
-        CAN_TranData(&SPI_CV2[2],0x602,8);
-        CAN_TranData(&SPI_CV2[10],0x603,8);
-        CAN_TranData(&SPI_CV3[2],0x604,8);
-        CAN_TranData(&SPI_CV3[10],0x605,8);
-        CAN_TranData(&SPI_CV4[2],0x606,8);
-        CAN_TranData(&SPI_CV4[10],0x607,8);
-        CAN_TranData(&SPI_CV5[2],0x608,8);
-        CAN_TranData(&SPI_CV5[10],0x609,8);
+    static uint8_t su8StartUpdateBufFlag = 0;
 
-        CAN_TranData(&SPI_T1[2],0x700,8);
-        CAN_TranData(&SPI_T1[10],0x701,8);
+    //data is uodate once in a round of main()
+    if(su8StartUpdateBufFlag < HAL_FRE_SPI_DATA)
+	{
+		su8StartUpdateBufFlag ++;
+	}else
+	{
+		su8StartUpdateBufFlag = 0;
+		EnterCritical();
+		spi0_send_buffer_fill(SPI_SEND_DMA, HAL_LEN_SPI_SEND_DATA);//fill data
+        DMA_Data_CMD_Handle(SPI_SEND_DMA, HAL_LEN_SPI_SEND_DATA);//calculate crc
+		ExitCritical();
+    }
+
+    //analysis rdata
+    if(gu8halSlaveSpiReadyFlag)
+    {
+    	gu8halSlaveSpiReadyFlag = 0;
+		DMA_Recv_Data_Handle(gu8HalSpiRxDataBuf, HAL_LEN_SPI_RECV_DATA);
     }
 }
 
 uint8_t 
-DMA_Data_CMD_Handle(uint8_t *data, uint8_t len)
+DMA_Data_CMD_Handle(uint8_t *Data, uint16_t Len)
 {
-  	uint16_t Mcmd = 0;
-  	uint16_t SendDataCRC = 0;
     volatile CrcUnion u16RxCrc;
-    uint8_t u8Tmp[16] = {0};
-
-    if (len <= 2) return 1;
-
-    //cmd
-    if(halSlaveSpiCsFlag)
+    if((Data == NULL) || (Len > 280))
     {
-        //judge cmd legit
-        u16RxCrc.u16Crc = PEC15(data, 2);
-        if( (u16RxCrc.u8Crc[0] != data[3]) || (u16RxCrc.u8Crc[1] != data[2]))
-        {
-        	return 2;
-        }
-        halSlaveSpiRxFlag = HAL_SLAVE_SPI_SEND_DATA;
-        Mcmd = (uint16_t)(((uint16_t)data[0]<<8) | ((uint16_t)data[1]));
-        switch (Mcmd)
-        {
-            //读命令
-            case _Mcmd_R_IV: {
-                                 SendDataCRC = PEC15(SPI_IV, 18);
-                                 SPI_IV[18] = (uint8_t)(SendDataCRC>>8);
-                                 SPI_IV[19] = (uint8_t)(SendDataCRC);
-                                 //EnterCritical();
-                                 memcpy(&SPI_SEND_DMA[0], SPI_IV, 20);
-                                 //ExitCritical();
-                                 break;
-                             }
-            case _Mcmd_R_CV1: {
-                                  SendDataCRC = PEC15((uint8_t *)&SPI_CV1[0], 18);
-                                  SPI_CV1[18] = (uint8_t)(SendDataCRC>>8);
-                                  SPI_CV1[19] = (uint8_t)(SendDataCRC);
-                                  //EnterCritical();
-                                  memcpy(&SPI_SEND_DMA[0], SPI_CV1, 20);
-                                  //ExitCritical();
-                                  break;
-                              }
-            case _Mcmd_R_CV2: {
-                                  SendDataCRC = PEC15((uint8_t *)&SPI_CV2[0], 18);
-                                  SPI_CV2[18] = (uint8_t)(SendDataCRC>>8);
-                                  SPI_CV2[19] = (uint8_t)(SendDataCRC);
-                                  //EnterCritical();
-                                  memcpy(&SPI_SEND_DMA[0], SPI_CV2, 20);
-                                  //ExitCritical();
-                                  break;
-                              }
-            case _Mcmd_R_CV3: {
-                                  SendDataCRC = PEC15((uint8_t *)&SPI_CV3[0], 18);
-                                  SPI_CV3[18] = (uint8_t)(SendDataCRC>>8);
-                                  SPI_CV3[19] = (uint8_t)(SendDataCRC);
-                                  //EnterCritical();
-                                  memcpy(&SPI_SEND_DMA[0], SPI_CV3, 20);
-                                  //ExitCritical();
-                                  break;
-                              }
-            case _Mcmd_R_CV4: {
-                                  SendDataCRC = PEC15((uint8_t *)&SPI_CV4[0], 18);
-                                  SPI_CV4[18] = (uint8_t)(SendDataCRC>>8);
-                                  SPI_CV4[19] = (uint8_t)(SendDataCRC);
-                                  //EnterCritical();
-                                  memcpy(&SPI_SEND_DMA[0], SPI_CV4, 20);
-                                  //ExitCritical();
-                                  break;
-                              }
-            case _Mcmd_R_CV5: {
-                                  SendDataCRC = PEC15((uint8_t *)&SPI_CV5[0], 18);
-                                  SPI_CV5[18] = (uint8_t)(SendDataCRC>>8);
-                                  SPI_CV5[19] = (uint8_t)(SendDataCRC);
-                                  //EnterCritical();
-                                  memcpy(&SPI_SEND_DMA[0], SPI_CV5, 20);
-                                  //ExitCritical();
-                                  break;
-                              }
-            case _Mcmd_R_CV6: {
-                                  SendDataCRC = PEC15((uint8_t *)&SPI_CV6[0], 18);
-                                  SPI_CV6[18] = (uint8_t)(SendDataCRC>>8);
-                                  SPI_CV6[19] = (uint8_t)(SendDataCRC);
-                                  //EnterCritical();
-                                  memcpy(&SPI_SEND_DMA[0], SPI_CV6, 20);
-                                  //ExitCritical();
-                                  break;
-                              }
-            case _Mcmd_R_T1: {
-                                 SendDataCRC = PEC15((uint8_t *)&SPI_T1[0], 18);
-                                 SPI_T1[18] = (uint8_t)(SendDataCRC>>8);
-                                 SPI_T1[19] = (uint8_t)(SendDataCRC);
-                                 //EnterCritical();
-                                 memcpy(&SPI_SEND_DMA[0], SPI_T1, 20);
-                                 //ExitCritical();
-                                 break;
-                             }
-            case _Mcmd_R_T2: {
-                                 SendDataCRC = PEC15((uint8_t *)&SPI_T2[0], 18);
-                                 SPI_T2[18] = (uint8_t)(SendDataCRC>>8);
-                                 SPI_T2[19] = (uint8_t)(SendDataCRC);
-                                 //EnterCritical();
-                                 memcpy(&SPI_SEND_DMA[0], SPI_T2, 20);
-                                 memcpy(&SPI_ReT2[10], &SPI_T2[10], 8);
-                                 DSG_AH = 0;
-                                 CHG_AH = 0;
-                                 //ExitCritical();
-                                 break;
-                             }
-            case _Mcmd_R_T3: {
-                                 SendDataCRC = PEC15((uint8_t *)&SPI_T3[0], 18);
-                                 SPI_T3[18] = (uint8_t)(SendDataCRC>>8);
-                                 SPI_T3[19] = (uint8_t)(SendDataCRC);
-                                 //EnterCritical();
-                                 memcpy(&SPI_SEND_DMA[0], SPI_T3, 20);
-                                 //ExitCritical();
-                                 break;
-                             }
-            case _Mcmd_R_E: {
-                                SendDataCRC = PEC15((uint8_t *)&SPI_E[0], 18);
-                                SPI_E[18] = (uint8_t)(SendDataCRC>>8);
-                                SPI_E[19] = (uint8_t)(SendDataCRC);
-                                //EnterCritical();
-                                memcpy(&SPI_SEND_DMA[0], SPI_E, 20);
-                                //ExitCritical();
-                                break;
-                            }
-            case _Mcmd_R_E2: {
-                                 SendDataCRC = PEC15((uint8_t *)&SPI_E2[0], 18);
-                                 SPI_E2[18] = (uint8_t)(SendDataCRC>>8);
-                                 SPI_E2[19] = (uint8_t)(SendDataCRC);
-                                 //EnterCritical();
-                                 memcpy(&SPI_SEND_DMA[0], SPI_E2, 20);
-                                 //ExitCritical();
-                                 break;
-                             }
-            case _Mcmd_R_BL1: {
-                                  SendDataCRC = PEC15((uint8_t *)&SPI_BL1[0], 18);
-                                  SPI_BL1[18] = (uint8_t)(SendDataCRC>>8);
-                                  SPI_BL1[19] = (uint8_t)(SendDataCRC);
-                                  //EnterCritical();
-                                  memcpy(&SPI_SEND_DMA[0], SPI_BL1, 20);
-                                  memcpy(&SPI_ReBL1[2], &SPI_BL1[2], 16);
-                                  //memset(ComBalanceEnergy, 0, 16);
-                                  GetBalanceCmdCount ++;
-                                  BalanceCmd = 0;
-                                  ClrDataFlag[0] = 0;
-                                  //ExitCritical();
-                                  break;
-                              }
-            case _Mcmd_R_BL2: {
-                                  SendDataCRC = PEC15((uint8_t *)&SPI_BL2[0], 18);
-                                  SPI_BL2[18] = (uint8_t)(SendDataCRC>>8);
-                                  SPI_BL2[19] = (uint8_t)(SendDataCRC);
-                                  //EnterCritical();
-                                  memcpy(&SPI_SEND_DMA[0], SPI_BL2, 20);
-                                  memcpy(&SPI_ReBL2[2], &SPI_BL2[2], 16);
-                                  //memset(&ComBalanceEnergy[16], 0, 16);
-                                  GetBalanceCmdCount ++;
-                                  BalanceCmd = 0;
-                                  ClrDataFlag[1] = 0;
-                                  //ExitCritical();
-                                  break;
-                              }
-            case _Mcmd_R_BL3: {
-                                  SendDataCRC = PEC15((uint8_t *)&SPI_BL3[0], 18);
-                                  SPI_BL3[18] = (uint8_t)(SendDataCRC>>8);
-                                  SPI_BL3[19] = (uint8_t)(SendDataCRC);
-                                  //EnterCritical();
-                                  memcpy(&SPI_SEND_DMA[0], SPI_BL3, 20);
-                                  memcpy(&SPI_ReBL3[2], &SPI_BL3[2], 16);
-                                  GetBalanceCmdCount ++;
-                                  BalanceCmd = 0;
-                                  ClrDataFlag[2] = 0;
-                                  //ExitCritical();
-                                  break;
-                              }
-            case _Mcmd_R_RTC: {
-                                  SendDataCRC = PEC15((uint8_t *)&SPI_RTC[0], 18);
-                                  SPI_RTC[18] = (uint8_t)(SendDataCRC>>8);
-                                  SPI_RTC[19] = (uint8_t)(SendDataCRC);
-                                  //EnterCritical();
-                                  memcpy(&SPI_SEND_DMA[0], SPI_RTC, 20);
-                                  //ExitCritical();
-                                  break;
-                              }
-            case _Mcmd_R_ReT2: {
-                                   SPI_ReT2[0] = (uint8_t)(_Mcmd_R_ReT2>>8);
-                                   SPI_ReT2[1] = 0x00;
-                                   SendDataCRC = PEC15((uint8_t *)&SPI_ReT2[0], 18);
-                                   SPI_ReT2[18] = (uint8_t)(SendDataCRC>>8);
-                                   SPI_ReT2[19] = (uint8_t)(SendDataCRC);
-                                   //EnterCritical();
-                                   memcpy(&SPI_SEND_DMA[0], SPI_ReT2, 20);
-                                   //ExitCritical();
-                                   break;
-                               }
-            case _Mcmd_R_ReBL1: {
-                                    SPI_ReBL1[0] = (uint8_t)(_Mcmd_R_ReBL1>>8);
-                                    SPI_ReBL1[1] = 0x00;
-                                    SendDataCRC = PEC15((uint8_t *)&SPI_ReBL1[0], 18);
-                                    SPI_ReBL1[18] = (uint8_t)(SendDataCRC>>8);
-                                    SPI_ReBL1[19] = (uint8_t)(SendDataCRC);
-                                    //EnterCritical();
-                                    memcpy(&SPI_SEND_DMA[0], SPI_ReBL1, 20);
-                                    //ExitCritical();
-                                    break;
-                                }
-            case _Mcmd_R_ReBL2: {
-                                    SPI_ReBL2[0] = (uint8_t)(_Mcmd_R_ReBL2>>8);
-                                    SPI_ReBL2[1] = 0x00;
-                                    SendDataCRC = PEC15((uint8_t *)&SPI_ReBL2[0], 18);
-                                    SPI_ReBL2[18] = (uint8_t)(SendDataCRC>>8);
-                                    SPI_ReBL2[19] = (uint8_t)(SendDataCRC);
-                                    //EnterCritical();
-                                    memcpy(&SPI_SEND_DMA[0], SPI_ReBL2, 20);
-                                    //ExitCritical();
-                                    break;
-                                }
-            case _Mcmd_R_ReBL3: {
-                                    SPI_ReBL3[0] = (uint8_t)(_Mcmd_R_ReBL3>>8);
-                                    SPI_ReBL3[1] = 0x00;
-                                    SendDataCRC = PEC15((uint8_t *)&SPI_ReBL3[0], 18);
-                                    SPI_ReBL3[18] = (uint8_t)(SendDataCRC>>8);
-                                    SPI_ReBL3[19] = (uint8_t)(SendDataCRC);
-                                    //EnterCritical();
-                                    memcpy(&SPI_SEND_DMA[2], SPI_ReBL3, 20);
-                                    //ExitCritical();
-                                    break;
-                                }
-                                //写命令
-            case _Mcmd_W_BL1:
-            case _Mcmd_W_BL2:
-            case _Mcmd_W_BL3:
-            case _Mcmd_W_WUT:
-            case _Mcmd_W_RTC:
-                                {
-                                    halSlaveSpiRxFlag = HAL_SLAVE_SPI_RECV_DATA;
-                                    break;
-                                }
-            case _Mcmd_ON_PCHG: {//不接受任何数据
-                                 //_PreCharge_ON;
-                                 //SPI_RD_Length = _SPI_RD_LEN;
-                                    halSlaveSpiRxFlag = HAL_SLAVE_SPI_RECV_CMD;
-                                    break;
-                                }
-            case _Mcmd_OFF_PCHG: {//不接受任何数据
-                                  //_PreCharge_OFF;
-                                  //SPI_RD_Length = _SPI_RD_LEN;
-                                     halSlaveSpiRxFlag = HAL_SLAVE_SPI_RECV_CMD;
-                                     break;
-                                 }
-            case _Mcmd_ON_HEAT: {//不接受任何数据
-                                 //_Heat_CTL_ON;
-                                 //SPI_RD_Length = _SPI_RD_LEN;
-                                    halSlaveSpiRxFlag = HAL_SLAVE_SPI_RECV_CMD;
-                                    break;
-                                }
-            case _Mcmd_OFF_HEAT: {//不接受任何数据
-                                  //_Heat_CTL_OFF;
-                                  //SPI_RD_Length = _SPI_RD_LEN;
-                                     halSlaveSpiRxFlag = HAL_SLAVE_SPI_RECV_CMD;
-                                     break;
-                                 }
-            case _Mcmd_ON_RES: {//不接受任何数据
-                                   ResMeasure_Switch = 1;
-                                   //SPI_RD_Length = _SPI_RD_LEN;
-                                   halSlaveSpiRxFlag = HAL_SLAVE_SPI_RECV_CMD;
-                                   break;
-                               }
-            case _Mcmd_OFF_RES: {//不接受任何数据
-                                    ResMeasure_Switch = 0;
-                                    //SPI_RD_Length = _SPI_RD_LEN;
-                                    halSlaveSpiRxFlag = HAL_SLAVE_SPI_RECV_CMD;
-                                    break;
-                                }
-            case _Mcmd_ON_SLEEP: {//不接受任何数据
-                                     SleepCmd = _SLEEP_STA;
-                                     SleepFlag = 1;
-                                     //SPI_RD_Length = _SPI_RD_LEN;
-                                     halSlaveSpiRxFlag = HAL_SLAVE_SPI_RECV_CMD;
-                                     break;
-                                 }
-            case _Mcmd_OFF_SLEEP: {//不接受任何数据
-                                      SleepCmd = _NORMAL_STA;
-                                      //SPI_RD_Length = _SPI_RD_LEN;
-                                      halSlaveSpiRxFlag = HAL_SLAVE_SPI_RECV_CMD;
-                                      break;
-                                  }
-            default :{
-
-                	halSlaveSpiRxFlag = HAL_SLAVE_SPI_RECV_CMD;
-                         break;
-                     }
-        }
-        halSlaveSpiCsFlag = 0;
-        if((memcmp(&SPI_CV1[2], u8Tmp, 16) == 0) && (memcmp(&SPI_CV2[2], u8Tmp, 16) == 0) &&
-           (memcmp(&SPI_CV3[2], u8Tmp, 16) == 0) && (memcmp(&SPI_CV4[2], u8Tmp, 16) == 0) &&
-           (memcmp(&SPI_CV5[2], u8Tmp, 16) == 0) && (memcmp(&SPI_CV6[2], u8Tmp, 16) == 0))
-        {
-            SPI_SEND_DMA[18] = 0;
-            SPI_SEND_DMA[19] = 0;
-        }
+        return 1;
     }
+	//crc1
+	u16RxCrc.u16Crc = PEC15(Data, 18);
+	Data[18] = u16RxCrc.u8Crc[1];
+	Data[19] = u16RxCrc.u8Crc[0];
+	//crc2
+	u16RxCrc.u16Crc = PEC15(&Data[20], 96);
+	Data[116] = u16RxCrc.u8Crc[1];
+	Data[117] = u16RxCrc.u8Crc[0];
+	//crc3
+	u16RxCrc.u16Crc = PEC15(&Data[118], 35);
+	Data[153] = u16RxCrc.u8Crc[1];
+	Data[154] = u16RxCrc.u8Crc[0];
+	//crc4
+	u16RxCrc.u16Crc = PEC15(&Data[155], 38);
+	Data[193] = u16RxCrc.u8Crc[1];
+	Data[194] = u16RxCrc.u8Crc[0];
+	//crc5
+	u16RxCrc.u16Crc = PEC15(&Data[195], 48);
+	Data[243] = u16RxCrc.u8Crc[1];
+	Data[244] = u16RxCrc.u8Crc[0];
+
+	//crc6
+	u16RxCrc.u16Crc = PEC15(&Data[245], 33);
+	Data[278] = u16RxCrc.u8Crc[1];
+	Data[279] = u16RxCrc.u8Crc[0];
 	return 0;
 }
 
 uint8_t
-DMA_Recv_Data_Handle(uint8_t *Data, uint8_t Len)
+DMA_Recv_Data_Handle(uint8_t *Data, uint16_t Len)
 {
   	uint16_t Mcmd = 0;
-	if (Len <= 2) return 1;
+    CrcUnion crcRecvData;
+	if (Len <= 4) return 1;
 
+    //crc
+    crcRecvData.u16Crc = PEC15(Data, Len-2);
+    if((crcRecvData.u8Crc[0] != Data[Len-1]) || (crcRecvData.u8Crc[1] != Data[Len-2]))
+    {
+        return 2;
+    }
+    //cmd
 	Mcmd = (uint16_t)(((uint16_t)Data[0]<<8) | ((uint16_t)Data[1]));
 	switch (Mcmd)
     {
-		//数据处理
-		case _Mcmd_W_BL1_D: {
-            EnterCritical();
-		  	memcpy(&SetBalanceEnergy[0], &SPI_READ_DMA[2], 16);
-//		  	BalanceCmd = 1;
-		  	//_LED_ON;
-		  	ClrDataFlag[0] = 1;
-			//SPI_rdData_Flag = 0;
-            ExitCritical();
-			//SPI_RD_Length = _SPI_RD_LEN;
-		  	//SPI_Cmd_Count[20] ++;
-			break;
-		}
-	  	case _Mcmd_W_BL2_D: {
-            EnterCritical();
-	  			memcpy(&SetBalanceEnergy[16], &SPI_READ_DMA[2], 16);
-//	  			BalanceCmd = 2;
-	  			ClrDataFlag[1] = 1;
-            ExitCritical();
-	  			//BalanceCmdCount ++;
-	  			//BalanceTime = 0;
-			break;
-		}
-	  	case _Mcmd_W_BL3_D: {
-            EnterCritical();
-	  			memcpy(&SetBalanceEnergy[32], &SPI_READ_DMA[2], 10);
-//	  			BalanceCmd = 3;
-	  			ClrDataFlag[2] = 1;
-	  			BalanceCmdCount ++;
-            ExitCritical();
-	  			//_LED_OFF;
-	  			//BalanceTime = 0;
-			break;
-		}
-		case _Mcmd_W_WUT_D: {
-            EnterCritical();
-		  	SetWakeUpTime = (uint16_t)(((uint16_t)SPI_READ_DMA[2]<<8) | (uint16_t)SPI_READ_DMA[3]);
-			SetWakeUpFlag ++;
-			//SPI_rdData_Flag = 0;
-            ExitCritical();
-			break;
-		}
-		case _Mcmd_W_RTC_D: {
-		  	//SPI_rdData_Flag = 0;
-			//SPI_RD_Length = _SPI_RD_LEN;
-			break;
-		}
-        default:break;
+        //数据处理
+        case _Mcmd_Recv_Cmd:
+            {
+                //clear balance cache after each SPI communication
+                memset(ComBalanceEnergyCache, 0, sizeof(ComBalanceEnergyCache));
+                //TODO:could add balance ch switch
+                //start balance
+                memcpy(&SetBalanceEnergy[0], &Data[2], _CV_CH_NUM);
+                for(uint8_t i=0;i<_CV_CH_NUM;i++)
+                {
+                    if(SetBalanceEnergy[i] != 0)
+                    {
+                        BalanceCmdCount ++;
+                        break;
+                    }
+                }
+                //set awake
+                if(Data[50] == 1)
+                {
+                    SetWakeUpTime = (uint16_t)(((uint16_t)Data[50]<<8) | (uint16_t)Data[51]);
+                    SetWakeUpFlag ++;
+                }
+                //set RTC
+                //TODO:receive
+                //开始绝缘检测
+                if(Data[63] == 1)
+                {
+                    ResMeasure_Switch = 1;
+                }else
+                {
+                    //关闭绝缘检测
+                    ResMeasure_Switch = 0;
+                }
+                //MC33771 sleep
+                if(Data[64] == 1)
+                {
+                    SleepCmd = _SLEEP_STA;
+                    SleepFlag = 1;
+                }else
+                {
+                    //MC33771 awake
+                    SleepCmd = _NORMAL_STA;
+                }
+            }
+            break;
+        default:return 3;
     }
-	halSlaveSpiRxFlag = HAL_SLAVE_SPI_RECV_CMD;
 	return 0;
-}
-
-unsigned char GetDMARTFlag(void)
-{
-	return DMA_RT_Flag;
 }
 
 /**
@@ -807,75 +345,48 @@ hal_spi_slave_rx_callback(void)
 void
 hal_spi_slave_cs_callback(void)
 {
-    uint8_t index = 0;
-    uint8_t len = 0;
+
+    uint16_t index = 0;
     uint16_t u16Timeout = 0;
     uint8_t u8Err = 0;
 
-    switch(halSlaveSpiRxFlag)
-    {
-        case HAL_SLAVE_SPI_RECV_CMD:
-			{
-				halSlaveSpiCsFlag = 1;
-				len = _SPI_RD_LEN;
-			}
-            break;
-        case HAL_SLAVE_SPI_RECV_DATA:
-            {
-                len = _SPI_RD_DATA_LEN;
-            }
-            break;
-        case HAL_SLAVE_SPI_SEND_DATA:
-            {
-                len = _SPI_TX_LEN;
-                //inform main()
-                halSlaveSpiSendDataFlag = 1;
-            }
-            break;
-        default:
-			{
-				halSlaveSpiRxFlag = HAL_SLAVE_SPI_RECV_CMD;
-				len = _SPI_RD_LEN;
-			}
-            return;
-    }
-
+    //传输数据
     {
         if (SPI_PDD_ReadStatusReg(SPI0_BASE_PTR) & SPI_PDD_RX_BUFFER_FULL)
-    	{
-        	SPI_PDD_ReadData8bit(SPI0_BASE_PTR);
-    	}
+        {
+            SPI_PDD_ReadData8bit(SPI0_BASE_PTR);
+        }
         //TODO:pull pin
-        SPI0_RDY_PutVal(NULL, 1);
-        while (index < len)
-    	{
-			//send
-			u16Timeout = 0;
-			while (((SPI_PDD_ReadStatusReg(SPI0_BASE_PTR) & SPI_PDD_TX_BUFFER_EMPTYG) == 0U) && (u16Timeout<40)) /* Is HW Tx buffer empty? */
-			{
-				u16Timeout ++;
-			}
-			if(u16Timeout == 40)
+        SPI0_RDY_PutVal(NULL, 0);
+        while (index < HAL_LEN_SPI_SEND_DATA)
+        {
+            //send
+            u16Timeout = 0;
+            while (((SPI_PDD_ReadStatusReg(SPI0_BASE_PTR) & SPI_PDD_TX_BUFFER_EMPTYG) == 0U) && (u16Timeout<0xFFFF)) /* Is HW Tx buffer empty? */
+            {
+                u16Timeout ++;
+            }
+            if(u16Timeout == 0xFFFF)
             {
                 u8Err = 1;
                 break;
             }
-			SPI_PDD_WriteData8Bit(SPI0_BASE_PTR, SPI_SEND_DMA[index]);
+            SPI_PDD_WriteData8Bit(SPI0_BASE_PTR, SPI_SEND_DMA[index]);
 
-			//recv
-			u16Timeout = 0;
-			while (((SPI_PDD_ReadStatusReg(SPI0_BASE_PTR) & SPI_PDD_RX_BUFFER_FULL) == 0U) && (u16Timeout<40)) /* Is any char in HW Rx buffer? */
-			{
-				u16Timeout ++;
-			}
-			if(u16Timeout == 40)
+            //recv
+            u16Timeout = 0;
+            while (((SPI_PDD_ReadStatusReg(SPI0_BASE_PTR) & SPI_PDD_RX_BUFFER_FULL) == 0U) && (u16Timeout<0xFFFF)) /* Is any char in HW Rx buffer? */
+            {
+                u16Timeout ++;
+            }
+            if(u16Timeout == 0xFFFF)
             {
                 u8Err = 2;
                 break;
             }
             SPI_READ_DMA[index] = SPI_PDD_ReadData8bit(SPI0_BASE_PTR);
-    		index ++;
-    	}
+            index ++;
+        }
         if(u8Err != 0 )
         {
             SS0_Deinit(SPI0TDeviceData);
@@ -883,26 +394,13 @@ hal_spi_slave_cs_callback(void)
             SPI_PDD_ReadStatusReg(SPI0_BASE_PTR);
             SPI_PDD_ReadData8bit(SPI0_BASE_PTR);
         }
-
     }
-
-    if(halSlaveSpiRxFlag == HAL_SLAVE_SPI_RECV_DATA)
-    {
-	    //cpy data
-	    memcpy(gu8HalSpiRxDataBuf, SPI_READ_DMA, len);
-        //inform main()
-        gu8halSlaveSpiRecvDataFlag = 1;
-    }else if(halSlaveSpiRxFlag == HAL_SLAVE_SPI_SEND_DATA)
-    {
-    	halSlaveSpiRxFlag = HAL_SLAVE_SPI_RECV_CMD;
-    }else if(halSlaveSpiRxFlag == HAL_SLAVE_SPI_RECV_CMD)
-    {
-        //analysis cmd
-        DMA_Data_CMD_Handle(SPI_READ_DMA, 4);
-    }
-    SPI0_RDY_PutVal(NULL, 0);
+    SPI0_RDY_PutVal(NULL, 1);
+    gu8halSlaveSpiReadyFlag = 1;
+    //copy recv buf
+    memcpy(gu8HalSpiRxDataBuf, SPI_READ_DMA, HAL_LEN_SPI_RECV_DATA);
     //clear wdg
-    WDog1_Clear(NULL);
+    //WDog1_Clear(NULL);
 }
 
 

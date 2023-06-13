@@ -22,7 +22,7 @@ by the component.
 <td class="regNotResetVal">0x90600000</td>
  <td>GPIOA_PDDR register, peripheral SPI0_RDY.</td></tr>
 <tr><td>0x400FF000</td><td>GPIOA_PDOR</td>
-<td class="regNotResetVal">0x00400000</td>
+<td class="regNotResetVal">0x80400000</td>
  <td>GPIOA_PDOR register, peripheral SPI0_RDY.</td></tr>
 <tr><td>0x400FF018</td><td>GPIOA_PIDR</td>
 <td class="regNotResetVal">0xFF7FFFFF</td>
@@ -113,10 +113,10 @@ registers of the peripheral(s) configured by the component.
         
 </div>
 <table class="regtbl2"><tr><td class="trowtit" colspan="2">Address</td><td colspan="2">0x400FF000</td></tr>
-<tr class="trowtit"><td  class="trowtit" colspan="2">Initial value</td><td colspan="2">0x00400000</td></tr>
+<tr class="trowtit"><td  class="trowtit" colspan="2">Initial value</td><td colspan="2">0x80400000</td></tr>
 <tr class="trowtit"><td  class="trowtit" colspan="2">After-reset value</td><td colspan="2">0x00000000</td></tr>
 <tr><td class="ttitle2">Bit</td><td class="ttitle2">Field</td><td class="ttitle2">Value</td><td class="ttitle2">Description</td></tr>
-<tr><td>0 - 31</td><td>PDO</td><td>0x00</td><td>Port Data Output</td>
+<tr><td>0 - 31</td><td>PDO</td><td>0x80000000</td><td>Port Data Output</td>
 </tr></table>
 <div class="reghdr1">GPIOA_PIDR</div>
 <div class="regdiag">
@@ -169,7 +169,7 @@ registers of the peripheral(s) configured by the component.
 **          Direction                                      : Output
 **          Initialization                                 : 
 **            Init. direction                              : Output
-**            Init. value                                  : 0
+**            Init. value                                  : 1
 **            Auto initialization                          : yes
 **          Safe mode                                      : no
 <h1>

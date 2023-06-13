@@ -232,6 +232,7 @@ char MC33771_ReadData(uint8_t nrt, uint8_t regaddr, uint8_t cid, uint16_t *spi_r
 #if 1
 //  EnterCritical();
 	MC33664_CLK_OE_PutVal(NULL, 0);
+	BCC_WaitUs(2);
 	MC33664_CS_TX_PutVal(NULL, 1);
 
 	//SPI_Count = 0;

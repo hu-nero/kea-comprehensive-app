@@ -44,12 +44,9 @@ extern uint8_t GetBalanceCmdCountCache;
 
 extern uint8_t SetBalanceEnergy[_CV_CH_NUM];
 extern uint8_t SetBalanceEnergyCache[_CV_CH_NUM];
-extern uint8_t ComBalanceEnergy[_CV_CH_NUM];
 extern uint8_t ComBalanceEnergyCache[_CV_CH_NUM];
 
 //extern uint64_t ComBalEnergyCache[_CV_CH_NUM];
-
-extern uint8_t ClrDataFlag[3];
 
 extern uint16_t SetBalanceReg[_BATCV_IC_NUM];
 //extern uint16_t SetBalanceRegCache[_BATCV_IC_NUM];

@@ -87,11 +87,12 @@
 #include "HVMeter\Current.h"
 
 //#define _CAN_SEND_TEST
+#define MAIN_WORKSTEPS  17
 
 
 uint8_t SoftsVer[32] = "KPB17-Slave-V1.08";//[13]:3;	[15]:0		[16]:6
 
-uint8_t WorkStep = 0;
+uint8_t WorkStep = 1;
 uint16_t gINA226CFG = 0;
 uint16_t gINA226CFG_R = 0;
 
@@ -173,8 +174,6 @@ int main(void)
   ADC_MeasureInit();
 
 
-  SPI_RD_Length = _SPI_RD_LEN;
-
   WDog1_Clear(NULL);
   //mdelay(50);
   //INA226_GetRegData(Cfg_Reg, &gINA226CFG);
@@ -193,9 +192,7 @@ int main(void)
 #endif
   //BCC_WaitMs(5);
   _LED_OFF;
-  unsigned char offset = 0, offset2 = 0;;
   unsigned char peridosendcount = 0;
-  unsigned char balstep = 0; //均衡控制步骤，只在0和1之间跳
 
   Timer2ms_Enable(Timer2ms_TDeviceDataPtr);
   EInt_Enable(tDevEIntPtr);
@@ -203,318 +200,199 @@ int main(void)
   //start run
   unsigned char u8TmpData[8] = {1,2,3,4,5,6,7,8};
   CAN_TranData(u8TmpData,0x50,8);
-  for (;;) {
+  for (;;)
+  {
       //prepare tdata
       DMA_Set();
-      //analysis rdata
-      if(gu8halSlaveSpiRecvDataFlag == 1)
+      if (Timer0Count != 0) 
       {
-    	  gu8halSlaveSpiRecvDataFlag = 0;
-          DMA_Recv_Data_Handle(gu8HalSpiRxDataBuf, 20);
+          ADC_Measure();
+          if (0 != GetCurrent())
+          {
+              Err_Count[0] ++;
+          }
+          if (ResMeasure_Switch == 1) {
+              R_Measure(ResMeasureCheckTimer,V_HV2);////打开绝缘检测
+              ResMeasure_Sta = 1;
+          } else {
+              R_Measure(ResMeasureCheckTimer,0);//关闭绝缘检测
+              ResMeasure_Sta = 0;
+          }
+
+          unsigned char blcheckstate,adccheckstate;
+          switch (WorkStep)
+          {
+              case 1:
+                  {
+                      CurrentFillter(&Current);
+                  }
+                  break;
+              case 2:
+                  {
+                      MC33771_RunCOD();//正常电压转换
+                  }
+                  break;
+              case 3:
+                  {
+                      GetADCvalue();
+                  }
+                  break;
+              case 4:
+                  {
+                      EnterCritical();
+                      GetHVAll();
+                      GetTemp();
+                      ExitCritical();
+                      memset(CellVolErr, 0 ,sizeof(CellVolErr));
+                  }
+                  break;
+              case 5:
+                  {
+                      if (0 == GetCellVoltage(0, &CellVoltageReal[0]))
+                      {
+                          CellVolErr[0][0] = 0;
+
+                      } else 
+                      {
+                          Err_Count[1] ++;
+                          CellVolErr[0][0] = 1;
+                      }
+                      //CAN_TranData((uint8_t*)&CellVoltageReal[0],0x400,8);
+                      //CAN_TranData((uint8_t*)&CellVoltageReal[4],0x401,8);
+                  }
+                  break;
+              case 6: 
+                  {
+                      if (0 == GetCellVoltage(1, &CellVoltageReal[14]))
+                      {
+                          CellVolErr[1][0] = 0;
+
+                      } else
+                      {
+                          Err_Count[2] ++;
+                          CellVolErr[1][0] = 1;
+                      }
+                  }
+                  break;
+              case 7:
+                  {
+                      if (0 == GetCellVoltage(2, &CellVoltageReal[28]))
+                      {
+                          CellVolErr[2][0] = 0;
+                      } else 
+                      {
+                          Err_Count[3] ++;
+                          CellVolErr[2][0] = 1;
+                      }
+                  }
+                  break;
+              case 8:
+                  {
+                      //start balance
+                      SetAndCheckBalance();
+                      //CAN_TranData(SetBalanceReg,0x300,8);
+                  }
+                  break;
+              case 9:
+                  {
+                      MC33771_RunCOD();//均衡电压转换
+                  }
+                  break;
+              case 10:
+                  {
+                      EnterCritical();
+                      CellVoltageFillter(CellVoltage, CellVoltageReal, 0, _CV_CH_NUM/3);//0 1 2 .... 13
+                      ExitCritical();
+                  }
+                  break;
+              case 11:
+                  {
+                      EnterCritical();
+                      CellVoltageFillter(CellVoltage, CellVoltageReal, (_CV_CH_NUM/3), (_CV_CH_NUM*2/3));//14 15 16 .... 27
+                      ExitCritical();
+                  }
+                  break;
+              case 12:
+                  {
+                      EnterCritical();
+                      CellVoltageFillter(CellVoltage, CellVoltageReal, (_CV_CH_NUM*2/3), _CV_CH_NUM);//28 22 23 .... 41
+                      ExitCritical();
+                  }
+                  break;
+              case 13:
+                  {
+                      CellVolErr[6][0] = GetCellVoltage(0, &BalanceVoltage[0]);
+                  }
+                  break;
+              case 14:
+                  {
+                      CellVolErr[7][0] = GetCellVoltage(1, &BalanceVoltage[14]);
+                  }
+                  break;
+              case 15:
+                  {
+                      CellVolErr[8][0] = GetCellVoltage(2, &BalanceVoltage[28]);
+                  }
+                  break;
+              case 16:
+                  {
+                      //close balance
+                      CellVolErr[12][0] = ClrBalanceStatus();
+                  }
+                  break;
+              case 17:
+                  {
+                      if (RTC_SelectStatus != 0) {
+                          SPI1_Deinit(NULL);
+                          SPI1_M_Init(NULL);
+                          RA4803_Check();
+                          GetRTCMsg_RA4803(RTCtimers);
+                          SPI1_M_Deinit(NULL);
+                          SPI1_Init(NULL);
+
+                      } else {
+                          RX8130_Check();
+                          GetRTCMsg(RTCtimers);
+                      }
+                  }
+                  break;
+              default :
+                  {
+                      WorkStep = 0;
+                  }
+                  break;
+          }
+          Timer1Count += Timer0Count;
+          Timer0Count = 0;
+          if(WorkStep < MAIN_WORKSTEPS)
+          {
+              WorkStep ++;
+          }else
+          {
+              WorkStep = 1;
+          }
+          WDog1_Clear(NULL);
       }
-	if (Timer0Count != 0) {
-		ADC_Measure();
-		unsigned char ret;
-		ret = GetCurrent();
-		Err_Count[7] = ret;
-		if (0 != ret) {
-			err_count32[0] ++;
-			Err_Count[0]  ++;
-		}
-		else
-		{
-			Err_Count[4]  ++;
-			err_count32[1] ++;
-		}
-		if (ResMeasure_Switch == 1) {
-			R_Measure(ResMeasureCheckTimer,V_HV2);////打开绝缘检测
-			ResMeasure_Sta = 1;
-		} else {
-			R_Measure(ResMeasureCheckTimer,0);//关闭绝缘检测
-			ResMeasure_Sta = 0;
-		}
-		if(peridosendcount==0){
 
-			//CAN_TranData(SetBalanceEnergy+offset,0x100+offset/8,8);
-			//CAN_TranData(ComBalanceEnergy+offset,0x200+offset/8,8);
-			Err_Count[5] = CellVolErr[12][0];
-			Err_Count[6] = CellVolErr[12][1];
-			CAN_TranData(Err_Count,0x302,8);
-			//CAN_TranData((unsigned char*)err_count32,0x303,8);
-			//CAN_TranData((unsigned char*)MC33771_TEMP,0x304,6);
-			offset += 8;
-			if(offset>=_CV_CH_NUM)
-			{
-				offset = 0;
-			}
-		}
-		peridosendcount++;
-		if(peridosendcount>=49)
-			peridosendcount = 0;
-		WorkStep ++;
-		unsigned char blcheckstate,adccheckstate;
-		switch (WorkStep) {
-			case 1: {
-				CurrentFillter(&Current);
-				unsigned char tempdata[8] = {0};
-				tempdata[0] = BalanceCmd;
-				tempdata[1] = BalanceCmdCount;
-				tempdata[2] = BalanceStartFlag;
-				tempdata[3] = balstep;
-				CAN_TranData(tempdata,0x301,8);
-				break;
-			}
-			case 2: {
-				if(GetBalanceStartFlag()==0||balstep==0)//没有开均衡或者均衡开了balstep==0
-				{
-					MC33771_RunCOD();//正常电压转换
-					adccheckstate = CheckADCState();
-					//CAN_TranData(&adccheckstate,0x401,1);
-				}
-				break;
-			}
-			case 3: {
-				GetADCvalue();
-				if(GetBalanceStartFlag()==0||balstep==0)//没有开均衡或者均衡开了balstep==0
-				{
-					MC33771_RunCOD();//正常电压转换
-					adccheckstate = CheckADCState();
-					//CAN_TranData(&adccheckstate,0x401,1);
-				}
-				break;
-			}
-			case 4: {
-                EnterCritical();
-				GetHVAll();
-				GetTemp();
-                ExitCritical();
-				memset(CellVolErr, 0 ,sizeof(CellVolErr));
-				break;
-			}
-			case 5: {
-				if(balstep==0)
-					SetAndCheckBalance();
-//				CAN_TranData(SetBalanceReg,0x300,8);
-				break;
-			}
-			case 6: {
-				if(GetBalanceStartFlag()==0||balstep==0){
-					//CheckADCState();
-					if (0 == GetCellVoltage(0, &CellVoltageReal[0])) {
-						CellVolErr[0][0] = 0;
-
-					} else {
-						Err_Count[1] ++;
-						CellVolErr[0][0] = 1;
-					}
-					//CAN_TranData((uint8_t*)&CellVoltageReal[0],0x400,8);
-					//CAN_TranData((uint8_t*)&CellVoltageReal[4],0x401,8);
-				}
-				break;
-			}
-			case 7: {
-				if(GetBalanceStartFlag()==0||balstep==0){
-					if (0 == GetCellVoltage(1, &CellVoltageReal[14])) {
-						CellVolErr[1][0] = 0;
-
-					} else {
-						Err_Count[2] ++;
-						CellVolErr[1][0] = 1;
-					}
-				}
-				break;
-			}
-			case 8: {
-				if(GetBalanceStartFlag()==0||balstep==0){
-					if (0 == GetCellVoltage(2, &CellVoltageReal[28])) {
-						CellVolErr[2][0] = 0;
-					} else {
-						Err_Count[3] ++;
-						CellVolErr[2][0] = 1;
-					}
-				}
-				break;
-			}
-			case 9: {
-				if(GetBalanceStartFlag()==0||balstep==0){
-					if (CellVolErr[0][0] != 0) {
-						CellVolErr[0][1] = GetCellVoltage(0, &CellVoltageReal[0]);
-					}
-				}
-				break;
-			}
-			case 10: {
-				if(GetBalanceStartFlag()==0||balstep==0){
-					if (CellVolErr[1][0] != 0) {
-						CellVolErr[1][1] = GetCellVoltage(1, &CellVoltageReal[14]);
-					}
-				}
-				break;
-			}
-			case 11: {
-				if(GetBalanceStartFlag()==0||balstep==0){
-					if (CellVolErr[2][0] != 0) {
-						CellVolErr[2][1] = GetCellVoltage(2, &CellVoltageReal[28]);
-					}
-				}
-				break;
-			}
-			case 12: {
-				if(balstep==1)
-					MC33771_RunCOD();//均衡电压转换
-				break;
-			}
-			case 13: {
-                EnterCritical();
-				CellVoltageFillter(CellVoltage, CellVoltageReal, 0, _CV_CH_NUM/3);//0 1 2 .... 13
-                ExitCritical();
-				break;
-			}
-			case 14: {
-                EnterCritical();
-				CellVoltageFillter(CellVoltage, CellVoltageReal, (_CV_CH_NUM/3), (_CV_CH_NUM*2/3));//14 15 16 .... 27
-                ExitCritical();
-				break;
-			}
-			case 15: {
-                EnterCritical();
-				CellVoltageFillter(CellVoltage, CellVoltageReal, (_CV_CH_NUM*2/3), _CV_CH_NUM);//28 22 23 .... 41
-                ExitCritical();
-				break;
-			}
-			case 16: {
-				SetBalVoltage(&BalanceVoltage[0]);
-//				CAN_TranData(BalanceVoltage,0x401,8);
-				break;
-			}
-			case 17: {
-				CellVolErr[7][0] = GetCellVoltage(1, &BalanceVoltage[14]);
-				break;
-			}
-			case 18: {
-				CellVolErr[8][0] = GetCellVoltage(2, &BalanceVoltage[28]);
-				break;
-			}
-			case 19: {
-				if (CellVolErr[6][0] != 0) {
-					CellVolErr[6][1] = GetCellVoltage(0, &BalanceVoltage[0]);
-				}
-				break;
-			}
-			case 20: {
-				if (CellVolErr[7][0] != 0) {
-					CellVolErr[7][1] = GetCellVoltage(1, &BalanceVoltage[14]);
-				}
-				break;
-			}
-			case 21: {
-				if (CellVolErr[8][0] != 0) {
-					CellVolErr[8][1] = GetCellVoltage(2, &BalanceVoltage[28]);
-				}
-				break;
-			}
-			case 22: {
-//				if(balstep==1)
-//					GetBalanceEnergy();
-#if 0
-				unsigned char tempdata[8] = {0};
-				tempdata[0] = BalanceCurrent[offset2]&0xFF;
-				tempdata[1] = (BalanceCurrent[offset2]>>8)&0xFF;
-				tempdata[2] = BalanceVoltage[offset2]&0xFF;
-				tempdata[3] = (BalanceVoltage[offset2]>>8)&0xFF;
-				tempdata[4] = BalanceCurrent[offset2+1]&0xFF;
-				tempdata[5] = (BalanceCurrent[offset2+1]>>8)&0xFF;
-				tempdata[6] = BalanceVoltage[offset2+1]&0xFF;
-				tempdata[7] = (BalanceVoltage[offset2+1]>>8)&0xFF;
-				CAN_TranData(tempdata,0x50+offset2/2,8);
-				offset2+=2;
-				if(offset2>=_CV_CH_NUM){
-					offset2 = 0;
-				}
-#endif
-				break;
-			}
-			case 23: {
-				if(GetBalanceStartFlag()==0||balstep==1)
-					CellVolErr[12][0] = ClrBalanceStatus();
-				break;
-			}
-			case 24: {
-				if(GetBalanceStartFlag()==0||balstep==1)
-				{
-#if 0
-					if (CellVolErr[12][0] != 0) {
-						unsigned int timer[2] = {0};
-						timer[0] = Timer_PIT_GetCounterValue(NULL);
-						timer[1] = Timer_PIT_GetCounterValue(NULL);
-						unsigned int outtime;
-						while(ClrBalanceStatus()!=0)
-						{
-							timer[1] = Timer_PIT_GetCounterValue(NULL);
-							if(timer[0]>timer[1])
-							{
-								if(timer[0]-timer[1]>200000) //0.05us 等待10ms
-									break;
-							}
-						}
-						outtime = timer[0]-timer[1];
-						//CAN_TranData(&outtime,0x303,4);
-					}
-#else
-					if (CellVolErr[12][0] != 0) {
-						CellVolErr[12][1] = ClrBalanceStatus();
-					}
-#endif
-				}
-				break;
-			}
-			case 25: {
-				if (RTC_SelectStatus != 0) {
-					SPI1_Deinit(NULL);
-					SPI1_M_Init(NULL);
-					RA4803_Check();
-					GetRTCMsg_RA4803(RTCtimers);
-					SPI1_M_Deinit(NULL);
-					SPI1_Init(NULL);
-
-				} else {
-					RX8130_Check();
-					GetRTCMsg(RTCtimers);
-				}
-				WorkStep = 0;
-				//新增均衡开启时两轮采一次单体    @20221123
-				if(GetBalanceStartFlag()!=0)
-					balstep = !balstep;
-				break;
-			}
-			default : {
-				WorkStep = 0;
-				break;
-			}
-		}
-		Timer1Count += Timer0Count;
-		Timer0Count = 0;
-		WDog1_Clear(NULL);
-	}
-
-	if (Timer1Count > 500) {//1s
-	  Timer1Count = 0;
-	  _LED_TOGGLE;
-	  WorkSignal ++;
-	  unsigned char ret1;
-	  ret1 = MC33771_CheckID();
-	  CAN_TranData(&ret1,0x106,1);
-	  if(ret1!=0)
-	  {
-		  mc33771_errcount++;
-		  if(mc33771_errcount>3)
-		  {
-			  mc33771_errcount = 0;
-			  Init_MC33771();
-		  }
-	  }
-	  WDog1_Clear(NULL);
-	}
+      if (Timer1Count > 500)
+      {//1s
+          Timer1Count = 0;
+          _LED_TOGGLE;
+          WorkSignal ++;
+          unsigned char ret1;
+          ret1 = MC33771_CheckID();
+          CAN_TranData(&ret1,0x106,1);
+          if(ret1!=0)
+          {
+              mc33771_errcount++;
+              if(mc33771_errcount>3)
+              {
+                  mc33771_errcount = 0;
+                  Init_MC33771();
+              }
+          }
+          WDog1_Clear(NULL);
+      }
   }
 
   /* For example: for(;;) { } */
