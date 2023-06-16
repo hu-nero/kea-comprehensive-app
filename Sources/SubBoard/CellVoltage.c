@@ -13,8 +13,10 @@
 #include "FuncCom.h"
 #include "Timer_PIT.h"
 
-#define _CV_MASK	0xFFFFFFFFFFFF
 
+#pragma GCC optimize ("O0")
+
+#define _CV_MASK	0xFFFFFFFFFFFF
 #define _BC_R		141	//14.1R //20221026 确认是否是181
 
 uint16_t CellVoltage[_CV_CH_NUM] = {0};
@@ -180,7 +182,6 @@ char SetAndCheckBalance(void)//均衡开启
 	uint8_t indey = 0;
 	uint16_t BalanceRegBuf = 0;
 	uint16_t sys_cfg1_read = 0;
-	static uint8_t Index_IC = 0;
 	memset((uint8_t *)&SetBalanceReg[0], 0, sizeof(SetBalanceReg));
 	if (BalanceCmdCountCache != BalanceCmdCount) {
 		BalanceCmdCountCache = BalanceCmdCount;
@@ -209,30 +210,34 @@ char SetAndCheckBalance(void)//均衡开启
 		BalanceStartFlag = 1;
 	}
 	if (BalanceStartFlag == 1) {
-		for (index = 0; index < _CV_CH_NUM; index ++) {
-			if ((((uint64_t)1)<<index)&_CV_MASK) {
-				//SetBalanceEnergyCache[index] = SetBalanceEnergy[indey];//获取均衡通道
-				//BalanceWorkStatus[3] ++;
-				if (SetBalanceEnergy[index] <= ComBalanceEnergyCache[index]) {
+		for (index = 0; index < _CV_CH_NUM; index ++) 
+        {
+			if ((((uint64_t)1)<<index)&_CV_MASK) 
+            {
+				if (SetBalanceEnergy[index] <= ComBalanceEnergyCache[index])
+                {
 					SetBalanceEnergyCache[index] = 0;
-				} else {
+				} else
+                {
 					SetBalanceEnergyCache[index] = SetBalanceEnergy[index];//获取均衡通道
 				}
 				indey ++;
-			} else {
+			} else
+            {
 				SetBalanceEnergyCache[index] = 0;
 			}
 
-			if (SetBalanceEnergyCache[index] != 0) {
+			if (SetBalanceEnergyCache[index] != 0)
+            {
 				SetBalanceReg[index/BCC_MAX_CELLS_MC33771] |= ((((uint16_t)1)<<(index%BCC_MAX_CELLS_MC33771)));
-				BalanceRegBuf |= SetBalanceReg[index/BCC_MAX_CELLS_MC33771];
 				MC33771_Writecommand(0x020A, bcc_reg_cb1_cfg+(index%BCC_MAX_CELLS_MC33771), (uint8_t)MC33771_ID[index/BCC_MAX_CELLS_MC33771]);//配置均衡通道	打开
 				//MC33771_Writecommand(0x0201, bcc_reg_cb1_cfg+(index%BCC_MAX_CELLS_MC33771), (uint8_t)MC33771_ID[index/BCC_MAX_CELLS_MC33771]);//配置均衡通道	打开
-			} else {
+			} else
+            {
 				SetBalanceReg[index/BCC_MAX_CELLS_MC33771] &= ~(((uint16_t)1)<<(index%BCC_MAX_CELLS_MC33771));
 				MC33771_Writecommand(0x0000, bcc_reg_cb1_cfg+(index%BCC_MAX_CELLS_MC33771), (uint8_t)MC33771_ID[index/BCC_MAX_CELLS_MC33771]);//配置均衡通道	关闭
 			}
-
+			BalanceRegBuf |= SetBalanceReg[index/BCC_MAX_CELLS_MC33771];
 		}
 		BalanceTimerLast = Timer_PIT_GetCounterValue(NULL);
 		//CAN_TranData(&BalanceTimerLast,0x305,4);
@@ -243,19 +248,20 @@ char SetAndCheckBalance(void)//均衡开启
 				//CAN_TranData(SetBalanceReg,0x500,8);
 			}
 		}
-		if (BalanceRegBuf == 0) {	//均衡完成了
+		if (BalanceRegBuf == 0)
+		{	//均衡完成了
 			BalanceStartFlag = 0;
-			MC33771_GlobalWritecommand(0x0201, bcc_reg_sys_cfg1);//SYS_CFG1
-		} else {
-
+			MC33771_GlobalWritecommand(0x0201, bcc_reg_sys_cfg1);//关闭均衡总开关SYS_CFG1
 		}
 	} else {
-		MC33771_ReadData(1, bcc_reg_sys_cfg1, (uint8_t)MC33771_ID[Index_IC], &sys_cfg1_read);//检查均衡状态，如果均衡状态不对，再次关闭均衡
-		if (sys_cfg1_read != 0x0201) {
-			MC33771_Writecommand(0x0201, bcc_reg_sys_cfg1, (uint8_t)MC33771_ID[Index_IC]);
-		}
-		Index_IC ++;
-		Index_IC %= _MC33771_NUM;
+        for(uint8_t ic=0;ic<_BATCV_IC_NUM;ic++)
+        {
+            MC33771_ReadData(1, bcc_reg_sys_cfg1, (uint8_t)MC33771_ID[ic], &sys_cfg1_read);//检查均衡状态，如果均衡状态不对，再次关闭均衡
+            if (sys_cfg1_read != 0x0201)
+            {
+                MC33771_Writecommand(0x0201, bcc_reg_sys_cfg1, (uint8_t)MC33771_ID[ic]);
+            }
+        }
 	}
 	return 0;
 }
@@ -263,8 +269,6 @@ char SetAndCheckBalance(void)//均衡开启
 char GetBalanceEnergy(void) {	//关闭均衡
 	uint8_t index = 0;
 	uint16_t reg_read_data = 0;
-	static uint8_t Index_REG = 0;
-	static uint8_t Index_IC = 0;
 
 	if (BalanceStartFlag == 1) {
 		MC33771_GlobalWritecommand(0x0201, bcc_reg_sys_cfg1);//关闭均衡
@@ -291,14 +295,16 @@ char GetBalanceEnergy(void) {	//关闭均衡
 		}
 	} else {
 		memset((uint8_t *)&BalanceCurrent[0], 0, sizeof(BalanceCurrent));
-		MC33771_ReadData(1, Index_REG+bcc_reg_cb1_cfg, (uint8_t)MC33771_ID[Index_IC], &reg_read_data);//检查均衡寄存器，如有数据，清空数据
-		if (reg_read_data != 0x0000) {
-			MC33771_Writecommand(0x0000, Index_REG+bcc_reg_cb1_cfg, (uint8_t)MC33771_ID[Index_IC]);
-		}
-		Index_REG ++;
-		Index_REG %= BCC_MAX_CELLS_MC33771;
-		Index_IC ++;
-		Index_IC %= _MC33771_NUM;
+        for(uint8_t ic=0;ic<_BATCV_IC_NUM;ic++)
+        {
+            for(uint8_t cell=0;cell<_BATCV_CH_NUM;cell++)
+            {
+                MC33771_ReadData(1, cell+bcc_reg_cb1_cfg, (uint8_t)MC33771_ID[ic], &reg_read_data);//检查均衡寄存器，如有数据，清空数据
+                if (reg_read_data != 0x0000) {
+                    MC33771_Writecommand(0x0000, cell+bcc_reg_cb1_cfg, (uint8_t)MC33771_ID[ic]);
+                }
+            }
+        }
 	}
 	return 0;
 }

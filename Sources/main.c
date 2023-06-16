@@ -87,7 +87,7 @@
 #include "HVMeter\Current.h"
 
 //#define _CAN_SEND_TEST
-#define MAIN_WORKSTEPS  17
+#define MAIN_WORKSTEPS  24
 
 
 uint8_t SoftsVer[32] = "KPB17-Slave-V1.08";//[13]:3;	[15]:0		[16]:6
@@ -146,20 +146,10 @@ int main(void)
   //Flash_Write();
 #endif
   Init_RTC();
-  //RTC_SelectStatus = RTC_Select_GetVal(NULL);
   Flash_Read();
-  //INA226_Init();//通过
   INA226_R_Init();//通过
   Init_MC33771();
   WDog1_Clear(NULL);
-
-  /*
-  if (RTC_SelectStatus != 0) {
-	  RX8900_CheckInit();
-  } else {
-	  RX8130_CheckInit();
-  }
-	*/
 
   if (RTC_SelectStatus != 0) {
 	  SPI1_Deinit(NULL);
@@ -173,10 +163,6 @@ int main(void)
   WDog1_Clear(NULL);
   ADC_MeasureInit();
 
-
-  WDog1_Clear(NULL);
-  //mdelay(50);
-  //INA226_GetRegData(Cfg_Reg, &gINA226CFG);
   INA226_R_GetRegData(Cfg_Reg, &gINA226CFG_R);
   MC33771_RunCOD();
   mdelay(50);
@@ -200,12 +186,17 @@ int main(void)
   //start run
   unsigned char u8TmpData[8] = {1,2,3,4,5,6,7,8};
   CAN_TranData(u8TmpData,0x50,8);
+  DMA_Set();
   for (;;)
   {
-      //prepare tdata
-      DMA_Set();
-      if (Timer0Count != 0) 
-      {
+      if (gu8halSlaveSpiCsFlag) //probably 15ms
+	  {
+          //prepare tdata
+          if(WorkStep == 1)
+          {
+              //prepare tdata
+              DMA_Set();
+          }
           ADC_Measure();
           if (0 != GetCurrent())
           {
@@ -219,164 +210,207 @@ int main(void)
               ResMeasure_Sta = 0;
           }
 
-          unsigned char blcheckstate,adccheckstate;
-          switch (WorkStep)
-          {
-              case 1:
-                  {
-                      CurrentFillter(&Current);
-                  }
-                  break;
-              case 2:
-                  {
-                      MC33771_RunCOD();//正常电压转换
-                  }
-                  break;
-              case 3:
-                  {
-                      GetADCvalue();
-                  }
-                  break;
-              case 4:
-                  {
-                      EnterCritical();
-                      GetHVAll();
-                      GetTemp();
-                      ExitCritical();
-                      memset(CellVolErr, 0 ,sizeof(CellVolErr));
-                  }
-                  break;
-              case 5:
-                  {
-                      if (0 == GetCellVoltage(0, &CellVoltageReal[0]))
-                      {
-                          CellVolErr[0][0] = 0;
+		  switch (WorkStep)
+		  {
+			  case 1:
+				  {
+					  //close balance
+					  GetBalanceEnergy();
+				  }
+				  break;
+			  case 2:
+				  {
+					  CellVolErr[12][0] = ClrBalanceStatus();
+				  }
+				  break;
+			  case 3:
+				  {
+					  CurrentFillter(&Current);
+				  }
+				  break;
+			  case 4:
+				  {
+					  MC33771_RunCOD();//正常电压转换
+				  }
+				  break;
+			  case 5:
+				  {
+					  GetADCvalue();
+				  }
+				  break;
+			  case 6:
+				  {
+					  EnterCritical();
+					  GetHVAll();
+					  GetTemp();
+					  ExitCritical();
+					  memset(CellVolErr, 0 ,sizeof(CellVolErr));
+				  }
+				  break;
+			  case 7:
+				  {
+					  if (0 == GetCellVoltage(0, &CellVoltageReal[0]))
+					  {
+						  CellVolErr[0][0] = 0;
 
-                      } else 
-                      {
-                          Err_Count[1] ++;
-                          CellVolErr[0][0] = 1;
-                      }
-                      //CAN_TranData((uint8_t*)&CellVoltageReal[0],0x400,8);
-                      //CAN_TranData((uint8_t*)&CellVoltageReal[4],0x401,8);
-                  }
-                  break;
-              case 6: 
-                  {
-                      if (0 == GetCellVoltage(1, &CellVoltageReal[14]))
-                      {
-                          CellVolErr[1][0] = 0;
+					  } else
+					  {
+						  Err_Count[1] ++;
+						  CellVolErr[0][0] = 1;
+					  }
+					  //CAN_TranData((uint8_t*)&CellVoltageReal[0],0x400,8);
+					  //CAN_TranData((uint8_t*)&CellVoltageReal[4],0x401,8);
+				  }
+				  break;
+			  case 8:
+				  {
+					  if (0 == GetCellVoltage(1, &CellVoltageReal[14]))
+					  {
+						  CellVolErr[1][0] = 0;
 
-                      } else
-                      {
-                          Err_Count[2] ++;
-                          CellVolErr[1][0] = 1;
-                      }
-                  }
-                  break;
-              case 7:
-                  {
-                      if (0 == GetCellVoltage(2, &CellVoltageReal[28]))
-                      {
-                          CellVolErr[2][0] = 0;
-                      } else 
-                      {
-                          Err_Count[3] ++;
-                          CellVolErr[2][0] = 1;
-                      }
-                  }
-                  break;
-              case 8:
-                  {
-                      //start balance
-                      SetAndCheckBalance();
-                      //CAN_TranData(SetBalanceReg,0x300,8);
-                  }
-                  break;
-              case 9:
-                  {
-                      MC33771_RunCOD();//均衡电压转换
-                  }
-                  break;
-              case 10:
-                  {
-                      EnterCritical();
-                      CellVoltageFillter(CellVoltage, CellVoltageReal, 0, _CV_CH_NUM/3);//0 1 2 .... 13
-                      ExitCritical();
-                  }
-                  break;
-              case 11:
-                  {
-                      EnterCritical();
-                      CellVoltageFillter(CellVoltage, CellVoltageReal, (_CV_CH_NUM/3), (_CV_CH_NUM*2/3));//14 15 16 .... 27
-                      ExitCritical();
-                  }
-                  break;
-              case 12:
-                  {
-                      EnterCritical();
-                      CellVoltageFillter(CellVoltage, CellVoltageReal, (_CV_CH_NUM*2/3), _CV_CH_NUM);//28 22 23 .... 41
-                      ExitCritical();
-                  }
-                  break;
-              case 13:
-                  {
-                      CellVolErr[6][0] = GetCellVoltage(0, &BalanceVoltage[0]);
-                  }
-                  break;
-              case 14:
-                  {
-                      CellVolErr[7][0] = GetCellVoltage(1, &BalanceVoltage[14]);
-                  }
-                  break;
-              case 15:
-                  {
-                      CellVolErr[8][0] = GetCellVoltage(2, &BalanceVoltage[28]);
-                  }
-                  break;
-              case 16:
-                  {
-                      //close balance
-                      CellVolErr[12][0] = ClrBalanceStatus();
-                  }
-                  break;
-              case 17:
-                  {
-                      if (RTC_SelectStatus != 0) {
-                          SPI1_Deinit(NULL);
-                          SPI1_M_Init(NULL);
-                          RA4803_Check();
-                          GetRTCMsg_RA4803(RTCtimers);
-                          SPI1_M_Deinit(NULL);
-                          SPI1_Init(NULL);
-
-                      } else {
-                          RX8130_Check();
-                          GetRTCMsg(RTCtimers);
-                      }
-                  }
-                  break;
-              default :
-                  {
-                      WorkStep = 0;
-                  }
-                  break;
-          }
-          Timer1Count += Timer0Count;
-          Timer0Count = 0;
-          if(WorkStep < MAIN_WORKSTEPS)
-          {
-              WorkStep ++;
-          }else
-          {
-              WorkStep = 1;
-          }
-          WDog1_Clear(NULL);
+					  } else
+					  {
+						  Err_Count[2] ++;
+						  CellVolErr[1][0] = 1;
+					  }
+				  }
+				  break;
+			  case 9:
+				  {
+					  if (0 == GetCellVoltage(2, &CellVoltageReal[28]))
+					  {
+						  CellVolErr[2][0] = 0;
+					  } else
+					  {
+						  Err_Count[3] ++;
+						  CellVolErr[2][0] = 1;
+					  }
+				  }
+				  break;
+			  case 10:
+				  {
+					  if (CellVolErr[0][0] != 0) {
+						  CellVolErr[0][1] = GetCellVoltage(0, &CellVoltageReal[0]);
+					  }
+				  }
+				  break;
+			  case 11:
+				  {
+					  if (CellVolErr[1][0] != 0) {
+						  CellVolErr[1][1] = GetCellVoltage(1, &CellVoltageReal[14]);
+					  }
+				  }
+				  break;
+			  case 12:
+				  {
+					  if (CellVolErr[2][0] != 0) {
+						  CellVolErr[2][1] = GetCellVoltage(2, &CellVoltageReal[28]);
+					  }
+				  }
+				  break;
+			  case 13:
+				  {
+					  //start balance
+					  SetAndCheckBalance();
+					  //CAN_TranData(SetBalanceReg,0x300,8);
+				  }
+				  break;
+			  case 14:
+				  {
+					  MC33771_RunCOD();//均衡电压转换
+				  }
+				  break;
+			  case 15:
+				  {
+					  EnterCritical();
+					  CellVoltageFillter(CellVoltage, CellVoltageReal, 0, _CV_CH_NUM/3);//0 1 2 .... 13
+					  ExitCritical();
+				  }
+				  break;
+			  case 16:
+				  {
+					  EnterCritical();
+					  CellVoltageFillter(CellVoltage, CellVoltageReal, (_CV_CH_NUM/3), (_CV_CH_NUM*2/3));//14 15 16 .... 27
+					  ExitCritical();
+				  }
+				  break;
+			  case 17:
+				  {
+					  EnterCritical();
+					  CellVoltageFillter(CellVoltage, CellVoltageReal, (_CV_CH_NUM*2/3), _CV_CH_NUM);//28 22 23 .... 41
+					  ExitCritical();
+				  }
+				  break;
+			  case 18:
+				  {
+					  CellVolErr[6][0] = GetCellVoltage(0, &BalanceVoltage[0]);
+				  }
+				  break;
+			  case 19:
+				  {
+					  CellVolErr[7][0] = GetCellVoltage(1, &BalanceVoltage[14]);
+				  }
+				  break;
+			  case 20:
+				  {
+					  CellVolErr[8][0] = GetCellVoltage(2, &BalanceVoltage[28]);
+				  }
+				  break;
+			  case 21:
+				  {
+					  if (CellVolErr[6][0] != 0) {
+						  CellVolErr[6][1] = GetCellVoltage(0, &CellVoltageReal[0]);
+					  }
+				  }
+				  break;
+			  case 22:
+				  {
+					  if (CellVolErr[7][0] != 0) {
+						  CellVolErr[7][1] = GetCellVoltage(1, &CellVoltageReal[14]);
+					  }
+				  }
+				  break;
+			  case 23:
+				  {
+					  if (CellVolErr[8][0] != 0) {
+						  CellVolErr[8][1] = GetCellVoltage(2, &CellVoltageReal[28]);
+					  }
+				  }
+				  break;
+			  case 24:
+				  {
+					  if (RTC_SelectStatus != 0) {
+						  SPI1_Deinit(NULL);
+						  SPI1_M_Init(NULL);
+						  RA4803_Check();
+						  GetRTCMsg_RA4803(RTCtimers);
+						  SPI1_M_Deinit(NULL);
+						  SPI1_Init(NULL);
+					  } else {
+						  RX8130_Check();
+						  GetRTCMsg(RTCtimers);
+					  }
+					  gu8halSlaveSpiCsFlag = 0;
+				  }
+				  break;
+			  default :
+				  {
+					  WorkStep = 0;
+				  }
+				  break;
+		  }
+		  if((WorkStep > 0) && (WorkStep < MAIN_WORKSTEPS))
+		  {
+			  WorkStep ++;
+		  }else
+		  {
+			  WorkStep = 1;
+		  }
+		  WDog1_Clear(NULL);
       }
-
-      if (Timer1Count > 500)
+      if (Timer0Count > 500)
       {//1s
-          Timer1Count = 0;
+          Timer0Count = 0;
           _LED_TOGGLE;
           WorkSignal ++;
           unsigned char ret1;
@@ -393,6 +427,7 @@ int main(void)
           }
           WDog1_Clear(NULL);
       }
+
   }
 
   /* For example: for(;;) { } */

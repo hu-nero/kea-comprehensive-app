@@ -18,12 +18,13 @@
 #pragma GCC optimize ("O0")
 
 static LDD_TDeviceData * SPI0TDeviceData = NULL;
-static uint8_t  SPI_READ_DMA[280] = {0};
-static uint8_t  SPI_SEND_DMA[280] = {0};
+static uint8_t  SPI_READ_DMA[HAL_LEN_SPI_SEND_DATA] = {0};
+static uint8_t  SPI_SEND_DMA[HAL_LEN_SPI_SEND_DATA] = {0};
 uint8_t WorkSignal = 0;
 
-static volatile uint8_t gu8halSlaveSpiReadyFlag = 0;
-static uint8_t gu8HalSpiRxDataBuf[70] = {0};
+volatile uint8_t gu8halSlaveSpiCsFlag = 0;
+static uint8_t gu8HalSpiRxDataBuf[HAL_LEN_SPI_RECV_DATA] = {0};
+static uint8_t gsu8BalanceExtraUpdateFlag = 0;
 
 typedef union
 {
@@ -91,7 +92,8 @@ DMA_GetIVData(uint8_t *Data, uint16_t Len)
 	Data[12] = (uint8_t)(R_FLQ_To_GND>>8);//R_FLQ_To_GND
 	Data[13] = (uint8_t)(R_FLQ_To_GND);
 	Data[14] = SleepFlag;
-	Data[15] = (HeatCtlStatus&0x01)|((PreChargeStatus&0x01)<<1)|((ResMeasure_Sta&0x01)<<2);
+	Data[15] = (HeatCtlStatus&0x01) | ((PreChargeStatus&0x01)<<1) |
+               ((ResMeasure_Sta&0x01)<<2) | ((gsu8BalanceExtraUpdateFlag&0x01)<<3);
 	Data[16] = BalanceStartFlag;
 	Data[17] = CVErrStatus|TempErrStatus;
     return 0;
@@ -159,8 +161,11 @@ DMA_GetBLData(uint8_t *Data, uint16_t Len)
     {
         return 1;
     }
-
-	memcpy(Data, SetBalanceEnergyCache, Len);
+    if(gsu8BalanceExtraUpdateFlag)
+    {
+        //balance cumulant
+        memcpy(Data, ComBalanceEnergyCache, Len);
+    }
 
     return 0;
 }
@@ -197,27 +202,12 @@ uint16_t ErrCount = 0;
 
 void DMA_Set(void)
 {
-    static uint8_t su8StartUpdateBufFlag = 0;
-
-    //data is uodate once in a round of main()
-    if(su8StartUpdateBufFlag < HAL_FRE_SPI_DATA)
-	{
-		su8StartUpdateBufFlag ++;
-	}else
-	{
-		su8StartUpdateBufFlag = 0;
-		EnterCritical();
-		spi0_send_buffer_fill(SPI_SEND_DMA, HAL_LEN_SPI_SEND_DATA);//fill data
-        DMA_Data_CMD_Handle(SPI_SEND_DMA, HAL_LEN_SPI_SEND_DATA);//calculate crc
-		ExitCritical();
-    }
-
     //analysis rdata
-    if(gu8halSlaveSpiReadyFlag)
-    {
-    	gu8halSlaveSpiReadyFlag = 0;
-		DMA_Recv_Data_Handle(gu8HalSpiRxDataBuf, HAL_LEN_SPI_RECV_DATA);
-    }
+    DMA_Recv_Data_Handle(gu8HalSpiRxDataBuf, HAL_LEN_SPI_RECV_DATA);
+    EnterCritical();
+    spi0_send_buffer_fill(SPI_SEND_DMA, HAL_LEN_SPI_SEND_DATA);//fill data
+    DMA_Data_CMD_Handle(SPI_SEND_DMA, HAL_LEN_SPI_SEND_DATA);//calculate crc
+    ExitCritical();
 }
 
 uint8_t 
@@ -276,30 +266,36 @@ DMA_Recv_Data_Handle(uint8_t *Data, uint16_t Len)
         //数据处理
         case _Mcmd_Recv_Cmd:
             {
-                //clear balance cache after each SPI communication
-                memset(ComBalanceEnergyCache, 0, sizeof(ComBalanceEnergyCache));
-                //TODO:could add balance ch switch
-                //start balance
-                memcpy(&SetBalanceEnergy[0], &Data[2], _CV_CH_NUM);
-                for(uint8_t i=0;i<_CV_CH_NUM;i++)
+                if(Data[2])
                 {
-                    if(SetBalanceEnergy[i] != 0)
+                    //clear balance cache after each SPI communication
+                    memset(ComBalanceEnergyCache, 0, sizeof(ComBalanceEnergyCache));
+                    memset(ComBalEnergyCache, 0, sizeof(ComBalEnergyCache));
+                    //TODO:could add balance ch switch
+                    //start balance
+                    memcpy(&SetBalanceEnergy[0], &Data[3], _CV_CH_NUM);
+                    for(uint8_t i=0;i<_CV_CH_NUM;i++)
                     {
-                        BalanceCmdCount ++;
-                        break;
+                        if(SetBalanceEnergy[i] != 0)
+                        {
+                            BalanceCmdCount ++;
+                            break;
+                        }
                     }
                 }
                 //set awake
-                if(Data[50] == 1)
+                if(Data[51])
                 {
-                    SetWakeUpTime = (uint16_t)(((uint16_t)Data[50]<<8) | (uint16_t)Data[51]);
+                    SetWakeUpTime = (uint16_t)(((uint16_t)Data[52]<<8) | (uint16_t)Data[53]);
                     SetWakeUpFlag ++;
                 }
                 //set RTC
-                //TODO:receive
-                //开始绝缘检测
-                if(Data[63] == 1)
+                //TODO:reserve
+                
+                //insulation detect
+                if(Data[64])
                 {
+                    //开始绝缘检测
                     ResMeasure_Switch = 1;
                 }else
                 {
@@ -307,7 +303,7 @@ DMA_Recv_Data_Handle(uint8_t *Data, uint16_t Len)
                     ResMeasure_Switch = 0;
                 }
                 //MC33771 sleep
-                if(Data[64] == 1)
+                if(Data[65])
                 {
                     SleepCmd = _SLEEP_STA;
                     SleepFlag = 1;
@@ -316,6 +312,8 @@ DMA_Recv_Data_Handle(uint8_t *Data, uint16_t Len)
                     //MC33771 awake
                     SleepCmd = _NORMAL_STA;
                 }
+                //balance value update flag
+                gsu8BalanceExtraUpdateFlag = Data[67];
             }
             break;
         default:return 3;
@@ -352,21 +350,18 @@ hal_spi_slave_cs_callback(void)
 
     //传输数据
     {
-        if (SPI_PDD_ReadStatusReg(SPI0_BASE_PTR) & SPI_PDD_RX_BUFFER_FULL)
-        {
-            SPI_PDD_ReadData8bit(SPI0_BASE_PTR);
-        }
         //TODO:pull pin
-        SPI0_RDY_PutVal(NULL, 0);
+//        SPI0_RDY_PutVal(NULL, 0);
         while (index < HAL_LEN_SPI_SEND_DATA)
         {
             //send
             u16Timeout = 0;
-            while (((SPI_PDD_ReadStatusReg(SPI0_BASE_PTR) & SPI_PDD_TX_BUFFER_EMPTYG) == 0U) && (u16Timeout<0xFFFF)) /* Is HW Tx buffer empty? */
+            while (((SPI_PDD_ReadStatusReg(SPI0_BASE_PTR) & SPI_PDD_TX_BUFFER_EMPTYG) == 0U) && (u16Timeout<0x20F)) /* Is HW Tx buffer empty? */
             {
                 u16Timeout ++;
             }
-            if(u16Timeout == 0xFFFF)
+
+            if(u16Timeout == 0x20F)//500us
             {
                 u8Err = 1;
                 break;
@@ -375,11 +370,11 @@ hal_spi_slave_cs_callback(void)
 
             //recv
             u16Timeout = 0;
-            while (((SPI_PDD_ReadStatusReg(SPI0_BASE_PTR) & SPI_PDD_RX_BUFFER_FULL) == 0U) && (u16Timeout<0xFFFF)) /* Is any char in HW Rx buffer? */
+            while (((SPI_PDD_ReadStatusReg(SPI0_BASE_PTR) & SPI_PDD_RX_BUFFER_FULL) == 0U) && (u16Timeout<0x20F)) /* Is any char in HW Rx buffer? */
             {
                 u16Timeout ++;
             }
-            if(u16Timeout == 0xFFFF)
+            if(u16Timeout == 0x20F)//500us
             {
                 u8Err = 2;
                 break;
@@ -395,8 +390,8 @@ hal_spi_slave_cs_callback(void)
             SPI_PDD_ReadData8bit(SPI0_BASE_PTR);
         }
     }
-    SPI0_RDY_PutVal(NULL, 1);
-    gu8halSlaveSpiReadyFlag = 1;
+//    SPI0_RDY_PutVal(NULL, 1);
+    gu8halSlaveSpiCsFlag = 1;
     //copy recv buf
     memcpy(gu8HalSpiRxDataBuf, SPI_READ_DMA, HAL_LEN_SPI_RECV_DATA);
     //clear wdg
