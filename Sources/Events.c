@@ -393,6 +393,7 @@ void SS0_OnBlockSent(LDD_TUserData *UserDataPtr)
 {
 	  /* Write your code here ... */
 		(void) UserDataPtr;
+		hal_spi_slave_tx_callback();
 }
 
 /*
@@ -438,7 +439,7 @@ void EInt_OnInterrupt(LDD_TUserData *UserDataPtr)
 {
   /* Write your code here ... */
 	(void) UserDataPtr;
-	hal_spi_slave_cs_callback();
+//	hal_spi_slave_cs_callback();
 }
 
 /* END Events */

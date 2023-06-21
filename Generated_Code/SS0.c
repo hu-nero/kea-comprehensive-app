@@ -7,14 +7,20 @@
 **     Version     : Component 01.048, Driver 01.02, CPU db: 3.00.000
 **     Repository  : Kinetis
 **     Compiler    : GNU C Compiler
-**     Date/Time   : 2023-04-26, 17:24, # CodeGen: 27
+**     Date/Time   : 2023-06-21, 11:41, # CodeGen: 52
 **     Abstract    :
 **         This component "SPISlave_LDD" implements SLAVE part of synchronous
 **         serial master-slave communication.
 **     Settings    :
 **          Component name                                 : SS0
 **          Device                                         : SPI0
-**          Interrupt service/event                        : Disabled
+**          Interrupt service/event                        : Enabled
+**            Input interrupt                              : INT_SPI0
+**            Input interrupt priority                     : medium priority
+**            Input ISR name                               : SS0_Interrupt
+**            Output interrupt                             : INT_SPI0
+**            Output interrupt priority                    : medium priority
+**            Output ISR name                              : SS0_Interrupt
 **          Settings                                       : 
 **            Input pin                                    : Enabled
 **              Pin                                        : PTB3/KBI0_P11/SPI0_MOSI/FTM0_CH1/ADC0_SE7
@@ -28,7 +34,7 @@
 **            Attribute set                                : 
 **              Width                                      : 8 bits
 **              MSB first                                  : yes
-**              Clock polarity                             : High
+**              Clock polarity                             : Low
 **              Clock phase                                : Change on leading edge
 **              Parity                                     : None
 **            HW input buffer size                         : 1
@@ -51,7 +57,6 @@
 **         GetBlockReceivedStatus  - bool SS0_GetBlockReceivedStatus(LDD_TDeviceData *DeviceDataPtr);
 **         CancelBlockTransmission - LDD_TError SS0_CancelBlockTransmission(LDD_TDeviceData *DeviceDataPtr);
 **         CancelBlockReception    - LDD_TError SS0_CancelBlockReception(LDD_TDeviceData *DeviceDataPtr);
-**         Main                    - void SS0_Main(LDD_TDeviceData *DeviceDataPtr);
 **         GetStats                - LDD_SPISLAVE_TStats SS0_GetStats(LDD_TDeviceData *DeviceDataPtr);
 **         GetDriverState          - LDD_TDriverState SS0_GetDriverState(LDD_TDeviceData *DeviceDataPtr);
 **
@@ -133,6 +138,8 @@ typedef SS0_TDeviceData* SS0_TDeviceDataPtr; /* Pointer to the device data struc
 
 /* {Default RTOS Adapter} Static object used for simulation of dynamic driver memory allocation */
 static SS0_TDeviceData DeviceDataPrv__DEFAULT_RTOS_ALLOC;
+/* {Default RTOS Adapter} Global variable used for passing a parameter into ISR */
+static SS0_TDeviceDataPtr INT_SPI0__DEFAULT_RTOS_ISRPARAM;
 /* Internal method prototypes */
 
 /*
@@ -170,6 +177,9 @@ LDD_TDeviceData* SS0_Init(LDD_TUserData *UserDataPtr)
   DeviceDataPrv->Stats.RxChars = 0x00U;
   DeviceDataPrv->Stats.TxChars = 0x00U;
   DeviceDataPrv->Stats.RxOverruns = 0x00U;
+  /* Interrupt vector(s) allocation */
+  /* {Default RTOS Adapter} Set interrupt vector: IVT is static, ISR parameter is passed by the global variable */
+  INT_SPI0__DEFAULT_RTOS_ISRPARAM = DeviceDataPrv;
   DeviceDataPrv->ErrFlag = 0x00U;      /* Clear error flags */
   /* Clear the receive counters and pointer */
   DeviceDataPrv->InpRecvDataNum = 0x00U; /* Clear the counter of received characters */
@@ -184,10 +194,21 @@ LDD_TDeviceData* SS0_Init(LDD_TUserData *UserDataPtr)
   SIM_SCGC |= SIM_SCGC_SPI0_MASK;
   /* SPI0_C1: SPIE=0,SPE=0,SPTIE=0,MSTR=0,CPOL=0,CPHA=1,SSOE=0,LSBFE=0 */
   SPI0_C1 = SPI_C1_CPHA_MASK;          /* Clear control register */
+  /* Interrupt vector(s) priority setting */
+  /* NVIC_IPR2: PRI_10=1 */
+  NVIC_IPR2 = (uint32_t)((NVIC_IPR2 & (uint32_t)~(uint32_t)(
+               NVIC_IP_PRI_10(0x02)
+              )) | (uint32_t)(
+               NVIC_IP_PRI_10(0x01)
+              ));
+  /* NVIC_ISER: SETENA31=0,SETENA30=0,SETENA29=0,SETENA28=0,SETENA27=0,SETENA26=0,SETENA25=0,SETENA24=0,SETENA23=0,SETENA22=0,SETENA21=0,SETENA20=0,SETENA19=0,SETENA18=0,SETENA17=0,SETENA16=0,SETENA15=0,SETENA14=0,SETENA13=0,SETENA12=0,SETENA11=0,SETENA10=1,SETENA9=0,SETENA8=0,SETENA7=0,SETENA6=0,SETENA5=0,SETENA4=0,SETENA3=0,SETENA2=0,SETENA1=0,SETENA0=0 */
+  NVIC_ISER = NVIC_ISER_SETENA10_MASK;
+  /* NVIC_ICER: CLRENA31=0,CLRENA30=0,CLRENA29=0,CLRENA28=0,CLRENA27=0,CLRENA26=0,CLRENA25=0,CLRENA24=0,CLRENA23=0,CLRENA22=0,CLRENA21=0,CLRENA20=0,CLRENA19=0,CLRENA18=0,CLRENA17=0,CLRENA16=0,CLRENA15=0,CLRENA14=0,CLRENA13=0,CLRENA12=0,CLRENA11=0,CLRENA10=0,CLRENA9=0,CLRENA8=0,CLRENA7=0,CLRENA6=0,CLRENA5=0,CLRENA4=0,CLRENA3=0,CLRENA2=0,CLRENA1=0,CLRENA0=0 */
+  NVIC_ICER = 0x00U;
   /* SIM_PINSEL0: SPI0PS=0 */
   SIM_PINSEL0 &= (uint32_t)~(uint32_t)(SIM_PINSEL_SPI0PS_MASK);
-  /* SPI0_C1: SPIE=0,SPE=0,SPTIE=0,MSTR=0,CPOL=1,CPHA=1,SSOE=0,LSBFE=0 */
-  SPI0_C1 = (SPI_C1_CPOL_MASK | SPI_C1_CPHA_MASK); /* Set Configuration register */
+  /* SPI0_C1: SPIE=0,SPE=0,SPTIE=0,MSTR=0,CPOL=0,CPHA=1,SSOE=0,LSBFE=0 */
+  SPI0_C1 = SPI_C1_CPHA_MASK;          /* Set Configuration register */
   /* SPI0_C2: SPMIE=0,??=0,??=0,MODFEN=0,BIDIROE=0,??=0,SPISWAI=0,SPC0=0 */
   SPI0_C2 = 0x00U;                     /* Set Configuration register */
   /* SPI0_BR: ??=0,SPPR=0,SPR=0 */
@@ -218,6 +239,8 @@ void SS0_Deinit(LDD_TDeviceData *DeviceDataPtr)
   (void)DeviceDataPtr;                 /* Parameter is not used, suppress unused argument warning */
   /* SPI0_C1: SPIE=0,SPE=0,SPTIE=0,MSTR=0,CPOL=0,CPHA=1,SSOE=0,LSBFE=0 */
   SPI0_C1 = SPI_C1_CPHA_MASK;          /* Disable device */
+  /* Restoring the interrupt vector */
+  /* {Default RTOS Adapter} Restore interrupt vector: IVT is static, no code is generated */
   /* Unregistration of the device structure */
   PE_LDD_UnregisterDeviceStructure(PE_LDD_COMPONENT_SS0_ID);
   /* Deallocation of the device structure */
@@ -267,6 +290,8 @@ LDD_TError SS0_ReceiveBlock(LDD_TDeviceData *DeviceDataPtr, LDD_TData *BufferPtr
   if (((SS0_TDeviceDataPtr)DeviceDataPtr)->InpDataNumReq != 0x00U) { /* Is the previous receive operation pending? */
     return ERR_BUSY;                   /* If yes then error */
   }
+  /* {Default RTOS Adapter} Critical section begin, general PE function is used */
+  EnterCritical();
   ((SS0_TDeviceDataPtr)DeviceDataPtr)->InpDataPtr = (uint8_t*)BufferPtr; /* Store a pointer to the input data. */
   ((SS0_TDeviceDataPtr)DeviceDataPtr)->InpDataNumReq = Size; /* Store a number of characters to be received. */
   ((SS0_TDeviceDataPtr)DeviceDataPtr)->InpRecvDataNum = 0x00U; /* Set number of received characters to zero. */
@@ -274,6 +299,9 @@ LDD_TError SS0_ReceiveBlock(LDD_TDeviceData *DeviceDataPtr, LDD_TData *BufferPtr
     (void)SPI_PDD_ReadData8bit(SPI0_BASE_PTR); /* Dummy read of the data register */
   }
   ((SS0_TDeviceDataPtr)DeviceDataPtr)->SerFlag &= (uint8_t)(~(uint8_t)BLOCK_RECEIVED); /* Clear data block received flag */
+  SPI_PDD_EnableInterruptMask(SPI0_BASE_PTR, SPI_PDD_RX_BUFFER_FULL_OR_FAULT); /* Enable Rx buffer full interrupt */
+  /* {Default RTOS Adapter} Critical section end, general PE function is used */
+  ExitCritical();
   return ERR_OK;                       /* OK */
 }
 
@@ -312,10 +340,15 @@ LDD_TError SS0_SendBlock(LDD_TDeviceData *DeviceDataPtr, LDD_TData *BufferPtr, u
   if (((SS0_TDeviceDataPtr)DeviceDataPtr)->OutDataNumReq != 0x00U) { /* Is the previous transmit operation pending? */
     return ERR_BUSY;                   /* If yes then error */
   }
+  /* {Default RTOS Adapter} Critical section begin, general PE function is used */
+  EnterCritical();
   ((SS0_TDeviceDataPtr)DeviceDataPtr)->OutDataPtr = (uint8_t*)BufferPtr; /* Set a pointer to the output data. */
   ((SS0_TDeviceDataPtr)DeviceDataPtr)->OutDataNumReq = Size; /* Set the counter of characters to be sent. */
   ((SS0_TDeviceDataPtr)DeviceDataPtr)->OutSentDataNum = 0x00U; /* Clear the counter of sent characters. */
   ((SS0_TDeviceDataPtr)DeviceDataPtr)->SerFlag &= (uint8_t)(~(uint8_t)BLOCK_SENT); /* Clear data block sent flag */
+  SPI_PDD_EnableInterruptMask(SPI0_BASE_PTR, SPI_PDD_TX_BUFFER_EMPTY); /* Enable Tx buffer empty interrupt */
+  /* {Default RTOS Adapter} Critical section end, general PE function is used */
+  ExitCritical();
   return ERR_OK;                       /* OK */
 }
 
@@ -344,8 +377,12 @@ bool SS0_GetBlockSentStatus(LDD_TDeviceData *DeviceDataPtr)
 {
   uint8_t Status;                      /* Temporary variable for flag saving */
 
+  /* {Default RTOS Adapter} Critical section begin, general PE function is used */
+  EnterCritical();
   Status = ((SS0_TDeviceDataPtr)DeviceDataPtr)->SerFlag; /* Save flag for return */
   ((SS0_TDeviceDataPtr)DeviceDataPtr)->SerFlag &= (uint8_t)(~(uint8_t)BLOCK_SENT); /* Clear data block sent flag */
+  /* {Default RTOS Adapter} Critical section end, general PE function is used */
+  ExitCritical();
   return (bool)(((Status & BLOCK_SENT) != 0U)? TRUE : FALSE); /* Return saved status */
 }
 
@@ -373,8 +410,12 @@ bool SS0_GetBlockReceivedStatus(LDD_TDeviceData *DeviceDataPtr)
 {
   uint8_t Status;                      /* Temporary variable for flag saving */
 
+  /* {Default RTOS Adapter} Critical section begin, general PE function is used */
+  EnterCritical();
   Status = ((SS0_TDeviceDataPtr)DeviceDataPtr)->SerFlag; /* Save flag for return */
   ((SS0_TDeviceDataPtr)DeviceDataPtr)->SerFlag &= (uint8_t)(~(uint8_t)BLOCK_RECEIVED); /* Clear data block received flag */
+  /* {Default RTOS Adapter} Critical section end, general PE function is used */
+  ExitCritical();
   return (bool)(((Status & BLOCK_RECEIVED) != 0U)? TRUE : FALSE); /* Return saved status */
 }
 
@@ -400,7 +441,11 @@ LDD_TError SS0_CancelBlockTransmission(LDD_TDeviceData *DeviceDataPtr)
 {
   SS0_TDeviceDataPtr DeviceDataPrv = (SS0_TDeviceDataPtr)DeviceDataPtr;
 
+  /* {Default RTOS Adapter} Critical section begin, general PE function is used */
+  EnterCritical();
   DeviceDataPrv->OutDataNumReq = 0x00U; /* Clear the counter of requested outgoing characters. */
+  /* {Default RTOS Adapter} Critical section end, general PE function is used */
+  ExitCritical();
   return ERR_OK;                       /* OK */
 }
 
@@ -427,31 +472,29 @@ LDD_TError SS0_CancelBlockReception(LDD_TDeviceData *DeviceDataPtr)
 {
   SS0_TDeviceDataPtr DeviceDataPrv = (SS0_TDeviceDataPtr)DeviceDataPtr;
 
+  /* {Default RTOS Adapter} Critical section begin, general PE function is used */
+  EnterCritical();
   DeviceDataPrv->InpDataNumReq = 0x00U; /* Clear the counter of requested incoming characters. */
+  SPI_PDD_DisableInterruptMask(SPI0_BASE_PTR, SPI_PDD_RX_BUFFER_FULL_OR_FAULT); /* Disable Rx buffer full interrupt */
+  /* {Default RTOS Adapter} Critical section end, general PE function is used */
+  ExitCritical();
   return ERR_OK;                       /* OK */
 }
 
 /*
 ** ===================================================================
-**     Method      :  SS0_Main (component SPISlave_LDD)
+**     Method      :  SS0_Interrupt (component SPISlave_LDD)
+**
+**     Description :
+**         The ISR function handling the device receive/transmit 
+**         interrupt.
+**         This method is internal. It is used by Processor Expert only.
+** ===================================================================
 */
-/*!
-**     @brief
-**         This method is available only in the polling mode (Interrupt
-**         service/event = 'no'). If interrupt service is disabled this
-**         method replaces the interrupt handler. This method should be
-**         called if Receive/SendBlock was invoked before in order to
-**         run the reception/transmission. The end of the
-**         receiving/transmitting is indicated by OnBlockSent or
-**         OnBlockReceived event. 
-**     @param
-**         DeviceDataPtr   - Device data structure
-**                           pointer returned by [Init] method.
-*/
-/* ===================================================================*/
-void SS0_Main(LDD_TDeviceData *DeviceDataPtr)
+PE_ISR(SS0_Interrupt)
 {
-  SS0_TDeviceDataPtr DeviceDataPrv = (SS0_TDeviceDataPtr)DeviceDataPtr;
+  /* {Default RTOS Adapter} ISR parameter is passed through the global variable */
+  SS0_TDeviceDataPtr DeviceDataPrv = INT_SPI0__DEFAULT_RTOS_ISRPARAM;
   uint8_t StatReg = SPI_PDD_ReadStatusReg(SPI0_BASE_PTR); /* Read status register */
 
   (void)DeviceDataPrv;                 /* Supress unused variable warning if needed */
@@ -461,6 +504,7 @@ void SS0_Main(LDD_TDeviceData *DeviceDataPtr)
       DeviceDataPrv->InpRecvDataNum++; /* Increment received char. counter */
       DeviceDataPrv->Stats.RxChars++;  /* Increment received char. counter */
       if (DeviceDataPrv->InpRecvDataNum == DeviceDataPrv->InpDataNumReq) { /* Is the requested number of characters received? */
+        SPI_PDD_DisableInterruptMask(SPI0_BASE_PTR, SPI_PDD_RX_BUFFER_FULL_OR_FAULT); /* Disable Rx buffer full interrupt */
         DeviceDataPrv->InpDataNumReq = 0x00U; /* If yes then clear number of requested characters to be received. */
         DeviceDataPrv->SerFlag |= BLOCK_RECEIVED; /* Set data block received flag */
         SS0_OnBlockReceived(DeviceDataPrv->UserData);
@@ -477,6 +521,8 @@ void SS0_Main(LDD_TDeviceData *DeviceDataPtr)
         DeviceDataPrv->SerFlag |= BLOCK_SENT; /* Set data block sent flag */
         SS0_OnBlockSent(DeviceDataPrv->UserData);
       }
+    } else {
+      SPI_PDD_DisableInterruptMask(SPI0_BASE_PTR, SPI_PDD_TX_BUFFER_EMPTY); /* Disable TX interrupt */
     }
   }
 }

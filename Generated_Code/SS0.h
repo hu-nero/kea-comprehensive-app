@@ -7,14 +7,20 @@
 **     Version     : Component 01.048, Driver 01.02, CPU db: 3.00.000
 **     Repository  : Kinetis
 **     Compiler    : GNU C Compiler
-**     Date/Time   : 2023-04-24, 13:58, # CodeGen: 20
+**     Date/Time   : 2023-06-21, 11:41, # CodeGen: 52
 **     Abstract    :
 **         This component "SPISlave_LDD" implements SLAVE part of synchronous
 **         serial master-slave communication.
 **     Settings    :
 **          Component name                                 : SS0
 **          Device                                         : SPI0
-**          Interrupt service/event                        : Disabled
+**          Interrupt service/event                        : Enabled
+**            Input interrupt                              : INT_SPI0
+**            Input interrupt priority                     : medium priority
+**            Input ISR name                               : SS0_Interrupt
+**            Output interrupt                             : INT_SPI0
+**            Output interrupt priority                    : medium priority
+**            Output ISR name                              : SS0_Interrupt
 **          Settings                                       : 
 **            Input pin                                    : Enabled
 **              Pin                                        : PTB3/KBI0_P11/SPI0_MOSI/FTM0_CH1/ADC0_SE7
@@ -28,7 +34,7 @@
 **            Attribute set                                : 
 **              Width                                      : 8 bits
 **              MSB first                                  : yes
-**              Clock polarity                             : High
+**              Clock polarity                             : Low
 **              Clock phase                                : Change on leading edge
 **              Parity                                     : None
 **            HW input buffer size                         : 1
@@ -51,7 +57,6 @@
 **         GetBlockReceivedStatus  - bool SS0_GetBlockReceivedStatus(LDD_TDeviceData *DeviceDataPtr);
 **         CancelBlockTransmission - LDD_TError SS0_CancelBlockTransmission(LDD_TDeviceData *DeviceDataPtr);
 **         CancelBlockReception    - LDD_TError SS0_CancelBlockReception(LDD_TDeviceData *DeviceDataPtr);
-**         Main                    - void SS0_Main(LDD_TDeviceData *DeviceDataPtr);
 **         GetStats                - LDD_SPISLAVE_TStats SS0_GetStats(LDD_TDeviceData *DeviceDataPtr);
 **         GetDriverState          - LDD_TDriverState SS0_GetDriverState(LDD_TDeviceData *DeviceDataPtr);
 **
@@ -130,7 +135,6 @@ extern "C" {
 #define SS0_GetBlockReceivedStatus_METHOD_ENABLED /*!< GetBlockReceivedStatus method of the component SS0 is enabled (generated) */
 #define SS0_CancelBlockTransmission_METHOD_ENABLED /*!< CancelBlockTransmission method of the component SS0 is enabled (generated) */
 #define SS0_CancelBlockReception_METHOD_ENABLED /*!< CancelBlockReception method of the component SS0 is enabled (generated) */
-#define SS0_Main_METHOD_ENABLED        /*!< Main method of the component SS0 is enabled (generated) */
 #define SS0_GetStats_METHOD_ENABLED    /*!< GetStats method of the component SS0 is enabled (generated) */
 #define SS0_GetDriverState_METHOD_ENABLED /*!< GetDriverState method of the component SS0 is enabled (generated) */
 
@@ -338,23 +342,16 @@ LDD_TError SS0_CancelBlockReception(LDD_TDeviceData *DeviceDataPtr);
 
 /*
 ** ===================================================================
-**     Method      :  SS0_Main (component SPISlave_LDD)
+**     Method      :  SS0_Interrupt (component SPISlave_LDD)
+**
+**     Description :
+**         The ISR function handling the device receive/transmit 
+**         interrupt.
+**         This method is internal. It is used by Processor Expert only.
+** ===================================================================
 */
-/*!
-**     @brief
-**         This method is available only in the polling mode (Interrupt
-**         service/event = 'no'). If interrupt service is disabled this
-**         method replaces the interrupt handler. This method should be
-**         called if Receive/SendBlock was invoked before in order to
-**         run the reception/transmission. The end of the
-**         receiving/transmitting is indicated by OnBlockSent or
-**         OnBlockReceived event. 
-**     @param
-**         DeviceDataPtr   - Device data structure
-**                           pointer returned by [Init] method.
-*/
-/* ===================================================================*/
-void SS0_Main(LDD_TDeviceData *DeviceDataPtr);
+/* {Default RTOS Adapter} ISR function prototype */
+PE_ISR(SS0_Interrupt);
 
 /*
 ** ===================================================================

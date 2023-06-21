@@ -83,7 +83,7 @@ char CAN_TranData(unsigned char *candata, unsigned long canid, unsigned char len
 	CAN_TX_ID[CAN_TX_Sum] = (unsigned long)(canid);
 	memcpy((uint8_t *)(&(CAN_TX_DATA[CAN_TX_Sum][0])), (uint8_t *)(&(candata[0])), 8);
 
-	  EnterCritical();
+	  //EnterCritical();
 	if (CAN_TX_Flag == 0) {
 		CanTxFrame.Length = CAN_TX_LENGTH[CAN_TX_Sum];
 		CanTxFrame.MessageID = (unsigned long)(CAN_TX_ID[CAN_TX_Sum]);
@@ -91,7 +91,7 @@ char CAN_TranData(unsigned char *candata, unsigned long canid, unsigned char len
 		CAN1_SendFrame(CanDeviceDataPrv, 1, &CanTxFrame);
 		CAN_TX_Flag = 1;
 	}
-	  ExitCritical();
+	  //ExitCritical();
 
 	CAN_TX_Sum ++;
 	if (CAN_TX_Sum >= _CANTXNUM) {

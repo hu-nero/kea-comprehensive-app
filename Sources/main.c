@@ -118,7 +118,7 @@ int main(void)
   /*** Processor Expert internal initialization. DON'T REMOVE THIS CODE!!! ***/
   PE_low_level_init();
   /*** End of Processor Expert internal initialization.                    ***/
-  WDog1_Init(NULL);
+  //WDog1_Init(NULL);
   I2C1_TDeviceDataPtr = CI2C1_Init(NULL);
   I2C2_TDeviceDataPtr = CI2C2_Init(NULL);
   spi0_init();
@@ -139,8 +139,7 @@ int main(void)
   InitADC();
   __EI();
  _LED_ON;
-  WDog1_Clear(NULL);
-
+  //WDog1_Clear(NULL);
 
 #ifdef _DISABLE_FLASH_WR
   //Flash_Write();
@@ -149,7 +148,7 @@ int main(void)
   Flash_Read();
   INA226_R_Init();//Í¨¹ý
   Init_MC33771();
-  WDog1_Clear(NULL);
+  //WDog1_Clear(NULL);
 
   if (RTC_SelectStatus != 0) {
 	  SPI1_Deinit(NULL);
@@ -160,13 +159,13 @@ int main(void)
   } else {
 	  RX8130_CheckInit();
   }
-  WDog1_Clear(NULL);
+  //WDog1_Clear(NULL);
   ADC_MeasureInit();
 
   INA226_R_GetRegData(Cfg_Reg, &gINA226CFG_R);
   MC33771_RunCOD();
   mdelay(50);
-  WDog1_Clear(NULL);
+  //WDog1_Clear(NULL);
   /* Write your code here */
 #ifdef _CAN_DEF
   MSCAN_CANRFLG &= 0x01;
@@ -174,7 +173,6 @@ int main(void)
   CAN_RD_Count = 0;
   MSCAN_CANRIER |= 0x01;
 
-  //CAN_TranData(CANTxBuff, 0x710, 8);
 #endif
   //BCC_WaitMs(5);
   _LED_OFF;
@@ -406,26 +404,27 @@ int main(void)
 		  {
 			  WorkStep = 1;
 		  }
-		  WDog1_Clear(NULL);
-      }
-      if (Timer0Count > 500)
-      {//1s
-          Timer0Count = 0;
-          _LED_TOGGLE;
-          WorkSignal ++;
-          unsigned char ret1;
-          ret1 = MC33771_CheckID();
-          CAN_TranData(&ret1,0x106,1);
-          if(ret1!=0)
-          {
-              mc33771_errcount++;
-              if(mc33771_errcount>3)
-              {
-                  mc33771_errcount = 0;
-                  Init_MC33771();
-              }
-          }
-          WDog1_Clear(NULL);
+		  //WDog1_Clear(NULL);
+
+	      if (Timer0Count > 500)
+	      {//1s
+	          Timer0Count = 0;
+	          _LED_TOGGLE;
+	          WorkSignal ++;
+	          unsigned char ret1;
+	          ret1 = MC33771_CheckID();
+	          CAN_TranData(&ret1,0x106,1);
+	          if(ret1!=0)
+	          {
+	              mc33771_errcount++;
+	              if(mc33771_errcount>3)
+	              {
+	                  mc33771_errcount = 0;
+	                  Init_MC33771();
+	              }
+	          }
+	          //WDog1_Clear(NULL);
+	      }
       }
 
   }

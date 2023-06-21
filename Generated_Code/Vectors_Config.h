@@ -114,7 +114,7 @@ extern "C" {
 #define VECTOR_23         (tIsrFunc)&EInt_Interrupt             /* 0x17 128  ivINT_IRQ                     used by PE */
 #define VECTOR_24         (tIsrFunc)&UnhandledInterrupt         /* 0x18 -    ivINT_I2C0                    unused by PE */
 #define VECTOR_25         (tIsrFunc)&UnhandledInterrupt         /* 0x19 -    ivINT_I2C1                    unused by PE */
-#define VECTOR_26         (tIsrFunc)&UnhandledInterrupt         /* 0x1A -    ivINT_SPI0                    unused by PE */
+#define VECTOR_26         (tIsrFunc)&SS0_Interrupt              /* 0x1A 64   ivINT_SPI0                    used by PE */
 #define VECTOR_27         (tIsrFunc)&UnhandledInterrupt         /* 0x1B -    ivINT_SPI1                    unused by PE */
 #define VECTOR_28         (tIsrFunc)&UnhandledInterrupt         /* 0x1C -    ivINT_UART0                   unused by PE */
 #define VECTOR_29         (tIsrFunc)&UnhandledInterrupt         /* 0x1D -    ivINT_UART1                   unused by PE */

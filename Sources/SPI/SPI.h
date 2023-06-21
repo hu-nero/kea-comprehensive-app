@@ -30,7 +30,7 @@ extern "C" {
 #define _Mcmd_Send_Cmd		0x0100
 #define _Mcmd_Recv_Cmd		0xA102
 
-#define	HAL_LEN_SPI_SEND_DATA 280
+#define	HAL_LEN_SPI_SEND_DATA  280
 #define	HAL_LEN_SPI_RECV_DATA  82
 
 extern volatile uint8_t gu8halSlaveSpiCsFlag;

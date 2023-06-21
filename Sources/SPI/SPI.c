@@ -44,10 +44,14 @@ spi0_init(void)
 {
 	uint16_t u16Err = 0;
 	uint32_t u32TimeOut = 0;
+	uint8_t Read_S;
+	uint8_t Read_D;
 
 	SPI0TDeviceData = SS0_Init(NULL);
     if(NULL == SPI0TDeviceData)
         return 1;
+    SS0_ReceiveBlock(SPI0TDeviceData,SPI_READ_DMA, HAL_LEN_SPI_SEND_DATA);
+    SS0_SendBlock(SPI0TDeviceData, SPI_SEND_DMA, HAL_LEN_SPI_SEND_DATA);
 	return 0;
 }
 
@@ -203,11 +207,11 @@ uint16_t ErrCount = 0;
 void DMA_Set(void)
 {
     //analysis rdata
-    DMA_Recv_Data_Handle(gu8HalSpiRxDataBuf, HAL_LEN_SPI_RECV_DATA);
-    EnterCritical();
+    DMA_Recv_Data_Handle(SPI_READ_DMA, HAL_LEN_SPI_RECV_DATA);
+//    EnterCritical();
     spi0_send_buffer_fill(SPI_SEND_DMA, HAL_LEN_SPI_SEND_DATA);//fill data
     DMA_Data_CMD_Handle(SPI_SEND_DMA, HAL_LEN_SPI_SEND_DATA);//calculate crc
-    ExitCritical();
+//    ExitCritical();
 }
 
 uint8_t 
@@ -335,6 +339,9 @@ hal_spi_slave_tx_callback(void)
 void
 hal_spi_slave_rx_callback(void)
 {
+    SS0_ReceiveBlock(SPI0TDeviceData,SPI_READ_DMA, HAL_LEN_SPI_SEND_DATA);
+    SS0_SendBlock(SPI0TDeviceData, SPI_SEND_DMA, HAL_LEN_SPI_SEND_DATA);
+    gu8halSlaveSpiCsFlag = 1;
 }
 /**
 /**
