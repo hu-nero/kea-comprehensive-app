@@ -3,7 +3,7 @@
   <Header>
     <Name>kpb17</Name>
     <SavedBy>jiangliang.liu</SavedBy>
-    <ModificationStamp>161</ModificationStamp>
+    <ModificationStamp>162</ModificationStamp>
     <Date>2020-08-05</Date>
     <IDE>Eclipse IDE</IDE>
     <PEversion>1.12.2.RT7_b1550-0615</PEversion>
@@ -9996,8 +9996,8 @@
         <UserReadOnly>false</UserReadOnly>
         <PropertyModelIsAutomatic>false</PropertyModelIsAutomatic>
         <TypeSpecNameState>typeClockPolarity</TypeSpecNameState>
-        <Index>1</Index>
-        <Value>false</Value>
+        <Index>0</Index>
+        <Value>true</Value>
       </ItemState>
       <ItemState>
         <ItemSymbol>ClockPhase</ItemSymbol>

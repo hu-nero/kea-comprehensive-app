@@ -7,7 +7,7 @@
 **     Version     : Component 01.048, Driver 01.02, CPU db: 3.00.000
 **     Repository  : Kinetis
 **     Compiler    : GNU C Compiler
-**     Date/Time   : 2023-06-21, 11:41, # CodeGen: 52
+**     Date/Time   : 2023-06-21, 15:53, # CodeGen: 56
 **     Abstract    :
 **         This component "SPISlave_LDD" implements SLAVE part of synchronous
 **         serial master-slave communication.
@@ -34,7 +34,7 @@
 **            Attribute set                                : 
 **              Width                                      : 8 bits
 **              MSB first                                  : yes
-**              Clock polarity                             : Low
+**              Clock polarity                             : High
 **              Clock phase                                : Change on leading edge
 **              Parity                                     : None
 **            HW input buffer size                         : 1
@@ -207,8 +207,8 @@ LDD_TDeviceData* SS0_Init(LDD_TUserData *UserDataPtr)
   NVIC_ICER = 0x00U;
   /* SIM_PINSEL0: SPI0PS=0 */
   SIM_PINSEL0 &= (uint32_t)~(uint32_t)(SIM_PINSEL_SPI0PS_MASK);
-  /* SPI0_C1: SPIE=0,SPE=0,SPTIE=0,MSTR=0,CPOL=0,CPHA=1,SSOE=0,LSBFE=0 */
-  SPI0_C1 = SPI_C1_CPHA_MASK;          /* Set Configuration register */
+  /* SPI0_C1: SPIE=0,SPE=0,SPTIE=0,MSTR=0,CPOL=1,CPHA=1,SSOE=0,LSBFE=0 */
+  SPI0_C1 = (SPI_C1_CPOL_MASK | SPI_C1_CPHA_MASK); /* Set Configuration register */
   /* SPI0_C2: SPMIE=0,??=0,??=0,MODFEN=0,BIDIROE=0,??=0,SPISWAI=0,SPC0=0 */
   SPI0_C2 = 0x00U;                     /* Set Configuration register */
   /* SPI0_BR: ??=0,SPPR=0,SPR=0 */
