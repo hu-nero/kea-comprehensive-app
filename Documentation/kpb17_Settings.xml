@@ -1627,37 +1627,6 @@ Autoselect
       <event name="OnChannel7" v="don&amp;apos;t generate code" />
     </Events>
   </Bean>
-  <Bean name="EInt" type="ExtInt_LDD">
-    <Enabled v="Y" />
-    <Properties>
-      <Component_name v="EInt" />
-      <Pin v="PTI4/IRQ" />
-      <Generate_interrupt_on v="falling edge" />
-      <Interrupt v="INT_IRQ" />
-      <Interrupt_priority v="low priority" />
-      <ISR_Name v="EInt_Interrupt" />
-      <group name="Initialization">
-        <Enabled_in_init__code v="yes" />
-      </group>
-    </Properties>
-    <Methods>
-      <Init v="generate code" />
-      <Deinit v="generate code" />
-      <Enable v="generate code" />
-      <Disable v="generate code" />
-      <GetVal v="don&amp;apos;t generate code" />
-      <SetEdge v="don&amp;apos;t generate code" />
-      <SetOperationMode v="don&amp;apos;t generate code" />
-      <GetDriverState v="don&amp;apos;t generate code" />
-      <ConnectPin v="don&amp;apos;t generate code" />
-    </Methods>
-    <Events>
-      <Event_module_name v="Events" />
-      <event name="OnInterrupt" v="generate code">
-        <Event_procedure_name v="EInt_OnInterrupt" />
-      </event>
-    </Events>
-  </Bean>
   <Bean name="SPI0_RDY" type="BitIO_LDD">
     <Enabled v="Y" />
     <Properties>

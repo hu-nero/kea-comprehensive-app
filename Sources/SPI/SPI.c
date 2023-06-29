@@ -65,8 +65,8 @@ spi0_send_buffer_fill(uint8_t *Data, uint16_t Len)
         return 1;
     }
   	u8Err |= DMA_GetIVData(&Data[0], 18);
-	u8Err |= DMA_GetCVData(&Data[20], 72);
 	u8Err |= DMA_GetTData(&Data[118], 35);
+	u8Err |= DMA_GetCVData(&Data[20], 84);
 	u8Err |= DMA_GetEData(&Data[155], 38);
 	u8Err |= DMA_GetBLData(&Data[195], 36);
 	u8Err |= DMA_GetRTCData(&Data[245], 18);
@@ -110,7 +110,7 @@ DMA_GetCVData(uint8_t *Data, uint16_t Len)
   	uint8_t index = 0;
 	uint8_t indey = 0;
 	//36个单体，42个通道，48个传输量
-    if((Data == NULL) || (Len > 72))//36*2=72
+    if((Data == NULL) || (Len > 84))//42*2=84
     {
         return 1;
     }
@@ -169,6 +169,7 @@ DMA_GetBLData(uint8_t *Data, uint16_t Len)
     {
         //balance cumulant
         memcpy(Data, ComBalanceEnergyCache, Len);
+        //CAN_TranData(ComBalanceEnergyCache,0x500,8);
     }
 
     return 0;
@@ -253,6 +254,7 @@ DMA_Data_CMD_Handle(uint8_t *Data, uint16_t Len)
 uint8_t
 DMA_Recv_Data_Handle(uint8_t *Data, uint16_t Len)
 {
+    static uint8_t su8Err = 0;
   	uint16_t Mcmd = 0;
     CrcUnion crcRecvData;
 	if (Len <= 4) return 1;
@@ -261,7 +263,19 @@ DMA_Recv_Data_Handle(uint8_t *Data, uint16_t Len)
     crcRecvData.u16Crc = PEC15(Data, Len-2);
     if((crcRecvData.u8Crc[0] != Data[Len-1]) || (crcRecvData.u8Crc[1] != Data[Len-2]))
     {
+        su8Err++;
+        if(su8Err > 3)
+        {
+            su8Err = 0;
+            SS0_Deinit(SPI0TDeviceData);
+            SPI0TDeviceData = SS0_Init(NULL);
+            SS0_ReceiveBlock(SPI0TDeviceData,SPI_READ_DMA, HAL_LEN_SPI_SEND_DATA);
+            SS0_SendBlock(SPI0TDeviceData, SPI_SEND_DMA, HAL_LEN_SPI_SEND_DATA);
+        }
         return 2;
+    }else
+    {
+        su8Err = 0;
     }
     //cmd
 	Mcmd = (uint16_t)(((uint16_t)Data[0]<<8) | ((uint16_t)Data[1]));
@@ -318,6 +332,7 @@ DMA_Recv_Data_Handle(uint8_t *Data, uint16_t Len)
                 }
                 //balance value update flag
                 gsu8BalanceExtraUpdateFlag = Data[67];
+                //CAN_TranData(&Data[67],0x400,1);
             }
             break;
         default:return 3;

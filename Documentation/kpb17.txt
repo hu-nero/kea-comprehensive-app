@@ -103,10 +103,6 @@ Module "SS0"       (component SPISlave_LDD)
    - SS0_CancelBlockReception -Immediately cancels the running receive process started by the ReceiveBlock method. Characters 
                 already stored in the HW buffer will be lost. This method is available only if the ReceiveBlock method is 
                 enabled.
-   - SS0_Main -This method is available only in the polling mode (Interrupt service/event = 'no'). If interrupt service is 
-                disabled this method replaces the interrupt handler. This method should be called if Receive/SendBlock was 
-                invoked before in order to run the reception/transmission. The end of the receiving/transmitting is indicated 
-                by OnBlockSent or OnBlockReceived event.
    - SS0_GetStats -Returns communication statistics (e.g. sent character count, parity error count).
    - SS0_GetDriverState -This method returns the current driver status.
 
@@ -494,15 +490,6 @@ Module "Timer_PIT" (component TimerUnit_LDD)
                 second call of Init the <Deinit> must be called first.
    - Timer_PIT_GetCounterValue -Returns the content of counter register. This method can be used both if counter is enabled and 
                 if counter is disabled. The method is not available if HW doesn't allow reading of the counter.
-
-Module "EInt"      (component ExtInt_LDD)
-   - EInt_Init -This method initializes the associated peripheral(s) and the component internal variables. The method is called 
-                automatically as a part of the application initialization code.
-   - EInt_Deinit -This method disables the device and frees the device data structure memory.
-   - EInt_Enable -Enable the component - the external events are accepted. This method is available only if HW module allows 
-                enable/disable of the interrupt.
-   - EInt_Disable -Disable the component - the external events are not accepted. This method is available only if HW module 
-                allows enable/disable of the interrupt.
 
 Module "SPI0_RDY"  (component BitIO_LDD)
    - SPI0_RDY_Init -Initializes the device. Allocates memory for the device data structure, allocates interrupt vectors and 

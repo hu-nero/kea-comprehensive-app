@@ -51,7 +51,7 @@ extern uint8_t ComBalanceEnergyCache[_CV_CH_NUM];
 extern uint16_t SetBalanceReg[_BATCV_IC_NUM];
 //extern uint16_t SetBalanceRegCache[_BATCV_IC_NUM];
 //extern uint8_t SetBalanceZero[_BATCV_IC_NUM];
-extern uint16_t BalanceCurrent[_CV_CH_NUM];
+extern uint32_t BalanceCurrent[_CV_CH_NUM];
 //extern uint8_t BalanceWorkStatus[16];
 /********************************************************************************/
 
@@ -68,7 +68,9 @@ extern char GetCellVoltage(uint8_t ic, uint16_t *vdata);
 extern unsigned char CheckADCState(void);
 extern char CellVoltageFillter(uint16_t *vdest, const uint16_t *vsrc, uint8_t sp, uint8_t ep);
 extern char SetAndCheckBalance(void);
-extern char GetBalanceEnergy(void);
+extern char CloseBalance(void);
+extern char CalBalanceEnergy(void);
+
 extern char ClrBalanceStatus(void);
 
 #ifdef __cplusplus

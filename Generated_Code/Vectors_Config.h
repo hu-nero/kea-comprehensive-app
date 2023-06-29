@@ -77,7 +77,6 @@
 #include "SPI1.h"
 #include "FLASH1.h"
 #include "Timer_PIT.h"
-#include "EInt.h"
 #include "SPI0_RDY.h"
 #include "Events.h"
 
@@ -111,7 +110,7 @@ extern "C" {
 #define VECTOR_20         (tIsrFunc)&UnhandledInterrupt         /* 0x14 -    ivINT_Reserved20              unused by PE */
 #define VECTOR_21         (tIsrFunc)&FLASH1_CommandCompleteInterrupt /* 0x15 0 ivINT_FTMRE                 used by PE */
 #define VECTOR_22         (tIsrFunc)&UnhandledInterrupt         /* 0x16 -    ivINT_LVD_LLW                 unused by PE */
-#define VECTOR_23         (tIsrFunc)&EInt_Interrupt             /* 0x17 128  ivINT_IRQ                     used by PE */
+#define VECTOR_23         (tIsrFunc)&UnhandledInterrupt         /* 0x17 -    ivINT_IRQ                     unused by PE */
 #define VECTOR_24         (tIsrFunc)&UnhandledInterrupt         /* 0x18 -    ivINT_I2C0                    unused by PE */
 #define VECTOR_25         (tIsrFunc)&UnhandledInterrupt         /* 0x19 -    ivINT_I2C1                    unused by PE */
 #define VECTOR_26         (tIsrFunc)&SS0_Interrupt              /* 0x1A 64   ivINT_SPI0                    used by PE */

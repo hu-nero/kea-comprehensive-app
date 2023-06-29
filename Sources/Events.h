@@ -58,7 +58,6 @@
 #include "SPI1.h"
 #include "FLASH1.h"
 #include "Timer_PIT.h"
-#include "EInt.h"
 #include "SPI0_RDY.h"
 #include "RTC_CE.h"
 #include "CAN1.h"

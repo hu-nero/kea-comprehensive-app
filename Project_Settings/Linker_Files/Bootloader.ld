@@ -37,10 +37,10 @@ __heap_size = 0x00;                    /* required amount of heap  */
 __stack_size = 0x0100;                 /* required amount of stack */
 
 MEMORY {
-  m_interrupts (RX) : ORIGIN = 0x00000000, LENGTH = 0x000000C0
-  m_text      (RX) : ORIGIN = 0x00000410, LENGTH = 0x0000F7F0
+  m_interrupts (RX) : ORIGIN = 0x00004000, LENGTH = 0x000000C0
+  m_text      (RX) : ORIGIN = 0x00004410, LENGTH = 0x0000B5F0
   m_data      (RW) : ORIGIN = 0x1FFFF800, LENGTH = 0x00002000
-  m_cfmprotrom  (RX) : ORIGIN = 0x00000400, LENGTH = 0x00000010
+  m_cfmprotrom  (RX) : ORIGIN = 0x00004400, LENGTH = 0x00000010
 }
 
 /* Define output sections */

@@ -23,7 +23,7 @@ by the component.
 <td class="regNotResetVal">0xC0C00000</td>
  <td>NVIC_IPR7 register, peripheral CAN1.</td></tr>
 <tr><td>0xE000E100</td><td>NVIC_ISER</td>
-<td class="regNotResetVal">0xC0028000</td>
+<td class="regNotResetVal">0xC0028400</td>
  <td>NVIC_ISER register, peripheral CAN1.</td></tr>
 <tr><td>0xE000E180</td><td>NVIC_ICER</td>
 <td class="regResetVal">0x00000000</td>
@@ -335,7 +335,7 @@ registers of the peripheral(s) configured by the component.
         
 </div>
 <table class="regtbl2"><tr><td class="trowtit" colspan="2">Address</td><td colspan="2">0xE000E100</td></tr>
-<tr class="trowtit"><td  class="trowtit" colspan="2">Initial value</td><td colspan="2">0xC0028000</td></tr>
+<tr class="trowtit"><td  class="trowtit" colspan="2">Initial value</td><td colspan="2">0xC0028400</td></tr>
 <tr class="trowtit"><td  class="trowtit" colspan="2">After-reset value</td><td colspan="2">0x00000000</td></tr>
 <tr><td class="ttitle2">Bit</td><td class="ttitle2">Field</td><td class="ttitle2">Value</td><td class="ttitle2">Description</td></tr>
 <tr><td>31</td><td>SETENA31</td><td>0x01</td><td>Freescale&apos;s Scalable Controller Area Network Tx and error interrupt set-enable bit</td>
@@ -359,7 +359,7 @@ registers of the peripheral(s) configured by the component.
 <tr><td>13</td><td>SETENA13</td><td>0x00</td><td>UART1 status and error interrupt set-enable bit</td>
 <tr><td>12</td><td>SETENA12</td><td>0x00</td><td>UART0 status and error interrupt set-enable bit</td>
 <tr><td>11</td><td>SETENA11</td><td>0x00</td><td>Serial Peripheral Interface 1 interrupt set-enable bit</td>
-<tr><td>10</td><td>SETENA10</td><td>0x00</td><td>Serial Peripheral Interface 0 interrupt set-enable bit</td>
+<tr><td>10</td><td>SETENA10</td><td>0x01</td><td>Serial Peripheral Interface 0 interrupt set-enable bit</td>
 <tr><td>9</td><td>SETENA9</td><td>0x00</td><td>Inter-Integrated Circuit 1 interrupt set-enable bit</td>
 <tr><td>8</td><td>SETENA8</td><td>0x00</td><td>Inter-Integrated Circuit 0 interrupt set-enable bit</td>
 <tr><td>7</td><td>SETENA7</td><td>0x00</td><td>External Interrupt interrupt set-enable bit</td>

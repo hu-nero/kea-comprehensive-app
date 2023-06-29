@@ -50,7 +50,6 @@
 - \subpage SPI1
 - \subpage FLASH1
 - \subpage Timer_PIT
-- \subpage EInt
 - \subpage SPI0_RDY
 
 */
@@ -108,7 +107,6 @@
 - \subpage SPI1
 - \subpage FLASH1
 - \subpage Timer_PIT
-- \subpage EInt
 - \subpage SPI0_RDY
 
 */

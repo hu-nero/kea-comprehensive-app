@@ -55,7 +55,6 @@
 #include "SPI1.h"
 #include "FLASH1.h"
 #include "Timer_PIT.h"
-#include "EInt.h"
 #include "SPI0_RDY.h"
 #include "RTC_CE.h"
 #include "CAN1.h"
@@ -90,7 +89,7 @@
 #define MAIN_WORKSTEPS  24
 
 
-uint8_t SoftsVer[32] = "KPB17-Slave-V1.08";//[13]:3;	[15]:0		[16]:6
+uint8_t SoftsVer[32] = "KPB17-Slave-V1.09";//[13]:3;	[15]:0		[16]:6
 
 uint8_t WorkStep = 1;
 uint16_t gINA226CFG = 0;
@@ -118,11 +117,11 @@ int main(void)
   /*** Processor Expert internal initialization. DON'T REMOVE THIS CODE!!! ***/
   PE_low_level_init();
   /*** End of Processor Expert internal initialization.                    ***/
-  //WDog1_Init(NULL);
+  WDog1_Init(NULL);
   I2C1_TDeviceDataPtr = CI2C1_Init(NULL);
   I2C2_TDeviceDataPtr = CI2C2_Init(NULL);
   spi0_init();
-  LDD_TDeviceData *tDevEIntPtr = EInt_Init(NULL);
+//  LDD_TDeviceData *tDevEIntPtr = EInt_Init(NULL);
   Timer2ms_TDeviceDataPtr = Timer2ms_Init(NULL);
   Init_SPI1();
   Timer2ms_Disable(Timer2ms_TDeviceDataPtr);
@@ -139,7 +138,7 @@ int main(void)
   InitADC();
   __EI();
  _LED_ON;
-  //WDog1_Clear(NULL);
+  WDog1_Clear(NULL);
 
 #ifdef _DISABLE_FLASH_WR
   //Flash_Write();
@@ -148,7 +147,7 @@ int main(void)
   Flash_Read();
   INA226_R_Init();//Í¨¹ý
   Init_MC33771();
-  //WDog1_Clear(NULL);
+  WDog1_Clear(NULL);
 
   if (RTC_SelectStatus != 0) {
 	  SPI1_Deinit(NULL);
@@ -159,13 +158,13 @@ int main(void)
   } else {
 	  RX8130_CheckInit();
   }
-  //WDog1_Clear(NULL);
+  WDog1_Clear(NULL);
   ADC_MeasureInit();
 
   INA226_R_GetRegData(Cfg_Reg, &gINA226CFG_R);
   MC33771_RunCOD();
   mdelay(50);
-  //WDog1_Clear(NULL);
+  WDog1_Clear(NULL);
   /* Write your code here */
 #ifdef _CAN_DEF
   MSCAN_CANRFLG &= 0x01;
@@ -179,7 +178,7 @@ int main(void)
   unsigned char peridosendcount = 0;
 
   Timer2ms_Enable(Timer2ms_TDeviceDataPtr);
-  EInt_Enable(tDevEIntPtr);
+//  EInt_Enable(tDevEIntPtr);
 
   //start run
   unsigned char u8TmpData[8] = {1,2,3,4,5,6,7,8};
@@ -213,7 +212,7 @@ int main(void)
 			  case 1:
 				  {
 					  //close balance
-					  GetBalanceEnergy();
+					  CloseBalance();
 				  }
 				  break;
 			  case 2:
@@ -250,7 +249,7 @@ int main(void)
 					  if (0 == GetCellVoltage(0, &CellVoltageReal[0]))
 					  {
 						  CellVolErr[0][0] = 0;
-
+                          //CAN_TranData(&CellVoltageReal[0],0x201,8);
 					  } else
 					  {
 						  Err_Count[1] ++;
@@ -265,7 +264,7 @@ int main(void)
 					  if (0 == GetCellVoltage(1, &CellVoltageReal[14]))
 					  {
 						  CellVolErr[1][0] = 0;
-
+                          //CAN_TranData(&CellVoltageReal[14],0x202,8);
 					  } else
 					  {
 						  Err_Count[2] ++;
@@ -278,6 +277,7 @@ int main(void)
 					  if (0 == GetCellVoltage(2, &CellVoltageReal[28]))
 					  {
 						  CellVolErr[2][0] = 0;
+                          //CAN_TranData(&CellVoltageReal[28],0x203,8);
 					  } else
 					  {
 						  Err_Count[3] ++;
@@ -373,6 +373,7 @@ int main(void)
 					  if (CellVolErr[8][0] != 0) {
 						  CellVolErr[8][1] = GetCellVoltage(2, &CellVoltageReal[28]);
 					  }
+                      CalBalanceEnergy();
 				  }
 				  break;
 			  case 24:
@@ -404,7 +405,7 @@ int main(void)
 		  {
 			  WorkStep = 1;
 		  }
-		  //WDog1_Clear(NULL);
+		  WDog1_Clear(NULL);
 
 	      if (Timer0Count > 500)
 	      {//1s
@@ -414,16 +415,25 @@ int main(void)
 	          unsigned char ret1;
 	          ret1 = MC33771_CheckID();
 	          CAN_TranData(&ret1,0x106,1);
-	          if(ret1!=0)
+	          if((ret1!=0) || ((Err_Count[1]>3) &&
+                (Err_Count[2]>3) && (Err_Count[3]>3)))
 	          {
+                  Err_Count[1] = 0;
+                  Err_Count[2] = 0;
+                  Err_Count[3] = 0;
 	              mc33771_errcount++;
 	              if(mc33771_errcount>3)
 	              {
 	                  mc33771_errcount = 0;
+                      __DI();
+                      Init_SPI1();
+                      spi0_init();
+                      __EI();
 	                  Init_MC33771();
 	              }
+                  CAN_TranData(&Err_Count,0x107,8);
 	          }
-	          //WDog1_Clear(NULL);
+	          WDog1_Clear(NULL);
 	      }
       }
 

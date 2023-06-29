@@ -31,7 +31,7 @@ volatile uint32_t WorkTimer = 0;
 
 /******************************Balance********************************************/
 uint16_t BalanceVoltage[_CV_CH_NUM] = {0}; //单位0.1mV
-uint16_t BalanceCurrent[_CV_CH_NUM] = {0};
+uint32_t BalanceCurrent[_CV_CH_NUM] = {0};
 
 uint8_t BalanceCmd = 0;
 uint8_t BalanceStartFlag = 0; //0--没有均衡，1--开始均衡，2--过温暂停均衡，3--均衡提取暂停均衡
@@ -266,13 +266,33 @@ char SetAndCheckBalance(void)//均衡开启
 	return 0;
 }
 
-char GetBalanceEnergy(void) {	//关闭均衡
+char
+CloseBalance(void)
+{	//关闭均衡
+	uint16_t reg_read_data = 0;
+	if (BalanceStartFlag == 1)
+    {
+		MC33771_GlobalWritecommand(0x0201, bcc_reg_sys_cfg1);//关闭均衡
+        for(uint8_t ic=0;ic<_BATCV_IC_NUM;ic++)
+        {
+            MC33771_ReadData(1, bcc_reg_sys_cfg1, (uint8_t)MC33771_ID[ic], &reg_read_data);//检查均衡状态，如果均衡状态不对，再次关闭均衡
+            if (reg_read_data != 0x0201)
+            {
+                MC33771_Writecommand(0x0201, bcc_reg_sys_cfg1, (uint8_t)MC33771_ID[ic]);
+            }
+        }
+	}
+	return 0;
+}
+
+char
+CalBalanceEnergy(void)
+{
 	uint8_t index = 0;
 	uint16_t reg_read_data = 0;
 
-	if (BalanceStartFlag == 1) {
-		MC33771_GlobalWritecommand(0x0201, bcc_reg_sys_cfg1);//关闭均衡
-		//BalanceWorkStatus[9] ++;
+	if (BalanceStartFlag == 1)
+    {
 		BalanceTimerPresent = Timer_PIT_GetCounterValue(NULL);
 		BalanceTimerDiff = BalanceTimerLast - BalanceTimerPresent;//0.05us/LSB
 		BalanceTimerLast = BalanceTimerPresent;
@@ -281,19 +301,25 @@ char GetBalanceEnergy(void) {	//关闭均衡
 		BalanceTimer = (BalanceTimerCache/200000); //10ms
 		BalanceTimerCache %= 200000;  //   200000-->10ms
 
-		for (index = 0; index < _CV_CH_NUM; index ++) {
-			if (SetBalanceReg[index/_BATCV_CH_NUM]&((uint16_t)1<<(index%_BATCV_CH_NUM))) {//这里不用判断均衡量么？
-				BalanceCurrent[index] = BalanceVoltage[index]/_BC_R;//均衡电流mA
+		for (index = 0; index < _CV_CH_NUM; index ++)
+        {
+			if (SetBalanceReg[index/_BATCV_CH_NUM]&((uint16_t)1<<(index%_BATCV_CH_NUM)))
+            {//这里不用判断均衡量么？
+				BalanceCurrent[index] = (uint32_t)(BalanceVoltage[index]/_BC_R);//均衡电流mA
 	            ComBalEnergyCache[index] +=  (uint64_t)((uint64_t)BalanceCurrent[index]*(uint64_t)BalanceTimer); //1mA*10ms
+                //CAN_TranData(&ComBalEnergyCache[index],0x300+index,8);
 	            if (ComBalEnergyCache[index] > 720000) {
 	                ComBalanceEnergyCache[index] += (uint8_t)(ComBalEnergyCache[index]/720000);  //2mAh
 	                ComBalEnergyCache[index] %= 720000;
+                    //CAN_TranData(&ComBalanceEnergyCache[index],0x330+index,1);
 	            }
-			} else {
+			} else
+            {
 				BalanceCurrent[index] = 0;
 			}
 		}
-	} else {
+	} else
+    {
 		memset((uint8_t *)&BalanceCurrent[0], 0, sizeof(BalanceCurrent));
         for(uint8_t ic=0;ic<_BATCV_IC_NUM;ic++)
         {
