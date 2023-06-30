@@ -1,1 +1,3 @@
+berif:调整KPB17的均衡计算逻辑
 version:V1.09
+pwd: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

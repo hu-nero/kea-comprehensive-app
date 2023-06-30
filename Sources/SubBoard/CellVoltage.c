@@ -239,8 +239,6 @@ char SetAndCheckBalance(void)//¾ùºâ¿ªÆô
 			}
 			BalanceRegBuf |= SetBalanceReg[index/BCC_MAX_CELLS_MC33771];
 		}
-		BalanceTimerLast = Timer_PIT_GetCounterValue(NULL);
-		//CAN_TranData(&BalanceTimerLast,0x305,4);
 
 		for (index = 0; index < _MC33771_NUM; index ++) {
 			if (SetBalanceReg[index] != 0) {
@@ -285,6 +283,12 @@ CloseBalance(void)
 	return 0;
 }
 
+void
+RecordStartBalanceTime(void)
+{
+    BalanceTimerLast = Timer_PIT_GetCounterValue(NULL);
+}
+
 char
 CalBalanceEnergy(void)
 {
@@ -294,8 +298,12 @@ CalBalanceEnergy(void)
 	if (BalanceStartFlag == 1)
     {
 		BalanceTimerPresent = Timer_PIT_GetCounterValue(NULL);
+        if(BalanceTimerLast == 0)
+        {
+            return 0;
+        }
 		BalanceTimerDiff = BalanceTimerLast - BalanceTimerPresent;//0.05us/LSB
-		BalanceTimerLast = BalanceTimerPresent;
+                                                                  //
 		//CAN_TranData(&BalanceTimerPresent,0x306,4);
 		BalanceTimerCache += (BalanceTimerDiff);
 		BalanceTimer = (BalanceTimerCache/200000); //10ms

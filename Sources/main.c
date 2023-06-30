@@ -213,6 +213,7 @@ int main(void)
 				  {
 					  //close balance
 					  CloseBalance();
+                      CalBalanceEnergy();
 				  }
 				  break;
 			  case 2:
@@ -373,7 +374,7 @@ int main(void)
 					  if (CellVolErr[8][0] != 0) {
 						  CellVolErr[8][1] = GetCellVoltage(2, &CellVoltageReal[28]);
 					  }
-                      CalBalanceEnergy();
+                      RecordStartBalanceTime();
 				  }
 				  break;
 			  case 24:

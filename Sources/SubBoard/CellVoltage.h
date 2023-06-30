@@ -70,6 +70,7 @@ extern char CellVoltageFillter(uint16_t *vdest, const uint16_t *vsrc, uint8_t sp
 extern char SetAndCheckBalance(void);
 extern char CloseBalance(void);
 extern char CalBalanceEnergy(void);
+extern void RecordStartBalanceTime(void);
 
 extern char ClrBalanceStatus(void);
 
