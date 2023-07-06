@@ -17,7 +17,7 @@
 #pragma GCC optimize ("O0")
 
 #define _CV_MASK	0xFFFFFFFFFFFF
-#define _BC_R		141	//14.1R //20221026 确认是否是181
+#define _BC_R		177	//14.1R 17.7R
 
 uint16_t CellVoltage[_CV_CH_NUM] = {0};
 uint16_t CellVoltageReal[_CV_CH_NUM] = {0};
@@ -302,8 +302,14 @@ CalBalanceEnergy(void)
         {
             return 0;
         }
-		BalanceTimerDiff = BalanceTimerLast - BalanceTimerPresent;//0.05us/LSB
-                                                                  //
+        if(BalanceTimerPresent>BalanceTimerLast)
+        {
+            BalanceTimerPresent = 0xFFFFFFFF- BalanceTimerPresent;
+            BalanceTimerDiff = BalanceTimerLast + BalanceTimerPresent;//0.05us/LSB
+        }else
+        {
+            BalanceTimerDiff = BalanceTimerLast - BalanceTimerPresent;//0.05us/LSB
+        }
 		//CAN_TranData(&BalanceTimerPresent,0x306,4);
 		BalanceTimerCache += (BalanceTimerDiff);
 		BalanceTimer = (BalanceTimerCache/200000); //10ms

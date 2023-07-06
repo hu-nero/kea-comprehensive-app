@@ -311,6 +311,7 @@ int main(void)
 				  {
 					  //start balance
 					  SetAndCheckBalance();
+                      RecordStartBalanceTime();
 					  //CAN_TranData(SetBalanceReg,0x300,8);
 				  }
 				  break;
@@ -374,7 +375,6 @@ int main(void)
 					  if (CellVolErr[8][0] != 0) {
 						  CellVolErr[8][1] = GetCellVoltage(2, &CellVoltageReal[28]);
 					  }
-                      RecordStartBalanceTime();
 				  }
 				  break;
 			  case 24:
