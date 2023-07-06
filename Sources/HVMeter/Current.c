@@ -61,16 +61,16 @@ char GetCurrent(void) {
 	int32_t CurCache = 0;
 	char err = 0;
 
-	err = GetMeasISENSE_IC(0, &CurV_MeasISENSE);//0.1uV
+	err = GetMeasISENSE_IC(0, &CurV_MeasISENSE);//1uV
     AH_TimerPresent = Timer_PIT_GetCounterValue(NULL);
 
 	if (err == 0) {
-
+        //TODO:Current measurement channel features 16-bit ADC with an automatic programmablegain amplifier ( PGA ) allowing the user to accurately measure current from -1500 A to 1500 A Witth a 6.0 mA resolution
 		if (CurV_MeasISENSE >= 0) {
 			CurV = (CurV_MeasISENSE + 5) / 10;
 		} else {
 			CurV = (CurV_MeasISENSE - 5) / 10;
-		}
+		}//0.1uV
 
 		if (abs(CurV) <= Current_CAL_100ACurV) {//100A
 			//CurCache = (int32_t)((uint32_t)(abs(CurV))*(uint32_t)(Current_CAL_100A)/20480);
@@ -99,7 +99,8 @@ char GetCurrent(void) {
         //timer calculate
         if(AH_TimerLast < AH_TimerPresent)
         {
-            AH_TimerDiff = AH_TimerLast + 0xFFFFFFFF - AH_TimerPresent;//0.05us/LSB   ½µÐò
+            AH_TimerPresent = 0xFFFFFFFF - AH_TimerPresent;
+            AH_TimerDiff = AH_TimerLast + AH_TimerPresent;//0.05us/LSB   ½µÐò
         }else
         {
             AH_TimerDiff = AH_TimerLast - AH_TimerPresent;//0.05us/LSB    ½µÐò
