@@ -194,11 +194,12 @@ int main(void)
       if (gu8halSlaveSpiCsFlag) //probably 15ms
 	  {
           //prepare tdata
-          if(WorkStep == 1)
-          {
+//          if(WorkStep == 1)
+//          {
               //prepare tdata
               DMA_Set();
-          }
+//          }
+#if 0
           ADC_Measure();
           if (0 != GetCurrent())
           {
@@ -412,6 +413,7 @@ int main(void)
 			  WorkStep = 1;
 		  }
 		  WDog1_Clear(NULL);
+#endif
 
 	      if (Timer0Count > 500)
 	      {//1s

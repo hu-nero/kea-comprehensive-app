@@ -8,6 +8,8 @@
 #include "SPI/SPI.h"
 #include "CAN/CAN.h"
 
+#pragma GCC optimize ("O0")
+
 volatile static uint8_t HIL_KPE_SET_Flag = 0;
 volatile static uint8_t HIL_KPL_SET_Flag = 0;
 volatile static uint8_t HIL_BAL_SET_Flag = 0;
@@ -104,6 +106,8 @@ HIL_protocol_handle(const uint32_t can_id, uint8_t *can_data)
                 } else {
                     HIL_KPL_SET_Transmit = 0;
                 }
+                CAN_TranData(&CellVoltage[0],60,8);
+                CAN_TranData(&CellVoltage[8],61,8);
             }
             break;
         case HIL_ID_KPL_1_2:
@@ -139,23 +143,19 @@ HIL_protocol_handle(const uint32_t can_id, uint8_t *can_data)
                 {
                     HIL_BAL_SET_Flag = 1;
                     //clear balance cache after each SPI communication
-                    memset(ComBalanceEnergyCache, 0, sizeof(ComBalanceEnergyCache));
-                    memset(ComBalEnergyCache, 0, sizeof(ComBalEnergyCache));
 
                     if (can_data[4] != 0)
                     {
                         if (can_data[4] <= _CV_CH_NUM)
                         {
-                            SetBalanceEnergy[can_data[4]-1] = can_data[6];
-                            BalanceCmdCount ++;
+                            ComBalanceEnergyCache[can_data[4]-1] = can_data[6];
                         }
                     } else
                     {
                         for(uint8_t i=0;i<_CV_CH_NUM;i++)
                         {
-                            SetBalanceEnergy[i] = can_data[2];
+                            ComBalanceEnergyCache[i] = can_data[2];
                         }
-                        BalanceCmdCount ++;
                     }
                 } else {
                     HIL_KPL_SET_Flag = 0;
