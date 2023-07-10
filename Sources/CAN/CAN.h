@@ -37,11 +37,13 @@ extern uint8_t CAN_TX_Flag;
 
 extern volatile uint8_t CAN_RD_Count;
 extern volatile uint8_t CAN_RD_Sum;
+extern volatile uint8_t CAN_RD_Size;
 extern volatile uint32_t CAN_RD_ID[_CANRDNUM];
 extern volatile uint8_t CAN_RD_DATA[_CANRDNUM][8];
 
 extern volatile uint8_t CAN_TX_Count;
 extern volatile uint8_t CAN_TX_Sum;
+extern volatile uint8_t CAN_TX_Size;
 extern volatile uint32_t CAN_TX_ID[_CANTXNUM];
 extern volatile uint8_t CAN_TX_DATA[_CANTXNUM][8];
 extern volatile uint8_t CAN_TX_LENGTH[_CANTXNUM];
@@ -53,6 +55,7 @@ extern LDD_CAN_TFrame CanTxFrame;
 extern uint8_t CANRDBuff[8];
 extern uint8_t CANTxBuff[8];
 
+extern void CAN_Init(void);
 extern uint8_t CANmsgHandle(void);
 extern char CAN_TranData(unsigned char *candata, unsigned long canid, unsigned char length);
 

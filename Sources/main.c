@@ -126,9 +126,7 @@ int main(void)
   Init_SPI1();
   Timer2ms_Disable(Timer2ms_TDeviceDataPtr);
 #ifdef _CAN_DEF
-  CanDeviceDataPrv = CAN1_Init(NULL);
-  CanRxFrame.Data = CANRDBuff;
-  MSCAN_CANRIER &= ~0x01;
+  CAN_Init();
 #endif
 
 #ifdef _DISABLE_FLASH_WR
@@ -171,7 +169,6 @@ int main(void)
   CAN_RD_Sum = 0;
   CAN_RD_Count = 0;
   MSCAN_CANRIER |= 0x01;
-
 #endif
   //BCC_WaitMs(5);
   _LED_OFF;
@@ -183,9 +180,17 @@ int main(void)
   //start run
   unsigned char u8TmpData[8] = {1,2,3,4,5,6,7,8};
   CAN_TranData(u8TmpData,0x50,8);
+  CAN_TranData((uint8_t*)&Current_CAL_100A,0x51,2);
+  CAN_TranData((uint8_t*)&Current_CAL_200A,0x52,2);
   DMA_Set();
   for (;;)
   {
+      if (Timer1Count > 50)
+      {
+          Timer1Count = 0;
+          //handle can msg
+          CANmsgHandle();
+      }
       if (gu8halSlaveSpiCsFlag) //probably 15ms
 	  {
           //prepare tdata

@@ -192,6 +192,8 @@ void Timer2ms_OnCounterRestart(LDD_TUserData *UserDataPtr)
 {
   /* Write your code here ... */
 	Timer0Count ++;
+	Timer1Count ++;
+	Timer2Count ++;
 	ResMeasureCheckTimer++;
 	//AH_Timer ++;
 	//WorkTimer ++;
@@ -263,6 +265,7 @@ void CAN1_OnFreeTxBuffer(LDD_TUserData *UserDataPtr, LDD_CAN_TMBIndex BufferIdx)
 			CanTxFrame.MessageID = (unsigned long)(CAN_TX_ID[CAN_TX_Count]);
 			CanTxFrame.Data = (uint8_t *)(&(CAN_TX_DATA[CAN_TX_Count][0]));
 			CAN1_SendFrame(CanDeviceDataPrv, BufferIdx, &CanTxFrame);
+            CAN_TX_Size--;
 
 		} else {
 			CAN_TX_Flag = 0;
@@ -299,6 +302,7 @@ void CAN1_OnFullRxBuffer(LDD_TUserData *UserDataPtr, LDD_CAN_TMBIndex BufferIdx)
 		memcpy((uint8_t *)(&(CAN_RD_DATA[CAN_RD_Sum][0])), (uint8_t *)(&(CanRxFrame.Data[0])), 8);
 		memcpy((uint8_t *)(&(CAN_RD_ID[CAN_RD_Sum])), (uint8_t *)(&(CanRxFrame.MessageID)), 4);
 		CAN_RD_Sum ++;
+        CAN_RD_Size++;
 		if (CAN_RD_Sum >= _CANRDNUM) {
 			CAN_RD_Sum = 0;
 		}
