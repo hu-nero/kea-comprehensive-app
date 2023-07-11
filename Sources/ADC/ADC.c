@@ -201,6 +201,11 @@ uint8_t ADC_Measure(void) {
 
 		InjectADC_Value[TempChcurrent][FilterCurrent] = ADCValue[AD_Temp0];
 		InjectADC_Value[TempChcurrent+16][FilterCurrent] = ADCValue[AD_Temp1];
+
+
+	    //CAN_TranData(&InjectADC_Value[TempChcurrent][0],0x600+TempChcurrent,8);
+	    //CAN_TranData(&InjectADC_Value[TempChcurrent+16][0],0x610+TempChcurrent,8);
+
 		TempChcurrent ++;
 
 		if (TempChcurrent >= 16) {
@@ -242,13 +247,14 @@ uint8_t GetADCvalue(void) {
     uint16_t u16MaxADCValue = 0;
     uint16_t u16MinADCValue = 0;
 
-    u16MaxADCValue = RegularADC_Value[index][0];
-    u16MaxADCValue = u16MinADCValue;
 	memset((uint8_t *)&RegularADC_Sum[0], 0, sizeof(RegularADC_Sum));
-	for (index = 0; index < 8; index ++) {//通道
+	for (index = 0; index < 8; index ++)
+    {//通道
 	  	RegularADC_Ave[index] = 0;
 	  	RegularADC_Sum[index] = 0;
-		for (indey = 0; indey < 8; indey ++) {//通道不同位置
+        u16MaxADCValue = RegularADC_Value[index][0];
+        u16MinADCValue = u16MaxADCValue;
+        for (indey = 0; indey < 8; indey ++) {//通道不同位置
             u16MaxADCValue = MAX(u16MaxADCValue, RegularADC_Value[index][indey]);
             u16MinADCValue = MIN(u16MinADCValue, RegularADC_Value[index][indey]);
 			RegularADC_Sum[index] += RegularADC_Value[index][indey];
@@ -257,18 +263,20 @@ uint8_t GetADCvalue(void) {
 		RegularADC_Ave[index] = (RegularADC_Sum[index]+4)/6;
 	}
 
-    u16MaxADCValue = InjectADC_Value[index][0];
-    u16MaxADCValue = u16MinADCValue;
 	memset((uint8_t *)&InjectADC_Sum[0], 0, sizeof(InjectADC_Sum));
 	for (index = 0; index < 32; index ++) {//通道
-		InjectADC_Ave[index] = 0;
-		for (indey = 0; indey < 8; indey ++) {//通道不同位置
+        InjectADC_Ave[index] = 0;
+        InjectADC_Sum[index] = 0;
+        u16MaxADCValue = InjectADC_Value[index][0];
+        u16MinADCValue = u16MaxADCValue;
+        for (indey = 0; indey < 8; indey ++) {//通道不同位置
             u16MaxADCValue = MAX(u16MaxADCValue, InjectADC_Value[index][indey]);
             u16MinADCValue = MIN(u16MinADCValue, InjectADC_Value[index][indey]);
 			InjectADC_Sum[index] += InjectADC_Value[index][indey];
 		}
         InjectADC_Sum[index] = InjectADC_Sum[index] - u16MaxADCValue - u16MinADCValue;
 		InjectADC_Ave[index] = (InjectADC_Sum[index]+4)/6;//获取平均AD
+	    //CAN_TranData(&InjectADC_Ave[index],0x300+index,2);
 	}
 
 	return err;
