@@ -68,7 +68,7 @@ spi0_send_buffer_fill(uint8_t *Data, uint16_t Len)
 	u8Err |= DMA_GetTData(&Data[118], 35);
 	u8Err |= DMA_GetCVData(&Data[20], 84);
 	u8Err |= DMA_GetEData(&Data[155], 38);
-	u8Err |= DMA_GetBLData(&Data[195], 36);
+	u8Err |= DMA_GetBLData(&Data[195], 42);
 	u8Err |= DMA_GetRTCData(&Data[245], 18);
     return u8Err;
 }

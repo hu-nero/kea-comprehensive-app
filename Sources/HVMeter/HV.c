@@ -91,6 +91,10 @@ uint8_t GetHVAll(void) {
 
 	V_ADHeatV = (uint32_t)((uint32_t)RegularADC_Ave[AD_HeatVOL]*(uint32_t)Vref25/(uint32_t)ADref25);
 	//V_HeatVOL = (uint16_t)((V_ADHeatV*(uint32_t)HeatVOL_Cal+80)/160);//0.01V
+    
+    //CAN_TranData(&RegularADC_Ave[AD_HV1],0x200,2);
+    //CAN_TranData(&RegularADC_Ave[AD_HV2],0x201,2);
+    //CAN_TranData(&RegularADC_Ave[AD_HeatVOL],0x202,2);
 
 	if (V_ADHV1 <= HV1_50V_AD) {
 		V_HV1 = (uint16_t)((V_ADHV1*(uint32_t)HV1_50V_Cal+100)/200);//0.01V
@@ -113,13 +117,13 @@ uint8_t GetHVAll(void) {
 	}
 
 	if (V_ADHeatV <= HeatVOL_50V_AD) {
-		V_HeatVOL = (uint16_t)((V_ADHeatV*(uint32_t)HeatVOL_50V_Cal+80)/160);//0.01V
+		V_HeatVOL = (uint16_t)((V_ADHeatV*(uint32_t)HeatVOL_50V_Cal+100)/200);//0.01V
 	} else if ((V_ADHeatV > HeatVOL_50V_AD) && (V_ADHeatV <= HeatVOL_100V_AD)) {
-		V_HeatVOL = (uint16_t)(((V_ADHeatV-HeatVOL_50V_AD)*(uint32_t)HeatVOL_100V_Cal+80)/160) + HeatVOL_50V_V;//0.01V
+		V_HeatVOL = (uint16_t)(((V_ADHeatV-HeatVOL_50V_AD)*(uint32_t)HeatVOL_100V_Cal+100)/200) + HeatVOL_50V_V;//0.01V
 	} else if ((V_ADHeatV > HeatVOL_100V_AD) && (V_ADHeatV <= HeatVOL_200V_AD)) {
-		V_HeatVOL = (uint16_t)(((V_ADHeatV-HeatVOL_100V_AD)*(uint32_t)HeatVOL_200V_Cal+80)/160) + HeatVOL_100V_V;//0.01V
+		V_HeatVOL = (uint16_t)(((V_ADHeatV-HeatVOL_100V_AD)*(uint32_t)HeatVOL_200V_Cal+100)/200) + HeatVOL_100V_V;//0.01V
 	} else {
-		V_HeatVOL = (uint16_t)(((V_ADHeatV-HeatVOL_200V_AD)*(uint32_t)HeatVOL_300V_Cal+80)/160) + HeatVOL_200V_V;//0.01V
+		V_HeatVOL = (uint16_t)(((V_ADHeatV-HeatVOL_200V_AD)*(uint32_t)HeatVOL_300V_Cal+100)/200) + HeatVOL_200V_V;//0.01V
 	}
 
 

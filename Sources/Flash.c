@@ -146,9 +146,9 @@ char Flash_Read(void) {
 	HV2_100V_V = (uint16_t)(((HV2_100V_AD-HV2_50V_AD)*(uint32_t)HV2_100V_Cal+100)/200) + HV2_50V_V;//0.01V
 	HV2_200V_V = (uint16_t)(((HV2_200V_AD-HV2_100V_AD)*(uint32_t)HV2_100V_Cal+100)/200) + HV2_100V_V;//0.01V
 
-	HeatVOL_50V_V = (uint16_t)((HeatVOL_50V_AD*(uint32_t)HeatVOL_50V_Cal+80)/160);//0.01V
-	HeatVOL_100V_V = (uint16_t)(((HeatVOL_100V_AD-HeatVOL_50V_AD)*(uint32_t)HeatVOL_100V_Cal+80)/160) + HeatVOL_50V_V;//0.01V
-	HeatVOL_200V_V = (uint16_t)(((HeatVOL_200V_AD-HeatVOL_100V_AD)*(uint32_t)HeatVOL_100V_Cal+80)/160) + HeatVOL_100V_V;//0.01V
+	HeatVOL_50V_V = (uint16_t)((HeatVOL_50V_AD*(uint32_t)HeatVOL_50V_Cal+100)/200);//0.01V
+	HeatVOL_100V_V = (uint16_t)(((HeatVOL_100V_AD-HeatVOL_50V_AD)*(uint32_t)HeatVOL_100V_Cal+100)/200) + HeatVOL_50V_V;//0.01V
+	HeatVOL_200V_V = (uint16_t)(((HeatVOL_200V_AD-HeatVOL_100V_AD)*(uint32_t)HeatVOL_100V_Cal+100)/200) + HeatVOL_100V_V;//0.01V
 
 
 	/*
