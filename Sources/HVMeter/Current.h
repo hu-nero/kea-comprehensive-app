@@ -33,6 +33,8 @@ extern "C" {
 #define _CUR_CAL_200A_VALUE		650
 #define _CUR_CAL_350A_VALUE		650
 
+#define _CUR_RSHUNT		        1585//10u ohm
+
 extern uint16_t Current_CAL_100A;
 extern uint16_t Current_CAL_200A;
 extern uint16_t Current_CAL_350A;

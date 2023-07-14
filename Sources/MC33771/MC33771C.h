@@ -504,6 +504,13 @@ typedef struct {
 
 /*! @brief Timeout used for SPI/TPL communication. */
 #define BCC_COM_TIMEOUT           (BCC_GetSystemClockFreq() / 100U)
+#define BCC_GET_ISENSE_RAW(measISense1, measISense2) \
+        ((((uint32_t)(measISense1) & 0x7FFF) << 4U) | \
+               ((uint32_t)(measISense2) & 0xF))
+#define BCC_GET_ISENSE_RAW_SIGN(iSenseRaw) \
+        ((int32_t)(((iSenseRaw) & 0x040000U) ? ((iSenseRaw) | 0xFFF80000U) : (iSenseRaw)))
+#define BCC_GET_ISENSE_VOLT(iSense1, iSense2) \
+        ((BCC_GET_ISENSE_RAW_SIGN(BCC_GET_ISENSE_RAW(iSense1, iSense2)) * 600) )
 
 extern uint16_t MC33771_ID[_MC33771_NUM];
 extern int16_t MC33771_TEMP[_MC33771_NUM];
@@ -519,7 +526,8 @@ extern unsigned char MC33771_CheckID(void);
 extern char MC33771_RunCOD(void);
 extern char CheckMeasCellRdy(uint8_t ic);
 extern char GetMeasCell_IC(uint8_t ic, uint16_t *vdata);
-extern char GetMeasISENSE_IC(uint8_t ic, int32_t *vdata);
+extern char GetIsenseVoltage(uint8_t ic, int32_t *vdata);
+extern char GetCoulombCounter(uint8_t ic, int32_t *vdata);
 
 #ifdef __cplusplus
 }

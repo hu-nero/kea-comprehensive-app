@@ -398,7 +398,34 @@ char GetMeasCell_IC(uint8_t ic, uint16_t *vdata) {
 	return err;
 }
 
-char GetMeasISENSE_IC(uint8_t ic, int32_t *vdata) {//0.1uV
+char GetIsenseVoltage(uint8_t ic, int32_t *vdata)
+{
+    char err = 0;
+    uint16_t readVal[2];
+    int32_t  tmp = 0;
+
+    err = MC33771_ReadData(2, bcc_reg_meas_isense1, MC33771_ID[ic], readVal);
+    if (err == 0)
+    {
+        tmp = BCC_GET_ISENSE_VOLT(readVal[0], readVal[1]);
+        if((tmp & 0x80000000) != 0)
+        {
+            *vdata = 0xFFFFFFFF - tmp;
+        }else
+        {
+            *vdata = tmp;
+        }
+    }
+    if ((readVal[0] & readVal[1] & 0x8000) == 0U)
+    {
+        *vdata = 0;
+        return 1;
+    }
+    return err;
+}
+
+char GetCoulombCounter(uint8_t ic, int32_t *vdata)//0.1uV
+{
 	char err = 0;
 	uint16_t measisense[6] = {0};
 	int32_t measisenseV[3] = {0};
@@ -431,6 +458,7 @@ char Init_MC33771_Reg(void) {
 	MC33771_GlobalWritecommand(0x0330, bcc_reg_sys_cfg2);//SYS_CFG2
 	MC33771_GlobalWritecommand(0x0000, bcc_reg_sys_diag);//SYS_DIAG
 	MC33771_GlobalWritecommand(0xC000, bcc_reg_adc2_offset_comp);//ADC2_OFFSET_COMP
+	MC33771_GlobalWritecommand(0x0497, bcc_reg_adc_cfg);//ADC_CFG
 	//MC33771_GlobalWritecommand(0x4000, 0x07);//ADC2_OFFSET_COMP
 	MC33771_GlobalWritecommand(0x0000, bcc_reg_ov_uv_en);//OV_UV_EN
 

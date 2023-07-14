@@ -61,37 +61,20 @@ char GetCurrent(void) {
 	int32_t CurCache = 0;
 	char err = 0;
 
-	err = GetMeasISENSE_IC(0, &CurV_MeasISENSE);//1uV
+	err = GetIsenseVoltage(0, &CurV_MeasISENSE);//1uV
     AH_TimerPresent = Timer_PIT_GetCounterValue(NULL);
 
-	if (err == 0) {
-        //TODO:Current measurement channel features 16-bit ADC with an automatic programmablegain amplifier ( PGA ) allowing the user to accurately measure current from -1500 A to 1500 A Witth a 6.0 mA resolution
-		if (CurV_MeasISENSE >= 0) {
-			CurV = (CurV_MeasISENSE + 5) / 10;
-		} else {
-			CurV = (CurV_MeasISENSE - 5) / 10;
-		}//0.1uV
+	if (err == 0)
+    {
+        //TODO:Current measurement channel features 16-bit ADC with an automatic programmablegain amplifier ( PGA ) allowing the user to accurately measure current from -1500 A to 1500 A With a 6.0 mA resolution
+        CurCache = (CurV_MeasISENSE)/_CUR_RSHUNT; //100mA
 
-		if (abs(CurV) <= Current_CAL_100ACurV) {//100A
-			//CurCache = (int32_t)((uint32_t)(abs(CurV))*(uint32_t)(Current_CAL_100A)/20480);
-			CurCache = (int32_t)((uint32_t)(abs(CurV))*(uint32_t)(Current_CAL_100A)/2048);
-		} else {
-			//CurCache = (int32_t)(((uint32_t)(abs(CurV)-Current_CAL_100ACurV)*(uint32_t)(Current_CAL_200A)/20480) - (Current_CAL_100ACurV*Current_CAL_100A/20480));//Current_CAL_100A_Cur
-			//CurCache = (int32_t)(((uint32_t)(abs(CurV)-Current_CAL_100ACurV)*(uint32_t)(Current_CAL_200A)/20480) + (Current_CAL_100A_Cur));//Current_CAL_100A_Cur
-			CurCache = (int32_t)(((uint32_t)(abs(CurV)-Current_CAL_100ACurV)*(uint32_t)(Current_CAL_200A)/2048) + (Current_CAL_100A_Cur));//Current_CAL_100A_Cur
-		}
-
-		if (CurV < 0) {
-			CurCache = 0 - CurCache;
-		}
-
-
-		if (abs(CurCache) < 5) {
-			CurCache = 0;
-		}
-
-		CurV_Cache = (uint16_t)CurCache;
+		CurV_Cache = (uint32_t)CurCache;
 		RealCurrentCache[CurIndex] = (int32_t)CurCache;
+
+        uint32_t u32Tmp = (uint32_t)CurV_MeasISENSE;
+        CAN_TranData(&u32Tmp,0x200,4);
+        CAN_TranData(&CurV_Cache,0x300,4);
 		//cur[0] = CurCache;
 
 	  	/***********************************************************************************/
