@@ -35,8 +35,10 @@ HIL_protocol_handle(const uint32_t can_id, uint8_t *can_data)
                     HIL_KPE_SET_Flag = 1;
                     Current_CAN_Cache = (uint32_t)((((uint16_t)can_data[5])<<24)|(((uint16_t)can_data[4])<<16)|(((uint16_t)can_data[3])<<8)|((uint16_t)can_data[2]));
                     V_HV1_CAN_Cache = (uint16_t)((((uint16_t)can_data[7])<<8)|((uint16_t)can_data[6]));
-                    Current = (int16_t)(Current_CAN_Cache-32500);
-                    V_HV1 = V_HV1_CAN_Cache*15;
+                    //Current = (int16_t)(Current_CAN_Cache-32500);
+                    Current = (int16_t)(Current_CAN_Cache);
+                    //V_HV1 = V_HV1_CAN_Cache*15;
+                    V_HV1 = V_HV1_CAN_Cache;
 
                 } else {
                     HIL_KPE_SET_Flag = 0;
@@ -57,8 +59,10 @@ HIL_protocol_handle(const uint32_t can_id, uint8_t *can_data)
                 if (HIL_KPE_SET_Flag == 1) {
                     V_HV2_CAN_Cache = (uint16_t)((((uint16_t)can_data[1])<<8)|((uint16_t)can_data[0]));
                     V_HeatVOL_CAN_Cache = (uint16_t)((((uint16_t)can_data[3])<<8)|((uint16_t)can_data[2]));
-                    V_HV2 = V_HV2_CAN_Cache*15;
-                    V_HeatVOL = V_HeatVOL_CAN_Cache*15;
+                    //V_HV2 = V_HV2_CAN_Cache*15;
+                    //V_HeatVOL = V_HeatVOL_CAN_Cache*15;
+                    V_HV2 = V_HV2_CAN_Cache;
+                    V_HeatVOL = V_HeatVOL_CAN_Cache;
                 } else {
                     V_HV2 = 0;
                     V_HeatVOL = 0;
