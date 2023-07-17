@@ -12,7 +12,10 @@ extern "C" {
 #include "string.h"
 #include "FuncCom.h"
 #include "PE_Types.h"
-  
+
+#define FUNC_MAX(a,b) ((a)>(b)?(a):(b))
+#define FUNC_MIN(a,b) ((a)<(b)?(a):(b))
+
 typedef enum
 {
   	AD_HV1 = 0,

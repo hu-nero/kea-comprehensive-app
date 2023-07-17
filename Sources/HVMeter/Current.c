@@ -23,6 +23,7 @@ int32_t  RealCurrent = 0;//0.01A
 int32_t  RealCurrentNotTemp = 0;//0.01A
 int32_t  RealCurrentCache[_CUR_FILTER_NUM] = {0};//0.01A
 
+static uint8_t CurIndex = 0;//样本数
 int32_t CurV = 0;
 int32_t CurV_MeasISENSE = 0;
 
@@ -55,7 +56,6 @@ char GetCurrent(void) {
 	static uint32_t AH_TimerDiff = 0;
 	static uint32_t AH_Timer = 0;
 	static uint32_t AH_TimerCache = 0;
-	static uint8_t CurIndex = 0;
 
 	int16_t CUR_Cache[2] = {0};
 	int32_t CurCache = 0;
@@ -145,14 +145,21 @@ void CurrentFillter(int16_t *cdata) {
 	int32_t CurrentAve = 0;
 	int16_t NTC_BUFF = 0;
 	uint8_t index = 0;
+    int32_t i32CurMax = 0;
+    int32_t i32CurMin = 0;
 
 	static uint32_t CurTimerCount = 0;
 	static uint8_t CurTcalflag = 0;
 
+    CurIndex = 0;//Clear the sample after taking the mean
+    i32CurMax = i32CurMin = RealCurrentCache[0];
 	for (index = 0;index < _CUR_FILTER_NUM; index ++) {
+        i32CurMax = FUNC_MAX(i32CurMax, RealCurrentCache[index]);
+        i32CurMin = FUNC_MIN(i32CurMin, RealCurrentCache[index]);
 		CurSum += (int32_t)RealCurrentCache[index];
 	}
-	CurrentAve = (int32_t)((CurSum)/_CUR_FILTER_NUM);
+    CurSum = CurSum - i32CurMax - i32CurMin;
+	CurrentAve = (int32_t)((CurSum)/(_CUR_FILTER_NUM-2));
 
 	if (abs(CurrentAve) != 0) {
 		CurTimerCount ++;
@@ -174,7 +181,7 @@ void CurrentFillter(int16_t *cdata) {
 	}
 
     //屏蔽温度校准
-    //CurTcalflag = 0;
+    CurTcalflag = 0;
 	if (CurTcalflag == 1) {//温度校准，无温度校准
 		NTC_BUFF = (int16_t)((int16_t)(NTCshunt - TempShunt)*10) / CurCPSRatio[NTCshunt];
 		if (NTC_BUFF < -10000) NTC_BUFF = -10000;

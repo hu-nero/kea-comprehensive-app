@@ -89,7 +89,7 @@
 #define MAIN_WORKSTEPS  24
 
 
-uint8_t SoftsVer[32] = "KPB17-Slave-V1.09";//[13]:3;	[15]:0		[16]:6
+uint8_t SoftsVer[32] = "KPB17-Slave-V1.09";//[13]:1;	[15]:0		[16]:9
 
 uint8_t WorkStep = 1;
 uint16_t gINA226CFG = 0;
@@ -223,20 +223,15 @@ int main(void)
 				  break;
 			  case 3:
 				  {
-					  CurrentFillter(&Current);
+					  MC33771_RunCOD();//正常电压转换
 				  }
 				  break;
 			  case 4:
 				  {
-					  MC33771_RunCOD();//正常电压转换
-				  }
-				  break;
-			  case 5:
-				  {
 					  GetADCvalue();
 				  }
 				  break;
-			  case 6:
+			  case 5:
 				  {
 					  EnterCritical();
 					  GetHVAll();
@@ -245,7 +240,7 @@ int main(void)
 					  memset(CellVolErr, 0 ,sizeof(CellVolErr));
 				  }
 				  break;
-			  case 7:
+			  case 6:
 				  {
 					  if (0 == GetCellVoltage(0, &CellVoltageReal[0]))
 					  {
@@ -260,7 +255,7 @@ int main(void)
 					  //CAN_TranData((uint8_t*)&CellVoltageReal[4],0x401,8);
 				  }
 				  break;
-			  case 8:
+			  case 7:
 				  {
 					  if (0 == GetCellVoltage(1, &CellVoltageReal[14]))
 					  {
@@ -273,7 +268,7 @@ int main(void)
 					  }
 				  }
 				  break;
-			  case 9:
+			  case 8:
 				  {
 					  if (0 == GetCellVoltage(2, &CellVoltageReal[28]))
 					  {
@@ -286,28 +281,28 @@ int main(void)
 					  }
 				  }
 				  break;
-			  case 10:
+			  case 9:
 				  {
 					  if (CellVolErr[0][0] != 0) {
 						  CellVolErr[0][1] = GetCellVoltage(0, &CellVoltageReal[0]);
 					  }
 				  }
 				  break;
-			  case 11:
+			  case 10:
 				  {
 					  if (CellVolErr[1][0] != 0) {
 						  CellVolErr[1][1] = GetCellVoltage(1, &CellVoltageReal[14]);
 					  }
 				  }
 				  break;
-			  case 12:
+			  case 11:
 				  {
 					  if (CellVolErr[2][0] != 0) {
 						  CellVolErr[2][1] = GetCellVoltage(2, &CellVoltageReal[28]);
 					  }
 				  }
 				  break;
-			  case 13:
+			  case 12:
 				  {
 					  //start balance
 					  SetAndCheckBalance();
@@ -315,68 +310,73 @@ int main(void)
 					  //CAN_TranData(SetBalanceReg,0x300,8);
 				  }
 				  break;
-			  case 14:
+			  case 13:
 				  {
 					  MC33771_RunCOD();//均衡电压转换
 				  }
 				  break;
-			  case 15:
+			  case 14:
 				  {
 					  EnterCritical();
 					  CellVoltageFillter(CellVoltage, CellVoltageReal, 0, _CV_CH_NUM/3);//0 1 2 .... 13
 					  ExitCritical();
 				  }
 				  break;
-			  case 16:
+			  case 15:
 				  {
 					  EnterCritical();
 					  CellVoltageFillter(CellVoltage, CellVoltageReal, (_CV_CH_NUM/3), (_CV_CH_NUM*2/3));//14 15 16 .... 27
 					  ExitCritical();
 				  }
 				  break;
-			  case 17:
+			  case 16:
 				  {
 					  EnterCritical();
 					  CellVoltageFillter(CellVoltage, CellVoltageReal, (_CV_CH_NUM*2/3), _CV_CH_NUM);//28 22 23 .... 41
 					  ExitCritical();
 				  }
 				  break;
-			  case 18:
+			  case 17:
 				  {
 					  CellVolErr[6][0] = GetCellVoltage(0, &BalanceVoltage[0]);
 				  }
 				  break;
-			  case 19:
+			  case 18:
 				  {
 					  CellVolErr[7][0] = GetCellVoltage(1, &BalanceVoltage[14]);
 				  }
 				  break;
-			  case 20:
+			  case 19:
 				  {
 					  CellVolErr[8][0] = GetCellVoltage(2, &BalanceVoltage[28]);
 				  }
 				  break;
-			  case 21:
+			  case 20:
 				  {
 					  if (CellVolErr[6][0] != 0) {
 						  CellVolErr[6][1] = GetCellVoltage(0, &CellVoltageReal[0]);
 					  }
 				  }
 				  break;
-			  case 22:
+			  case 21:
 				  {
 					  if (CellVolErr[7][0] != 0) {
 						  CellVolErr[7][1] = GetCellVoltage(1, &CellVoltageReal[14]);
 					  }
 				  }
 				  break;
-			  case 23:
+			  case 22:
 				  {
 					  if (CellVolErr[8][0] != 0) {
 						  CellVolErr[8][1] = GetCellVoltage(2, &CellVoltageReal[28]);
 					  }
 				  }
 				  break;
+              case 23:
+                  {
+					  CurrentFillter(&Current);
+                  }
+                  break;
 			  case 24:
 				  {
 					  if (RTC_SelectStatus != 0) {

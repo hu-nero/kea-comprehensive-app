@@ -1,7 +1,5 @@
 #include "ADC.h"
 
-#define MAX(a,b) ((a)>(b)?(a):(b))
-#define MIN(a,b) ((a)<(b)?(a):(b))
 
 uint16_t ADCValue[10] = {0};
 
@@ -255,8 +253,8 @@ uint8_t GetADCvalue(void) {
         u16MaxADCValue = RegularADC_Value[index][0];
         u16MinADCValue = u16MaxADCValue;
         for (indey = 0; indey < 8; indey ++) {//通道不同位置
-            u16MaxADCValue = MAX(u16MaxADCValue, RegularADC_Value[index][indey]);
-            u16MinADCValue = MIN(u16MinADCValue, RegularADC_Value[index][indey]);
+            u16MaxADCValue = FUNC_MAX(u16MaxADCValue, RegularADC_Value[index][indey]);
+            u16MinADCValue = FUNC_MIN(u16MinADCValue, RegularADC_Value[index][indey]);
 			RegularADC_Sum[index] += RegularADC_Value[index][indey];
 		}
         RegularADC_Sum[index] = RegularADC_Sum[index] - u16MaxADCValue - u16MinADCValue;
@@ -270,8 +268,8 @@ uint8_t GetADCvalue(void) {
         u16MaxADCValue = InjectADC_Value[index][0];
         u16MinADCValue = u16MaxADCValue;
         for (indey = 0; indey < 8; indey ++) {//通道不同位置
-            u16MaxADCValue = MAX(u16MaxADCValue, InjectADC_Value[index][indey]);
-            u16MinADCValue = MIN(u16MinADCValue, InjectADC_Value[index][indey]);
+            u16MaxADCValue = FUNC_MAX(u16MaxADCValue, InjectADC_Value[index][indey]);
+            u16MinADCValue = FUNC_MIN(u16MinADCValue, InjectADC_Value[index][indey]);
 			InjectADC_Sum[index] += InjectADC_Value[index][indey];
 		}
         InjectADC_Sum[index] = InjectADC_Sum[index] - u16MaxADCValue - u16MinADCValue;
