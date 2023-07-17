@@ -1,3 +1,3 @@
-berif:调整KPB17的均衡计算逻辑
+berif:完成常温电流矫正测试（需要标定完）
 version:V1.09
-pwd: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
+pwd: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
