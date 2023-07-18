@@ -152,7 +152,7 @@ HIL_protocol_handle(const uint32_t can_id, uint8_t *can_data)
                     {
                         if (can_data[4] <= _CV_CH_NUM)
                         {
-                            ComBalanceEnergyCache[can_data[4]-1] = can_data[6];
+                            ComBalanceEnergyCache[can_data[4]-1] = can_data[5];
                         }
                     } else
                     {
