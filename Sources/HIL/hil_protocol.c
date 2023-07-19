@@ -36,7 +36,11 @@ HIL_protocol_handle(const uint32_t can_id, uint8_t *can_data)
                     Current_CAN_Cache = (uint32_t)((((uint16_t)can_data[5])<<24)|(((uint16_t)can_data[4])<<16)|(((uint16_t)can_data[3])<<8)|((uint16_t)can_data[2]));
                     V_HV1_CAN_Cache = (uint16_t)((((uint16_t)can_data[7])<<8)|((uint16_t)can_data[6]));
                     //Current = (int16_t)(Current_CAN_Cache-32500);
-                    Current = (int16_t)(Current_CAN_Cache);
+                    int32_t i32Tmp = Current_CAN_Cache*0.02-650;
+                    i32Tmp /= 0.02;
+                    Current_CAN_Cache = (uint32_t)i32Tmp;
+
+                    Current = (int16_t)(i32Tmp);
                     //V_HV1 = V_HV1_CAN_Cache*15;
                     V_HV1 = V_HV1_CAN_Cache;
 
