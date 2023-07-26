@@ -19,8 +19,6 @@ int16_t Current_CAL_100A_Cur = 10000;
 int32_t Current_CAL_100ACurV = 1;
 
 int16_t  Current = 0;//0.02A
-int32_t  RealCurrent = 0;//0.01A
-int32_t  RealCurrentNotTemp = 0;//0.01A
 int32_t  RealCurrentCache[_CUR_FILTER_NUM] = {0};//0.01A
 
 static uint8_t CurIndex = 0;//样本数
@@ -143,10 +141,11 @@ void CurrentFillter(int16_t *cdata) {
 
 	int32_t CurSum = 0;
 	int32_t CurrentAve = 0;
-	int16_t NTC_BUFF = 0;
 	uint8_t index = 0;
     int32_t i32CurMax = 0;
     int32_t i32CurMin = 0;
+    double dTempICAve = 0;
+    double dCurr;
 
 	static uint32_t CurTimerCount = 0;
 	static uint8_t CurTcalflag = 0;
@@ -159,45 +158,45 @@ void CurrentFillter(int16_t *cdata) {
 		CurSum += (int32_t)RealCurrentCache[index];
 	}
     CurSum = CurSum - i32CurMax - i32CurMin;
-	CurrentAve = (int32_t)((CurSum)/(_CUR_FILTER_NUM-2));
+	CurrentAve = (int32_t)((CurSum)/(_CUR_FILTER_NUM-2)); //0.01A
 
-	if (abs(CurrentAve) != 0) {
-		CurTimerCount ++;
-		if (CurTimerCount > 100) {	//2s
-			CurTimerCount = 30000;	//5min
-		}
-	} else {
-		if (CurTimerCount != 0) {
-			CurTimerCount --;
-		}
-
-	}
-
-	if (CurTimerCount > 1000) {
-		CurTcalflag = 1;
-	} else {
-		//CurTimerCount = 0;
-		CurTcalflag = 0;
-	}
-
-    //屏蔽温度校准
-    CurTcalflag = 0;
-	if (CurTcalflag == 1) {//温度校准，无温度校准
-		NTC_BUFF = (int16_t)((int16_t)(NTCshunt - TempShunt)*10) / CurCPSRatio[NTCshunt];
-		if (NTC_BUFF < -10000) NTC_BUFF = -10000;
-		if (abs(CurrentAve) < 34000) {//340A
-			//cdata[0]  = (int16_t)((CurrentAve * 10000) / (NTC_BUFF + 10050));
-			RealCurrent = (int32_t)((CurrentAve * 10000) / (int32_t)(NTC_BUFF + 10050));
-		} else {
-			//cdata[0]  = (int16_t)((CurrentAve * 10000) / (NTC_BUFF + 10100));
-			RealCurrent  = (int32_t)((CurrentAve * 10000) / (int32_t)(NTC_BUFF + 10100));
-		}
-	} else {
-		//cdata[0] = (int16_t)(CurrentAve);
-		RealCurrent = (int32_t)(CurrentAve);
-	}
-
-	RealCurrentNotTemp = (int32_t)(CurrentAve);
-	cdata[0] = (int16_t)(RealCurrent/2);
+    //采样芯片温度修正电流
+    dTempICAve = (double)(((double)TempIC[0] + (double)TempIC[1] + (double)TempIC[2])/3 - 50);
+    dCurr = (double)CurrentAve;
+    if (dTempICAve < -30)
+    {
+        dCurr += 0.0077 * (dCurr) - 2.7518;
+    }else if ((dTempICAve >= -30) && (dTempICAve < -25))
+    {
+        dCurr += 0.0065 * (dCurr) - 4.4849;
+    }else if ((dTempICAve >= -25) && (dTempICAve < -20))
+    {
+        dCurr += 0.0060 * (dCurr) - 3.1176;
+    }else if ((dTempICAve >= -20) && (dTempICAve < -15))
+    {
+        dCurr += 0.0059 * (dCurr) - 6.109;
+    }else if ((dTempICAve >= -15) && (dTempICAve < -10))
+    {
+        dCurr += 0.0055 * (dCurr) - 5.2084;
+    }else if ((dTempICAve >= -10) && (dTempICAve < -5))
+    {
+        dCurr += 0.0053 * (dCurr) - 4.0603;
+    }else if ((dTempICAve >= -5) && (dTempICAve < -1))
+    {
+        dCurr += 0.0041 * (dCurr) - 2.4428;
+    }else if ((dTempICAve >= -1) && (dTempICAve < 5))
+    {
+        dCurr += 0.0037 * (dCurr) - 0.0486;
+    }else if ((dTempICAve >= 5) && (dTempICAve < 9))
+    {
+        dCurr += 0.0035 * (dCurr) - 0.9743;
+    }else if ((dTempICAve >= 9) && (dTempICAve < 14))
+    {
+        dCurr += 0.0034 * (dCurr) - 2.0093;
+    }else if ((dTempICAve >= 14) && (dTempICAve < 18))
+    {
+        dCurr += 0.0027 * (dCurr) - 5.5924;
+    }
+	cdata[0] = (int16_t)(dCurr/2);//0.02A
 }
 

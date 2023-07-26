@@ -40,8 +40,6 @@ extern int16_t Current_CAL_100A_Cur;
 extern int32_t Current_CAL_100ACurV;
 
 extern int16_t  Current;//0.02A
-extern int32_t  RealCurrent;//0.01A
-extern int32_t  RealCurrentNotTemp;
 
 //extern int32_t CurV;
 //extern int32_t CurV_MeasISENSE;
